@@ -13,12 +13,12 @@ The main feature of these indicators is their continuous operation, which means 
 
 Releases are available under Node Package Manager (npm):
 
-    npm install @ft/indicators
+    npm install @follow-traders/indicators
 
 ## Exapmle with Simple Moving Average
 
 ```js
-import { SMA } from '@ft/indicators';
+import { SMA } from '@follow-traders/indicators';
 const sma = new SMA(4); // Create SMA with 4 period
 
 // SMA workflow
