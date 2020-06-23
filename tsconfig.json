@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+      "target": "es5",
+      "module": "esnext",
+      "moduleResolution": "node",
+      "allowJs": true,
+      "outDir": "./lib",
+      "resolveJsonModule": true,
+      "esModuleInterop": true,
+      "sourceMap": true,
+      "allowSyntheticDefaultImports": true,
+      "declaration": true,
+    },
+    "include": [
+      "src/**/*.ts"
+    ],
+    "exclude": ["node_modules"],
+}
