@@ -3,6 +3,7 @@
   "name": "@ft/indicators",
   "description": "Implementation of most popular technical stock indicators",
   "version": "0.1.0",
+  "license": "GPL-3.0",
   "homepage": "https://github.com/followtraders/indicators",
   "repository": {
     "type": "git",
