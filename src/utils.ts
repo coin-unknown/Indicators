@@ -11,22 +11,36 @@ export function sum(arr: number[]) {
 
 export const percentChange = (current: number, prev: number) => ((current - prev) / prev) * 100;
 export const avg = (arr: number[], period = arr.length) => sum(arr) / period || 0;
-export const max = (arr: number[]) => {
+export const getMax = (arr: number[]) => {
     let max = -Infinity;
+    let idx = 0;
+
     for (let i = arr.length - 1; i >= 0; i--) {
-        max = Math.max(max, arr[i]);
+        const item = arr[i];
+
+        if (max < item) {
+            idx = i;
+            max = item;
+        }
     }
 
-    return max;
+    return { max, idx };
 };
 
-export const min = (arr: number[]) => {
+export const getMin = (arr: number[]) => {
     let min = Infinity;
+    let idx = 0;
+
     for (let i = arr.length - 1; i >= 0; i--) {
-        min = Math.min(min, arr[i]);
+        const item = arr[i];
+
+        if (min > item) {
+            idx = i;
+            min = item;
+        }
     }
 
-    return min;
+    return { min, idx };
 };
 
 export class AvgChangeProvider {
@@ -72,5 +86,25 @@ export class AvgChangeProvider {
         }
 
         return { gain: this.gain, loss: this.loss };
+    }
+}
+
+export class AvgProvider {
+    private values: number[] = [];
+    private prevAvg: number;
+
+    constructor(private period: number) {}
+
+    nextValue(value: number) {
+        if (this.prevAvg) {
+            this.prevAvg = (this.prevAvg * (this.period - 1) + value) / this.period;
+            return this.prevAvg;
+        }
+        
+        this.values.push(value);
+
+        if (this.values.length === this.period) {
+            return this.prevAvg = avg(this.values, this.period);
+        }
     }
 }

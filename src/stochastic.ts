@@ -1,4 +1,4 @@
-import { max, min } from './utils';
+import { getMin, getMax } from './utils';
 import { SMA } from './sma';
 
 export class Stochastic {
@@ -29,13 +29,13 @@ export class Stochastic {
         if (this.higestH !== null) {
             this.higestH = Math.max(high, this.higestH);
         } else if (this.highs.length === this.period) {
-            this.higestH = max(this.highs);
+            this.higestH = getMax(this.highs).max;
         }
 
         if (this.lowestL !== null) {
             this.lowestL = Math.min(low, this.lowestL);
         } else if (this.lows.length === this.period) {
-            this.lowestL = min(this.lows);
+            this.lowestL = getMin(this.lows).min;
         }
 
         let k: number = ((close - this.lowestL) / (this.higestH - this.lowestL)) * 100;

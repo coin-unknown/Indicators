@@ -1,13 +1,16 @@
 {
     "compilerOptions": {
       "target": "es5",
-      "module": "esnext",
       "moduleResolution": "node",
+      "lib": ["ESNext"],
+      "skipLibCheck": true,
+      "module": "commonjs",
       "allowJs": true,
       "outDir": "./lib",
       "resolveJsonModule": true,
       "esModuleInterop": true,
       "sourceMap": true,
+      "isolatedModules": true,
       "allowSyntheticDefaultImports": true,
       "declaration": true,
     },
