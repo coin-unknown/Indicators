@@ -19,7 +19,14 @@ export default [
             nodeResolve(),
             resolve(), // so Rollup can find `ms`
             commonjs(), // so Rollup can convert `ms` to an ES module
-            typescript(),
+            typescript({
+                tsconfigOverride: {
+                    compilerOptions: {
+                        target: "ES5",
+                        module: "ESNext",
+                    }
+                }
+            }),
             buble({
                 transforms: { forOf: false },
                 objectAssign: 'Object.assign',
