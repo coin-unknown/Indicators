@@ -4,3 +4,5 @@ export { Wave } from './src/wave';
 export { Stochastic } from './src/stochastic';
 export { RSI } from './src/rsi';
 export { EMA } from './src/ema';
+export { CCI } from './src/cci';
+export { ATR } from './src/atr';
