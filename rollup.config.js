@@ -39,6 +39,7 @@ export default [
                 tsconfigOverride: {
                     compilerOptions: {
                         target: "ES2020",
+                        module: "ESNext",
                     }
                 }
             }),
