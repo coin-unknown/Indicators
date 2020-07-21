@@ -1,3 +1,5 @@
+import { avg } from "../utils";
+
 export class AvgProvider {
     private values: number[] = [];
     private prevAvg: number;
