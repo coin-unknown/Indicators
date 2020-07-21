@@ -1,4 +1,4 @@
-import { getMin, getMax } from '../utils';
+import { getMin, getMax } from './utils';
 import { SMA } from './sma';
 
 export class Stochastic {

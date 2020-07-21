@@ -7,7 +7,7 @@
 //=>   │       └─(2+3+4+5)/4
 //=>   └─(1+2+3+4)/4
 
-import { avg } from '../utils';
+import { avg } from './utils';
 
 export class SMA {
     private arr: number[] = [];

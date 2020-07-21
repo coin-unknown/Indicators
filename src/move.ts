@@ -1,4 +1,4 @@
-import { percentChange } from '../utils';
+import { percentChange } from './utils';
 
 export class Move {
     private prices: number[] = [];

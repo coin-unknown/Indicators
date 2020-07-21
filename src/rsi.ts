@@ -1,4 +1,4 @@
-import { AvgChangeProvider } from '../providers/gain';
+import { AvgChangeProvider } from './providers/gain';
 
 export class RSI {
     private change: AvgChangeProvider;

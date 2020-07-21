@@ -1,4 +1,4 @@
-import { AvgProvider } from '../providers/aerage-deviation';
+import { AvgProvider } from './providers/aerage-deviation';
 
 export class ATR {
     private prevClose: number;
