@@ -1,6 +1,5 @@
 import { SMA } from './sma';
-import { MeanDeviationProvider } from './utils';
-import { CCI as CCI2 } from 'technicalindicators';
+import { MeanDeviationProvider } from '../providers/mean-deviation';
 
 export class CCI {
     private md: MeanDeviationProvider;

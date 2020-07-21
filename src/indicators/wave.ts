@@ -1,4 +1,4 @@
-import { percentChange } from './utils';
+import { percentChange } from '../utils';
 
 type OHLC = { o: number; h: number; l: number; c: number };
 
