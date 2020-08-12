@@ -27,4 +27,20 @@ export class SMA {
 
         return avg(this.arr, this.period);
     }
+
+    momentValue(value: number) {
+        if (this.arr.length < this.period) {
+            return;
+        }
+
+        const arr = this.arr.slice(0);
+
+        if (arr.length === this.period) {
+            arr.shift();
+        }
+
+        arr.push(value);
+
+        return avg(arr, this.period);
+    }
 }

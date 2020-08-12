@@ -67,7 +67,7 @@ export class Wave {
 
         let lastImage = true;
         const p = percentChange(this.max, this.min);
-        const ohlc = this.ohlc.slice();
+        const ohlc = this.ohlc.slice(0);
         let d = 0;
 
         if (this.lastImage) {
