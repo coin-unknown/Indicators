@@ -23,4 +23,14 @@ export class ATR {
             return this.avg.nextValue(trueRange);
         }
     }
+
+    momentValue(high: number, low: number) {
+        const prevClose = this.prevClose;
+
+        if (prevClose) {
+            const trueRange = Math.max(high - low, Math.abs(high - prevClose), Math.abs(low - prevClose));
+
+            return this.avg.momentValue(trueRange);
+        }
+    }
 }

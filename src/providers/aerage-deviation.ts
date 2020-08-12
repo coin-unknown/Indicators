@@ -18,4 +18,21 @@ export class AvgProvider {
             return (this.prevAvg = avg(this.values, this.period));
         }
     }
+
+    momentValue(value: number) {
+        let prevAvg = this.prevAvg;
+
+        if (prevAvg) {
+            prevAvg = (prevAvg * (this.period - 1) + value) / this.period;
+            return prevAvg;
+        }
+
+        const values = this.values.slice(0);
+
+        values.push(value);
+
+        if (values.length === this.period) {
+            return (prevAvg = avg(values, this.period));
+        }
+    }
 }
