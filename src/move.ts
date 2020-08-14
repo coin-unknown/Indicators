@@ -16,48 +16,63 @@ export class Move {
     }
 
     nextValue(close: number) {
-        if (this.prices.length === this.period) {
-            const rm = this.prices.shift();
+        const { p, d, min, max } = this.calculate(close, this.prices, this.min, this.max);
 
-            if (rm === this.max) {
-                this.max = null;
+        this.min = min;
+        this.max = max;
+
+        return { p, d };
+    }
+
+    momentValue(close: number) {
+        const { p, d } = this.calculate(close, this.prices.slice(0), this.min, this.max);
+
+        return { p, d };
+    }
+
+    calculate(close: number, prices: number[], min: number, max: number) {
+        if (prices.length === this.period) {
+            const rm = prices.shift();
+
+            if (rm === max) {
+                max = null;
             }
 
-            if (rm === this.min) {
-                this.min = null;
+            if (rm === min) {
+                min = null;
             }
         }
 
-        this.prices.push(close);
+        prices.push(close);
 
-        if (this.prices.length < this.period) {
-            return { p: undefined, d: undefined };
+        if (prices.length < this.period) {
+            return { p: undefined, d: undefined, min, max };
         }
 
-        if (this.min !== null) {
-            this.min = Math.min(close, this.min);
+        if (min !== null) {
+            min = Math.min(close, min);
         } else {
-            this.min = Infinity;
+            min = Infinity;
 
-            for (let len = this.prices.length - 1, i = len; i >= 0; i--) {
-                const c = this.prices[i];
-                this.min = Math.min(c, this.min);
+            for (let len = prices.length - 1, i = len; i >= 0; i--) {
+                const c = prices[i];
+                min = Math.min(c, min);
             }
         }
 
-        if (this.max !== null) {
-            this.max = Math.max(close, this.max);
+        if (max !== null) {
+            max = Math.max(close, max);
         } else {
-            this.max = -Infinity;
+            max = -Infinity;
 
-            for (let len = this.prices.length - 1, i = len; i >= 0; i--) {
-                const c = this.prices[i];
-                this.max = Math.max(c, this.max);
+            for (let len = prices.length - 1, i = len; i >= 0; i--) {
+                const c = prices[i];
+                max = Math.max(c, max);
             }
         }
 
-        const p = percentChange(this.max, this.min);
-        const lastPrice = this.prices[this.period - 1];
+        const p = percentChange(max, min);
+        const lastPrice = prices[this.period - 1];
 
         let d = 0;
 
@@ -67,6 +82,6 @@ export class Move {
             d = -1;
         }
 
-        return { p, d };
+        return { p, d, min, max };
     }
 }
