@@ -7,7 +7,14 @@ The main feature of these indicators is their continuous operation, which means 
 - High perfomance
 - Easy to use with candles streaming
 - Minimal state for calculation
+- Moment value (possible to calculate every tick)
 - Typescript
+
+## Next value (indicator.nextValue)
+This method allows you to get the current value of the indicator, usually performed according to the data of a closed candle. The method call affects all subsequent calculations of the indicator readings.
+
+## Moment value (indicator.momentValue)
+The method of calculating the instantaneous value of the indicator allows you to obtain information about the indicator readings in real time, without affecting future readings. This allows you to work with the indicator inside the candle.
 
 ## Download
 
@@ -37,7 +44,9 @@ sma.nextValue(4); // 2.50
 sma.nextValue(5); // 3.50
 sma.nextValue(6); // 4.50
 sma.nextValue(7); // 5.50
+sma.momentValue(8); // 6.50
 sma.nextValue(8); // 6.50
+sma.momentValue(9); // 7.50
 sma.nextValue(9); // 7.50
 
 ```
@@ -47,7 +56,10 @@ sma.nextValue(9); // 7.50
 - SMA
 - EMA
 - RSI
+- CCI
 - STOCHASTIC
+- ATR
+- BOLLINGER BANDS
 
 ### Extra indicators by FT
 - MOVE (direction move with power no less than p)
