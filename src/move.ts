@@ -47,7 +47,7 @@ export class Move {
             max = close;
         }
 
-        if (min < close || !min) {
+        if (min > close || !min) {
             min = close;
         }
 
@@ -57,6 +57,8 @@ export class Move {
             min = Math.min(...prices);
         }
 
-       return { min, max, move: percentChange(max, min) };
+        const p = close > min ? percentChange(close, min) : percentChange(close, max);
+
+       return { min, max, move: p };
     }
 }
