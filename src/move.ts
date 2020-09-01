@@ -25,7 +25,9 @@ export class Move {
     }
 
     momentValue(close: number) {
-        return this.calculate(close, this.prices.slice(0), this.min, this.max);
+        const { move } = this.calculate(close, this.prices.slice(0), this.min, this.max);
+
+        return move;
     }
 
     calculate(close: number, prices: number[], min: number, max: number) {
