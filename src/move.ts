@@ -3,6 +3,8 @@ import { percentChange } from './utils';
 export class Move {
     private prices: number[] = [];
     private period: number;
+    private min: number;
+    private max: number;
 
     /**
      * Конструктор
@@ -14,26 +16,45 @@ export class Move {
     }
 
     nextValue(close: number) {
-        return this.calculate(close, this.prices);
+        const { min, max, move } = this.calculate(close, this.prices, this.min, this.max);
+
+        this.min = min;
+        this.max = max;
+
+        return move;
     }
 
     momentValue(close: number) {
-        return this.calculate(close, this.prices.slice(0));
+        return this.calculate(close, this.prices.slice(0), this.min, this.max);
     }
 
-    calculate(close: number, prices: number[]) {
+    calculate(close: number, prices: number[], min: number, max: number) {
+        let removed: number;
+
         if (prices.length === this.period) {
-            prices.shift();
+            removed = prices.shift();
         }
 
         prices.push(close);
-
-        const start = prices[0];
 
         if (prices.length < this.period) {
             return;
         }
 
-       return percentChange(close, start);
+        if (close > max) {
+            max = close;
+        }
+
+        if (min < close) {
+            min = close;
+        }
+
+        if (removed === max) {
+            max = Math.max(...prices);
+        } else if (removed == min) {
+            min = Math.min(...prices);
+        }
+
+       return { min, max, move: percentChange(max, min) };
     }
 }
