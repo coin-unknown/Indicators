@@ -43,11 +43,11 @@ export class Move {
             return {};
         }
 
-        if (close > max) {
+        if (close > max || !max) {
             max = close;
         }
 
-        if (min < close) {
+        if (min < close || !min) {
             min = close;
         }
 
