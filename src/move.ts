@@ -40,7 +40,7 @@ export class Move {
         prices.push(close);
 
         if (prices.length < this.period) {
-            return;
+            return {};
         }
 
         if (close > max) {
