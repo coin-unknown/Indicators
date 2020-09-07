@@ -1,4 +1,4 @@
-import { SMA } from './sma';
+import { SMA } from "./sma";
 
 /**
  * An exponential moving average (EMA) is a type of moving average (MA)
@@ -8,13 +8,13 @@ import { SMA } from './sma';
  * than a simple moving average (SMA), which applies an equal weight to all observations in the period.
  */
 export class EMA {
-    private arr: number[] = [];
-    private sma: SMA;
     private smooth: number;
+    private ema: number;
+    private sma: SMA;
 
     constructor(private period: number) {
-        this.sma = new SMA(period);
-        this.smooth = 2 / (period + 1);
+        this.smooth = 2 / (this.period + 1);
+        this.sma = new SMA(this.period);
     }
 
     /**
@@ -22,22 +22,15 @@ export class EMA {
      * affect all next calculations
      */
     nextValue(value: number) {
-        if (this.arr.length === this.period) {
-            this.arr.shift();
+        if (!this.ema) {
+            return this.ema = this.sma.nextValue(value);
         }
 
-        this.arr.push(value);
-        let ema = this.sma.nextValue(value);
-
-        if (!ema) {
-            return;
+        if (this.ema) {
+            this.ema = ((value - this.ema) * this.smooth) + this.ema;
         }
 
-        for (let i = this.period; i < this.arr.length; i++) {
-            ema = this.smooth * this.arr[i] + (1 - this.smooth) * ema;
-        }
-
-        return ema;
+        return this.ema;
     }
 
      /**
@@ -45,23 +38,10 @@ export class EMA {
      * does not affect any next calculations
      */
     momentValue(value: number) {
-        const arr = this.arr.slice(0);
-
-        if (arr.length === this.period) {
-            arr.shift();
-        }
-
-        arr.push(value);
-        let ema = this.sma.momentValue(value);
-
-        if (!ema) {
+        if (!this.ema) {
             return;
         }
 
-        for (let i = this.period; i < arr.length; i++) {
-            ema = this.smooth * arr[i] + (1 - this.smooth) * ema;
-        }
-
-        return ema;
+        return ((value - this.ema) * this.smooth) + this.ema;
     }
 }
