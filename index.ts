@@ -6,4 +6,6 @@ export { RSI } from './src/rsi';
 export { EMA } from './src/ema';
 export { CCI } from './src/cci';
 export { ATR } from './src/atr';
+export { ROC } from './src/roc';
+export { cRSI } from './src/crsi';
 export { BollingerBands } from './src/bands';
