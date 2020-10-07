@@ -1,9 +1,10 @@
 export { SMA } from './src/sma';
+export { RMA } from './src/rma';
+export { EMA } from './src/ema';
 export { Move } from './src/move';
 export { Wave } from './src/wave';
 export { Stochastic } from './src/stochastic';
 export { RSI } from './src/rsi';
-export { EMA } from './src/ema';
 export { CCI } from './src/cci';
 export { ATR } from './src/atr';
 export { ROC } from './src/roc';
