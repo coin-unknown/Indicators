@@ -10,7 +10,7 @@ export class CCI {
     private md: MeanDeviationProvider;
     private sma: SMA;
 
-    constructor(period: number = 20) {
+    constructor(period = 20) {
         this.md = new MeanDeviationProvider(period);
         this.sma = new SMA(period);
     }

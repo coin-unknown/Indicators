@@ -4,7 +4,7 @@ export class BollingerBands {
     private sd: StandardDeviationProvider;
     private sma: SMA;
 
-    constructor(period: number = 20, private stdDev: number = 2) {
+    constructor(period = 20, private stdDev: number = 2) {
         this.sma = new SMA(period);
         this.sd = new StandardDeviationProvider(period);
     }

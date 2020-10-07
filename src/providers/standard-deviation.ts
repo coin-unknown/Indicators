@@ -2,7 +2,7 @@ import { avg } from '../utils';
 export class StandardDeviationProvider {
     private values: number[] = [];
 
-    constructor(private period: number) { }
+    constructor(private period: number) {}
 
     nextValue(value: number, mean?: number) {
         return this.calculate(this.values, value, mean);
@@ -24,6 +24,5 @@ export class StandardDeviationProvider {
         }
 
         return Math.sqrt(values.reduce((acc, item) => acc + (item - mean) ** 2, 0) / this.period);
-
     }
 }

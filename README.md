@@ -50,16 +50,16 @@ sma.momentValue(9); // 7.50
 sma.nextValue(9); // 7.50
 
 ```
-
-
 ### Currently available indicators
 - SMA
 - EMA
 - RSI
+- Connors RSI (cRSI)
 - CCI
 - STOCHASTIC
 - ATR
 - BOLLINGER BANDS
+- ROC
 
 ### Extra indicators by FT
 - MOVE (direction move with power no less than p)

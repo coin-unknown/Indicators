@@ -8,7 +8,7 @@ export class ATR {
      * Конструктор
      * @param period - период по умолчанию 14
      */
-    constructor(period: number = 14) {
+    constructor(period = 14) {
         this.avg = new AvgProvider(period);
         this.prevClose = 0;
     }

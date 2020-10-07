@@ -1,4 +1,4 @@
-import { avg } from "../utils";
+import { avg } from '../utils';
 
 export class AvgProvider {
     private values: number[] = [];

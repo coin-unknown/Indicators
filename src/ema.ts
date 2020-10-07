@@ -1,4 +1,4 @@
-import { SMA } from "./sma";
+import { SMA } from './sma';
 
 /**
  * An exponential moving average (EMA) is a type of moving average (MA)
@@ -23,17 +23,17 @@ export class EMA {
      */
     nextValue(value: number) {
         if (!this.ema) {
-            return this.ema = this.sma.nextValue(value);
+            return (this.ema = this.sma.nextValue(value));
         }
 
         if (this.ema) {
-            this.ema = ((value - this.ema) * this.smooth) + this.ema;
+            this.ema = (value - this.ema) * this.smooth + this.ema;
         }
 
         return this.ema;
     }
 
-     /**
+    /**
      * Get next value for non closed (tick) candle hlc
      * does not affect any next calculations
      */
@@ -42,6 +42,6 @@ export class EMA {
             return;
         }
 
-        return ((value - this.ema) * this.smooth) + this.ema;
+        return (value - this.ema) * this.smooth + this.ema;
     }
 }

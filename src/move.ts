@@ -59,6 +59,6 @@ export class Move {
 
         const p = close > min ? percentChange(close, min) : percentChange(close, max);
 
-       return { min, max, move: p };
+        return { min, max, move: p };
     }
 }
