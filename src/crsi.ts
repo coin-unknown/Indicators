@@ -14,49 +14,27 @@ import { RSI } from './rsi';
 export class cRSI {
     private rsi: RSI;
     private streakRsi: RSI;
-    private dayClose: number;
+    private prevClose: number;
     private streakLength: number;
     private streakValue: number;
     private roc: ROC;
     private prnk: PercentRank;
 
-    constructor(private period = 2, streakPeriod = 3, prnkPeriod = 100) {
+    constructor(private period = 3, streakPeriod = 2, prnkPeriod = 100) {
         this.rsi = new RSI(this.period);
         this.streakRsi = new RSI(streakPeriod);
         this.roc = new ROC(1);
         this.prnk = new PercentRank(prnkPeriod);
-    }
-
-    setDayClose(value: number) {
-        if (this.dayClose > value) {
-            // reset negative streak
-            if (this.streakLength < 0) {
-                this.streakLength = 0;
-            }
-
-            this.streakLength++;
-        } else if (this.dayClose < value) {
-            // reset positive streak
-            if (this.streakLength > 0) {
-                this.streakLength = 0;
-            }
-
-            this.streakLength--;
-        } else {
-            this.streakLength = 0;
-        }
-
-        const res = this.streakRsi.nextValue(this.streakLength);
-        this.dayClose = value;
-
-        if (!isNaN(res)) {
-            this.streakValue = res;
-        }
+        this.streakLength = 0;
+        this.prevClose = 0;
     }
 
     nextValue(value: number) {
         const rsi = this.rsi.nextValue(value);
         const prnk = this.prnk.nextValue(this.roc.nextValue(value));
+
+        this.updateStreak(value);
+        this.prevClose = value;
 
         if (this.streakValue === undefined) {
             return;
@@ -74,5 +52,31 @@ export class cRSI {
         }
 
         return (rsi + this.streakValue + prnk) / 3;
+    }
+
+    private updateStreak(value: number) {
+        if (value > this.prevClose) {
+            // reset negative streak
+            if (this.streakLength < 0) {
+                this.streakLength = 0;
+            }
+
+            this.streakLength++;
+        } else if (value < this.prevClose) {
+            // reset positive streak
+            if (this.streakLength > 0) {
+                this.streakLength = 0;
+            }
+
+            this.streakLength--;
+        } else {
+            this.streakLength = 0;
+        }
+
+        const res = this.streakRsi.nextValue(this.streakLength);
+
+        if (!isNaN(res)) {
+            this.streakValue = res;
+        }
     }
 }
