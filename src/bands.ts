@@ -1,12 +1,12 @@
 import { SMA } from './sma';
-import { StandardDeviationProvider } from './providers/standard-deviation';
+import { StandardDeviation } from './standard-deviation';
 export class BollingerBands {
-    private sd: StandardDeviationProvider;
+    private sd: StandardDeviation;
     private sma: SMA;
 
     constructor(period = 20, private stdDev: number = 2) {
         this.sma = new SMA(period);
-        this.sd = new StandardDeviationProvider(period);
+        this.sd = new StandardDeviation(period);
     }
 
     nextValue(close: number) {

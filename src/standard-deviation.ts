@@ -1,5 +1,4 @@
-import { avg } from '../utils';
-export class StandardDeviationProvider {
+export class StandardDeviation {
     private values: number[] = [];
 
     constructor(private period: number) {}

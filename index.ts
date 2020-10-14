@@ -10,3 +10,4 @@ export { ATR } from './src/atr';
 export { ROC } from './src/roc';
 export { cRSI } from './src/crsi';
 export { BollingerBands } from './src/bands';
+export { StandardDeviation } from './src/standard-deviation';
