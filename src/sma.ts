@@ -14,7 +14,7 @@ export class SMA {
     private arr: number[] = [];
     private sum: number;
 
-    constructor(private period: number, private quick?: boolean) {}
+    constructor(private period: number) {}
 
     nextValue(value: number) {
         let rmValue: number;
