@@ -1,80 +1,93 @@
 import { percentChange } from './utils';
 
-type OHLC = { o: number; h: number; l: number; c: number };
+export type WaveData = {
+    consolidate: number;
+    power: number;
+    streak: number;
+    diff: number;
+    startPrice: number;
+    prevPeak: number;
+};
+
+function clenWave(wave: WaveData) {
+    wave.consolidate = 0;
+    wave.power = 0;
+    wave.streak = 0;
+    wave.diff = 0;
+    wave.startPrice = 0;
+    wave.prevPeak = 0;
+
+    return wave;
+}
 
 export class Wave {
-    private bearishStreak = 0;
-    private bullishStreak = 0;
-    private consolidate = 0;
-    private prevBearDiff = 0;
-    private prevBullDiff = 0;
+    private up: WaveData;
+    private down: WaveData;
 
     /**
      * Конструктор
      */
-    constructor() {}
+    constructor() {
+        this.up = { consolidate: 0, power: 0, streak: 0, startPrice: 0, diff: 0, prevPeak: 0 };
+        this.down = { consolidate: 0, power: 0, streak: 0, startPrice: 0, diff: 0, prevPeak: 0 };
+    }
 
-    nextValue(open: number, close: number) {
+    nextValue(open: number, close: number, high: number, low: number) {
         // bullish
-        if (open < close) {
-            this.bullishStreak++;
+        if (open < close || this.up.streak && this.up.prevPeak < low) {
+            if (!this.up.startPrice) {
+                this.up.startPrice = open;
+            }
+
+            if (this.down.streak) {
+                clenWave(this.down);
+            }
 
             const diff = close - open;
+            this.up.streak++;
+            this.up.prevPeak = low;
 
-            if (this.prevBearDiff) {
-                this.consolidate = 0;
+            if (this.up.diff > diff) {
+                this.up.consolidate++;
+            } else {
+                this.up.consolidate = 0;
             }
 
-            if (this.prevBullDiff > diff) {
-                this.consolidate++;
-            }
-
-            this.prevBullDiff = diff;;
-            this.prevBearDiff = 0;
-            this.bearishStreak = 0;
+            this.up.diff = diff;
+            this.up.power = percentChange(close, this.up.startPrice);
         }
 
         // bearish
-        if (open > close) {
-            this.bearishStreak++;
+        if (open > close || this.down.streak && this.down.prevPeak > high) {
+            if (!this.down.startPrice) {
+                this.down.startPrice = open;
+            }
+
+            if (this.up.streak) {
+                clenWave(this.up);
+            }
+
             const diff = open - close;
+            this.down.streak++;
+            this.down.prevPeak = high;
 
-            if (this.prevBullDiff) {
-                this.consolidate = 0;
+            if (this.down.diff > diff) {
+                this.down.consolidate++;
+            } else {
+                this.down.consolidate = 0;
             }
 
-            if (this.prevBearDiff > diff) {
-                this.consolidate++;
-            }
-
-            this.prevBearDiff = diff;
-            this.prevBullDiff = 0;
-            this.bullishStreak = 0;
+            this.down.diff = diff;
+            this.down.power = percentChange(close, this.down.startPrice);
         }
 
         // doji is neutral
         if (open === close) {
-            this.bearishStreak++;
-            this.bullishStreak++;
-            this.prevBearDiff = this.prevBullDiff = 0;
+            this.up.streak++;
+            this.down.streak++;
+            this.up.diff = this.down.diff = 0;
         }
 
-        return { up: this.bullishStreak, down: this.bearishStreak, consolidate: this.consolidate };
-    }
-
-    isBulish(tick: OHLC) {
-        return tick.o < tick.c;
-    }
-
-    isBearish(tick: OHLC) {
-        return tick.o > tick.c;
-    }
-
-    isNoAnyShadow(ohlc: OHLC) {
-        return ohlc.h === ohlc.o || ohlc.h === ohlc.c || ohlc.l === ohlc.o || ohlc.h === ohlc.o;
-    }
-
-    isDoji(ohlc: OHLC) {
-        return ohlc.o === ohlc.c;
+        return { up: this.up, down: this.down };
     }
 }
