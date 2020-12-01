@@ -88,6 +88,10 @@ export class Wave {
             this.up.diff = this.down.diff = 0;
         }
 
-        return { up: this.up, down: this.down };
+        if (this.up.streak > this.down.streak) {
+            return { ...this.up };
+        } else {
+            return { ...this.down };
+        }
     }
 }
