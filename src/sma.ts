@@ -12,56 +12,42 @@ import { sum } from './utils';
 
 export class SMA {
     private arr: number[] = [];
-    private sum: number;
+    private sum = 0;
+    private filled = false;
 
     constructor(private period: number) {}
 
     nextValue(value: number) {
         let rmValue: number;
+        this.filled = this.filled || this.arr.length === this.period;
 
-        if (this.arr.length === this.period) {
+        if (this.filled) {
             rmValue = this.arr.shift();
         }
 
         this.arr.push(value);
 
-        if (this.arr.length < this.period) {
-            return;
-        }
-
-        if (this.sum !== undefined) {
+        if (this.filled) {
             this.sum -= rmValue;
             this.sum += value;
 
             return this.sum / this.period;
+        } else {
+            this.sum += value;
         }
-
-        this.sum = sum(this.arr);
-
-        return this.sum / this.period;
     }
 
     momentValue(value: number) {
-        if (this.arr.length < this.period) {
+        if (!this.filled) {
             return;
         }
 
-        let rmValue: number;
+        let rmValue: number = this.arr[0];
         let sum = this.sum;
 
-        const arr = this.arr.slice(0);
+        sum -= rmValue;
+        sum += value;
 
-        if (arr.length === this.period) {
-            rmValue = arr.shift();
-        }
-
-        arr.push(value);
-
-        if (sum !== undefined) {
-            sum -= rmValue;
-            sum += value;
-
-            return sum / this.period;
-        }
+        return sum / this.period;
     }
 }
