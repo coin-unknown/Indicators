@@ -1,11 +1,12 @@
 import { avg } from '../utils';
 
 export class AvgChangeProvider {
+    public gain: number;
+    public loss: number;
     private arrGain: number[] = [];
     private arrLoss: number[] = [];
     private prev: number;
-    public gain: number;
-    public loss: number;
+    private filled = false;
 
     constructor(private period: number) {}
 
@@ -34,7 +35,9 @@ export class AvgChangeProvider {
             return { gain: undefined, loss: undefined, prev: value };
         }
 
-        if (arrGain.length === this.period) {
+        this.filled = this.filled || arrGain.length === this.period;
+
+        if (this.filled) {
             arrGain.shift();
             arrLoss.shift();
         }
@@ -53,8 +56,8 @@ export class AvgChangeProvider {
             arrGain.push(localGain);
             arrLoss.push(localLoss);
 
-            if (arrGain.length < this.period) {
-                return { gain: undefined, loss: undefined, prev };
+            if (!this.filled) {
+                return;
             }
 
             gain = avg(arrGain, this.period);

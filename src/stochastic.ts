@@ -15,6 +15,7 @@ export class Stochastic {
     private higestH: number | null = null;
     private lowestL: number | null = null;
     private sma: SMA;
+    private filled = false;
 
     constructor(private period: number, private smaPeriod: number = 3) {
         this.sma = new SMA(this.smaPeriod);
@@ -62,7 +63,9 @@ export class Stochastic {
      * Calculation formula and parameters to be modified during calculation process
      */
     calculate(high: number, low: number, close: number, highs: number[], lows: number[], higestH: number, lowestL: number) {
-        if (highs.length === this.period) {
+        this.filled = this.filled || highs.length === this.period;
+
+        if (this.filled) {
             if (highs.shift() === higestH) {
                 higestH = null;
             }
@@ -77,7 +80,7 @@ export class Stochastic {
 
         if (higestH !== null) {
             higestH = Math.max(high, higestH);
-        } else if (highs.length === this.period) {
+        } else if (this.filled) {
             higestH = getMax(highs).max;
         }
 

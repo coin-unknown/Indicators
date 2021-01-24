@@ -1,5 +1,6 @@
 export class StandardDeviation {
     private values: number[] = [];
+    private filled = false;
 
     constructor(private period: number) {}
 
@@ -12,7 +13,9 @@ export class StandardDeviation {
     }
 
     calculate(values: number[], value: number, mean?: number) {
-        if (values.length === this.period) {
+        this.filled = this.filled || values.length === this.period;
+
+        if (this.filled) {
             values.shift();
         }
 

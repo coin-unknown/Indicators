@@ -11,6 +11,7 @@
  **/
 export class ROC {
     private values: number[] = [];
+    private filled = false;
 
     constructor(private period = 5) {}
 
@@ -24,18 +25,13 @@ export class ROC {
 
     private calculate(value: number, values: number[]) {
         let outed: number;
-
-        if (values.length === this.period) {
-            outed = values.shift();
-        }
+        this.filled = this.filled || values.length === this.period;
 
         values.push(value);
 
-        if (values.length !== this.period || outed === undefined) {
-            /**
-             * The values needs to have N prices in it before a result can be calculated with the following value. For
-             * an period of 5, the first result can be given on the 6th value.
-             */
+        if (this.filled) {
+            outed = values.shift();
+        } else {
             return;
         }
 
