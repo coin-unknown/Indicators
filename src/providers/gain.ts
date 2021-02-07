@@ -57,7 +57,7 @@ export class AvgChangeProvider {
             arrLoss.push(localLoss);
 
             if (!this.filled) {
-                return;
+                return { gain: undefined, loss: undefined, prev: value };
             }
 
             gain = avg(arrGain, this.period);
