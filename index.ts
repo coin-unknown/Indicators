@@ -12,3 +12,4 @@ export { DC } from './src/dc';
 export { cRSI } from './src/crsi';
 export { BollingerBands } from './src/bands';
 export { StandardDeviation } from './src/standard-deviation';
+export { MACD } from './src/macd';
