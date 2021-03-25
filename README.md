@@ -60,6 +60,7 @@ sma.nextValue(9); // 7.50
 - ATR
 - BOLLINGER BANDS
 - ROC
+- MACD
 
 ### Extra indicators by FT
 - MOVE (direction move with power no less than p)
