@@ -17,19 +17,20 @@ export class Correlation {
     }
 
     nextValue(priceX: number, priceY: number) {
+        this.pricesX.push(priceX);
+        this.pricesY.push(priceY);
+
         this.filled = this.filled || this.pricesX.length === this.period;
         this.SMAxValue = this.SMAx.nextValue(priceX);
         this.SMAyValue = this.SMAy.nextValue(priceY);
 
         if (this.filled && this.SMAxValue && this.SMAyValue) {
-            this.pricesX.push(priceX);
-            this.pricesY.push(priceY);
             this.pricesX.shift();
             this.pricesY.shift();
 
-            let SSxy: number;
-            let SSxx: number;
-            let SSyy: number;
+            let SSxy: number = 0;
+            let SSxx: number = 0;
+            let SSyy: number = 0;
 
             for (let i = 0; i < this.period; i++) {
                 const xPrice = this.pricesX[i];
