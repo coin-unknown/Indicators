@@ -1,3 +1,4 @@
+export { LevelRMA } from './src/providers/level-rma';
 export { Correlation } from './src/providers/correlation';
 export { SMA } from './src/sma';
 export { RMA } from './src/rma';
