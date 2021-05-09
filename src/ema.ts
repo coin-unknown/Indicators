@@ -26,11 +26,7 @@ export class EMA {
             return (this.ema = this.sma.nextValue(value));
         }
 
-        if (this.ema) {
-            this.ema = (value - this.ema) * this.smooth + this.ema;
-        }
-
-        return this.ema;
+        return this.ema = (value - this.ema) * this.smooth + this.ema;
     }
 
     /**

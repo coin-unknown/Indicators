@@ -15,23 +15,17 @@ export class SMA {
     constructor(private period: number) {}
 
     nextValue(value: number) {
-        let rmValue: number;
         this.filled = this.filled || this.arr.length === this.period;
-
-        if (this.filled) {
-            rmValue = this.arr.shift();
-        }
-
         this.arr.push(value);
 
         if (this.filled) {
-            this.sum -= rmValue;
+            this.sum -= this.arr.shift();
             this.sum += value;
 
             return this.sum / this.period;
-        } else {
-            this.sum += value;
         }
+
+        this.sum += value;
     }
 
     momentValue(value: number) {
