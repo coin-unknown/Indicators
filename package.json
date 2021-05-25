@@ -1,7 +1,7 @@
 {
-  "author": "FollowTraders <support@follow-traders.com>",
-  "name": "@follow-traders/indicators",
-  "description": "Implementation of most popular technical stock indicators",
+  "author": "Dmitry Yurov <yurov.de@gmail.com>",
+  "name": "@debut/indicators",
+  "description": "Implementation of most popular technical stock indicators for debut environment",
   "version": "0.4.0",
   "license": "GPL-3.0",
   "homepage": "https://github.com/followtraders/indicators",
