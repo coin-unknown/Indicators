@@ -1,13 +1,13 @@
 {
-  "author": "Dmitry Yurov <yurov.de@gmail.com>",
+  "author": "Dmitry Yurov",
   "name": "@debut/indicators",
   "description": "Implementation of most popular technical stock indicators for debut environment",
   "version": "0.4.0",
   "license": "GPL-3.0",
-  "homepage": "https://github.com/followtraders/indicators",
+  "homepage": "https://github.com/debut-js/Indicators",
   "repository": {
     "type": "git",
-    "url": "git://github.com/followtraders/indicators"
+    "url": "git@github.com:debut-js/Indicators.git"
   },
   "scripts": {
     "start": "ts-node --",
@@ -17,15 +17,12 @@
     "prettier": "prettier --config './.prettierrc.js' --write 'src/**/*.ts'"
   },
   "bugs": {
-    "url": "https://github.com/followtraders/indicators/issues"
+    "url": "https://github.com/debut-js/Indicators/issues"
   },
   "main": "lib/indicators.cjs.js",
   "module": "lib/indicators.esm.js",
   "browser": "lib/indicators.umd.js",
   "types": "lib/index.d.ts",
-  "engines": {
-    "node": "^12.0.0"
-  },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^3.7.0",
     "@typescript-eslint/parser": "^3.7.0",
