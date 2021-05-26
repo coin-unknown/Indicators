@@ -5,7 +5,7 @@
         "access": "public"
     },
     "description": "Implementation of most popular technical stock indicators for debut environment",
-    "version": "0.4.2",
+    "version": "0.4.3",
     "license": "GPL-3.0",
     "homepage": "https://github.com/debut-js/Indicators",
     "repository": {
