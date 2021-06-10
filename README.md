@@ -69,15 +69,15 @@ sma.nextValue(9); // 7.50
 ## [Benchmarks](https://github.com/follow-traders/indicators-benchmark)
 ```
 -- SMA 13x faster --
-@follow-traders/indicators SMA x 61,283 ops/sec
+@debut/indicators SMA x 61,283 ops/sec
 technicalindicators SMA x 4,526 ops/sec
 
 -- EMA 3x faster --
-@follow-traders/indicators EMA x 88,705 ops/sec
+@debut/indicators EMA x 88,705 ops/sec
 technicalindicators EMA x 27,581 ops/sec
 
 -- CCI 36x faster --
-@follow-traders/indicators CCI x 29,604 ops/sec
+@debut/indicators CCI x 29,604 ops/sec
 technicalindicators CCI x 832 ops/sec
 
 and more ...
