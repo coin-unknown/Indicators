@@ -20,12 +20,12 @@ The method of calculating the instantaneous value of the indicator allows you to
 
 Releases are available under Node Package Manager (npm):
 
-    npm install @follow-traders/indicators
+    npm install @debut/indicators
 
 ## Exapmle with Simple Moving Average
 
 ```js
-import { SMA } from '@follow-traders/indicators';
+import { SMA } from '@debut/indicators';
 const sma = new SMA(4); // Create SMA with 4 period
 
 // SMA workflow
@@ -62,7 +62,7 @@ sma.nextValue(9); // 7.50
 - ROC
 - MACD
 
-### Extra indicators by FT
+### Extra custom indicators
 - MOVE (direction move with power no less than p)
 - WAVE (directional move with bearish or bullish candle series and power p)
 
