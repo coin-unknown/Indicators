@@ -10,6 +10,7 @@ import { RSI } from './rsi';
  * On occasion, signals occur during slight corrections during a trend. For example,
  * when the market is in an uptrend, Connors RSI might generate short term sell signals.
  * When the market is in a downtrend, Connors RSI might generate short term buy signals.
+ * Original core here: https://tradingview.com/script/vWAPUAl9-Stochastic-Connors-RSI/
  */
 export class cRSI {
     private rsi: RSI;
