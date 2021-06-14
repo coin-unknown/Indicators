@@ -25,20 +25,12 @@ export class PercentRank {
     }
 
     private calculate(values: number[], n: number) {
-        let lowest = 0;
-        let highest = 0;
+        let count = 0;
 
-        for (let i = 0; i < values.length; i++) {
-            if (values[i] < n) {
-                lowest += 1;
-            } else if (values[i] === n) {
-                highest += 1;
-            } else {
-            }
-        }
+        values.forEach((value) => {
+            if (value <= n) count++;
+        });
 
-        const pct = (lowest + 0.5 * highest) / this.period;
-
-        return pct;
+        return (count / this.period) * 100;
     }
 }
