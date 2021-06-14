@@ -13,70 +13,70 @@ import { RSI } from './rsi';
  */
 export class cRSI {
     private rsi: RSI;
-    private streakRsi: RSI;
+    private updownRsi: RSI;
     private prevClose: number;
-    private streakLength: number;
-    private streakValue: number;
+    private updownPeriod: number;
+    private updownValue: number;
     private roc: ROC;
-    private prnk: PercentRank;
+    private percentRank: PercentRank;
 
-    constructor(private period = 3, streakPeriod = 2, prnkPeriod = 100) {
+    constructor(private period = 3, updownRsiPeriod = 2, rocPeriod = 100) {
         this.rsi = new RSI(this.period);
-        this.streakRsi = new RSI(streakPeriod);
+        this.updownRsi = new RSI(updownRsiPeriod);
         this.roc = new ROC(1);
-        this.prnk = new PercentRank(prnkPeriod);
-        this.streakLength = 0;
+        this.percentRank = new PercentRank(rocPeriod);
+        this.updownPeriod = 0;
         this.prevClose = 0;
     }
 
     nextValue(value: number) {
         const rsi = this.rsi.nextValue(value);
-        const prnk = this.prnk.nextValue(this.roc.nextValue(value));
+        const percentRank = this.percentRank.nextValue(this.roc.nextValue(value));
 
         this.updateStreak(value);
         this.prevClose = value;
 
-        if (this.streakValue === undefined) {
+        if (this.updownValue === undefined) {
             return;
         }
 
-        return (rsi + this.streakValue + prnk) / 3;
+        return (rsi + this.updownValue + percentRank) / 3;
     }
 
     momentValue(value: number) {
         const rsi = this.rsi.momentValue(value);
-        const prnk = this.prnk.momentValue(this.roc.momentValue(value));
+        const percentRank = this.percentRank.momentValue(this.roc.momentValue(value));
 
-        if (this.streakValue === undefined) {
+        if (this.updownValue === undefined) {
             return;
         }
 
-        return (rsi + this.streakValue + prnk) / 3;
+        return (rsi + this.updownValue + percentRank) / 3;
     }
 
     private updateStreak(value: number) {
         if (value > this.prevClose) {
             // reset negative streak
-            if (this.streakLength < 0) {
-                this.streakLength = 0;
+            if (this.updownPeriod < 0) {
+                this.updownPeriod = 0;
             }
 
-            this.streakLength++;
+            this.updownPeriod++;
         } else if (value < this.prevClose) {
             // reset positive streak
-            if (this.streakLength > 0) {
-                this.streakLength = 0;
+            if (this.updownPeriod > 0) {
+                this.updownPeriod = 0;
             }
 
-            this.streakLength--;
+            this.updownPeriod--;
         } else {
-            this.streakLength = 0;
+            this.updownPeriod = 0;
         }
 
-        const res = this.streakRsi.nextValue(this.streakLength);
+        const res = this.updownRsi.nextValue(this.updownPeriod);
 
         if (!isNaN(res)) {
-            this.streakValue = res;
+            this.updownValue = res;
         }
     }
 }
