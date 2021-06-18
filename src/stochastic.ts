@@ -17,7 +17,7 @@ export class Stochastic {
     private sma: SMA;
     private filled = false;
 
-    constructor(private period: number, private smaPeriod: number = 3) {
+    constructor(private period: number = 14, private smaPeriod: number = 3) {
         this.sma = new SMA(this.smaPeriod);
     }
 
