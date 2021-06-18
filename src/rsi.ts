@@ -16,7 +16,7 @@ import { AvgChangeProvider } from './providers/gain';
 export class RSI {
     private change: AvgChangeProvider;
 
-    constructor(private period: number) {
+    constructor(private period = 14) {
         this.change = new AvgChangeProvider(this.period);
     }
 
