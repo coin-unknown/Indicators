@@ -13,6 +13,7 @@ export class MACD {
     private emaSlow: number;
     private signal: number;
     private macd: number;
+    private histogram: number;
 
     constructor(private periodEmaFast = 12, private periodEmaSlow = 26, private periodSignal = 9) {
         this.emaFastIndicator = new EMA(periodEmaFast);
@@ -25,11 +26,13 @@ export class MACD {
         this.emaSlow = this.emaSlowIndicator.nextValue(value);
         this.macd = this.emaFast - this.emaSlow;
         this.signal = this.emaSignalIndicator.nextValue(this.macd);
+        this.histogram = this.macd - this.signal;
         return {
             macd: this.macd,
             emaFast: this.emaFast,
             emaSlow: this.emaSlow,
             signal: this.signal,
+            histogram: this.histogram,
         };
     }
 }
