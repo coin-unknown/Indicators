@@ -27,6 +27,19 @@ export class MACD {
         this.macd = this.emaFast - this.emaSlow;
         this.signal = this.emaSignalIndicator.nextValue(this.macd);
         this.histogram = this.macd - this.signal;
+        return this.getMACD();
+    }
+
+    momentValue(value: number) {
+        this.emaFast = this.emaFastIndicator.momentValue(value);
+        this.emaSlow = this.emaSlowIndicator.momentValue(value);
+        this.macd = this.emaFast - this.emaSlow;
+        this.signal = this.emaSignalIndicator.momentValue(this.macd);
+        this.histogram = this.macd - this.signal;
+        return this.getMACD();
+    }
+
+    getMACD() {
         return {
             macd: this.macd,
             emaFast: this.emaFast,
