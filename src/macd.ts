@@ -9,11 +9,6 @@ export class MACD {
     private emaFastIndicator: EMA;
     private emaSlowIndicator: EMA;
     private emaSignalIndicator: EMA;
-    private emaFast: number;
-    private emaSlow: number;
-    private signal: number;
-    private macd: number;
-    private histogram: number;
 
     constructor(private periodEmaFast = 12, private periodEmaSlow = 26, private periodSignal = 9) {
         this.emaFastIndicator = new EMA(periodEmaFast);
@@ -22,30 +17,32 @@ export class MACD {
     }
 
     nextValue(value: number) {
-        this.emaFast = this.emaFastIndicator.nextValue(value);
-        this.emaSlow = this.emaSlowIndicator.nextValue(value);
-        this.macd = this.emaFast - this.emaSlow;
-        this.signal = this.emaSignalIndicator.nextValue(this.macd);
-        this.histogram = this.macd - this.signal;
-        return this.getMACD();
+        const emaFast = this.emaFastIndicator.nextValue(value);
+        const emaSlow = this.emaSlowIndicator.nextValue(value);
+        const macd = emaFast - emaSlow;
+        const signal = this.emaSignalIndicator.nextValue(macd);
+        const histogram = macd - signal;
+        return {
+            macd,
+            emaFast,
+            emaSlow,
+            signal,
+            histogram,
+        };
     }
 
     momentValue(value: number) {
-        this.emaFast = this.emaFastIndicator.momentValue(value);
-        this.emaSlow = this.emaSlowIndicator.momentValue(value);
-        this.macd = this.emaFast - this.emaSlow;
-        this.signal = this.emaSignalIndicator.momentValue(this.macd);
-        this.histogram = this.macd - this.signal;
-        return this.getMACD();
-    }
-
-    getMACD() {
+        const emaFast = this.emaFastIndicator.momentValue(value);
+        const emaSlow = this.emaSlowIndicator.momentValue(value);
+        const macd = emaFast - emaSlow;
+        const signal = this.emaSignalIndicator.momentValue(macd);
+        const histogram = macd - signal;
         return {
-            macd: this.macd,
-            emaFast: this.emaFast,
-            emaSlow: this.emaSlow,
-            signal: this.signal,
-            histogram: this.histogram,
+            macd,
+            emaFast,
+            emaSlow,
+            signal,
+            histogram,
         };
     }
 }
