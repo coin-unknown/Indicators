@@ -20,8 +20,9 @@ export class MACD {
         const emaFast = this.emaFastIndicator.nextValue(value);
         const emaSlow = this.emaSlowIndicator.nextValue(value);
         const macd = emaFast - emaSlow;
-        const signal = this.emaSignalIndicator.nextValue(macd);
+        const signal = macd && this.emaSignalIndicator.nextValue(macd);
         const histogram = macd - signal;
+
         return {
             macd,
             emaFast,
@@ -35,8 +36,9 @@ export class MACD {
         const emaFast = this.emaFastIndicator.momentValue(value);
         const emaSlow = this.emaSlowIndicator.momentValue(value);
         const macd = emaFast - emaSlow;
-        const signal = this.emaSignalIndicator.momentValue(macd);
+        const signal = macd && this.emaSignalIndicator.momentValue(macd);
         const histogram = macd - signal;
+
         return {
             macd,
             emaFast,
