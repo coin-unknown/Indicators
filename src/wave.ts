@@ -34,7 +34,7 @@ export class Wave {
 
     nextValue(open: number, close: number, high: number, low: number) {
         // bullish
-        if (open < close || this.up.streak && this.up.prevPeak < low) {
+        if (open < close || (this.up.streak && this.up.prevPeak < low)) {
             if (!this.up.startPrice) {
                 this.up.startPrice = open;
             }
@@ -58,7 +58,7 @@ export class Wave {
         }
 
         // bearish
-        if (open > close || this.down.streak && this.down.prevPeak > high) {
+        if (open > close || (this.down.streak && this.down.prevPeak > high)) {
             if (!this.down.startPrice) {
                 this.down.startPrice = open;
             }

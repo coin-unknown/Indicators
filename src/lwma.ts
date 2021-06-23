@@ -1,4 +1,4 @@
-import { sum } from "./utils";
+import { sum } from './utils';
 
 /**
  * A linearly weighted moving average (LWMA) is a moving average calculation that more heavily weights recent price data.
@@ -12,7 +12,7 @@ export class LWMA {
     private devider = 0;
 
     constructor(private period: number) {
-        this.devider = sum(Array.from(Array(this.period).keys()).map(i => i + 1));
+        this.devider = sum(Array.from(Array(this.period).keys()).map((i) => i + 1));
     }
 
     nextValue(value: number) {
@@ -21,7 +21,7 @@ export class LWMA {
 
         if (this.filled) {
             this.arr.shift();
-            return this.arr.reduce((sum, value, idx) => sum + value * (idx + 1), 0) / this.devider
+            return this.arr.reduce((sum, value, idx) => sum + value * (idx + 1), 0) / this.devider;
         }
     }
 
@@ -29,6 +29,5 @@ export class LWMA {
         if (this.filled) {
             return this.arr.reduce((sum, value, idx) => sum + value * (idx + 1), 0) / this.devider;
         }
-
     }
 }

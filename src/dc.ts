@@ -1,4 +1,4 @@
-import { getMax, getMin } from "./utils";
+import { getMax, getMin } from './utils';
 
 /**
  * Donchian channels were developed by Richard Donchian, a pioneer of mechanical trend following systems.

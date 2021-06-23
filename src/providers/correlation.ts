@@ -1,4 +1,4 @@
-import { SMA } from "../sma";
+import { SMA } from '../sma';
 
 export class Correlation {
     private pricesX: number[];
@@ -43,6 +43,5 @@ export class Correlation {
 
             return SSxy / Math.sqrt(SSxx * SSyy);
         }
-
     }
 }
