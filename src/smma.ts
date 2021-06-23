@@ -12,7 +12,7 @@ export class SMMA {
 
     nextValue(value: number) {
         if (this.filled) {
-            return this.sum = (this.sum * (this.period - 1) + value) / this.period;
+            return (this.sum = (this.sum * (this.period - 1) + value) / this.period);
         }
 
         this.sum += value;

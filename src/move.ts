@@ -13,7 +13,6 @@ export class Move {
     constructor(private period: number) {}
 
     nextValue(close: number) {
-
         if (this.prevPrice) {
             const change = percentChange(close, this.prevPrice);
             this.calculate(change);
@@ -21,7 +20,6 @@ export class Move {
 
             return this.value;
         }
-
 
         this.prevPrice = close;
     }

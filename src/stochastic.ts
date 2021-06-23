@@ -26,7 +26,15 @@ export class Stochastic {
      * affect all next calculations
      */
     nextValue(high: number, low: number, close: number) {
-        let { k, d, lowestL, higestH } = this.calculate(high, low, close, this.highs, this.lows, this.higestH, this.lowestL);
+        let { k, d, lowestL, higestH } = this.calculate(
+            high,
+            low,
+            close,
+            this.highs,
+            this.lows,
+            this.higestH,
+            this.lowestL,
+        );
 
         this.higestH = higestH;
         this.lowestL = lowestL;
@@ -62,7 +70,15 @@ export class Stochastic {
     /**
      * Calculation formula and parameters to be modified during calculation process
      */
-    calculate(high: number, low: number, close: number, highs: number[], lows: number[], higestH: number, lowestL: number) {
+    calculate(
+        high: number,
+        low: number,
+        close: number,
+        highs: number[],
+        lows: number[],
+        higestH: number,
+        lowestL: number,
+    ) {
         this.filled = this.filled || highs.length === this.period;
 
         if (this.filled) {
