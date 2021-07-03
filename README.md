@@ -61,6 +61,7 @@ sma.nextValue(9); // 7.50
 - BOLLINGER BANDS
 - ROC
 - MACD
+- PIVOT (classic / woodie /camarilla / fibonacci)
 
 ### Extra custom indicators
 - MOVE (direction move with power no less than p)
