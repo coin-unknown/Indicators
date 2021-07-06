@@ -1,3 +1,6 @@
+![npm](https://img.shields.io/npm/v/@debut/indicators)
+![npm](https://img.shields.io/npm/dm/@debut/indicators)
+![NPM](https://img.shields.io/npm/l/@debut/indicators)
 # Streaming Technical Indicators
 ## High performance for you trading application
 
@@ -10,6 +13,30 @@ The main feature of these indicators is their continuous operation, which means 
 - Moment value (possible to calculate every tick)
 - Typescript
 
+## Available Indicators
+- Average True Range (ATR)
+- Bollinger Bands (BB).
+- Commodity Channel Index (CCI).
+- Connor's RSI (CRSI)
+- Donchian channels (DC).
+- Linearly weighted moving average (LWMA).
+- Moving Average Convergence Divergence (MACD).
+- Pivot Point Levels (classic / woodie /camarilla / fibonacci).
+- Rate of Change (ROC).
+- Relative Strength Index (RSI).
+- Relative Moving Average (RMA)
+- Simple Moving Average (SMA).
+- Smoothed Moving Average (SMMA).
+- Stochastic Oscillator (KD).
+- Exponential Moving Average (EMA).
+- Weighted Moving Average (WMA).
+
+## Candles
+- Heiken Ashi.
+
+## Utils
+- Standard Deviation (SD).
+- Correlation.
 ## Next value (indicator.nextValue)
 This method allows you to get the current value of the indicator, usually performed according to the data of a closed candle. The method call affects all subsequent calculations of the indicator readings.
 
@@ -50,36 +77,14 @@ sma.momentValue(9); // 7.50
 sma.nextValue(9); // 7.50
 
 ```
-### Currently available indicators
-- SMA
-- EMA
-- RSI
-- Connors RSI (cRSI)
-- CCI
-- STOCHASTIC
-- ATR
-- BOLLINGER BANDS
-- ROC
-- MACD
-- PIVOT (classic / woodie /camarilla / fibonacci)
-
 ### Extra custom indicators
 - MOVE (direction move with power no less than p)
 - WAVE (directional move with bearish or bullish candle series and power p)
 
 ## [Benchmarks](https://github.com/follow-traders/indicators-benchmark)
-```
--- SMA 13x faster --
-@debut/indicators SMA x 61,283 ops/sec
-technicalindicators SMA x 4,526 ops/sec
 
--- EMA 3x faster --
-@debut/indicators EMA x 88,705 ops/sec
-technicalindicators EMA x 27,581 ops/sec
-
--- CCI 36x faster --
-@debut/indicators CCI x 29,604 ops/sec
-technicalindicators CCI x 832 ops/sec
-
-and more ...
-```
+| Indicator   |      @debut/indicators     |   technicalindicators  |   trading-signals  |     ta.js        |
+|:-----------:|:--------------------------:|:----------------------:|:------------------:|:----------------:|
+|     SMA     |       56,913 ops/sec       |      3,754 ops/sec     |    120 ops/sec     |   1,670 ops/sec  |
+|     EMA     |       71,067 ops/sec      |      22,004 ops/sec     |    0.13 ops/sec     |   88,112 ops/sec  |
+|     CCI     |       26,284 ops/sec       |      812 ops/sec     |    x     |   x   |

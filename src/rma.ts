@@ -1,7 +1,8 @@
 import { SMA } from './sma';
 
 /**
- * Moving average used in RSI. It is the exponentially weighted moving average with alpha = 1 / length.
+ * The RMA (Relative Moving Average) is a powerful indicator based on the Simple Moving Average indicator.
+ * The Simple Moving Average (SMA) indicator is useful to identify the start and rreversal of a trend.
  */
 export class RMA {
     private smooth: number;
