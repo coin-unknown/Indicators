@@ -23,9 +23,12 @@ export class EMA {
      */
     nextValue(value: number) {
         this.ema = this.sma.nextValue(value);
-        this.nextValue = (value: number) => {
-            return (this.ema = (value - this.ema) * this.smooth + this.ema);
-        };
+
+        if (this.ema) {
+            this.nextValue = (value: number) => {
+                return (this.ema = (value - this.ema) * this.smooth + this.ema);
+            };
+        }
 
         return this.ema;
     }
