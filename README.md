@@ -85,6 +85,6 @@ sma.nextValue(9); // 7.50
 
 | Indicator   |      @debut/indicators     |   technicalindicators  |   trading-signals  |     ta.js        |
 |:-----------:|:--------------------------:|:----------------------:|:------------------:|:----------------:|
-|     SMA     |       56,913 ops/sec       |      3,754 ops/sec     |    120 ops/sec     |   1,670 ops/sec  |
-|     EMA     |       71,067 ops/sec      |      22,004 ops/sec     |    0.13 ops/sec     |   88,112 ops/sec  |
-|     CCI     |       26,284 ops/sec       |      812 ops/sec     |    x     |   x   |
+|     SMA     |       59,913 ops/sec       |      3,754 ops/sec     |    120 ops/sec     |   1,670 ops/sec  |
+|     EMA     |       104,231 ops/sec      |      22,004 ops/sec     |    0.13 ops/sec     |   100,070 ops/sec  |
+|     CCI     |       33,284 ops/sec       |      866 ops/sec     |    x     |   x   |
