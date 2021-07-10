@@ -203,8 +203,8 @@ const ticks = [
     { h: 23304, l: 22526, c: 22758 },
 ];
 
-const macd = new MACD(2,4);
+const macd = new MACD(2, 4);
 
-ticks.forEach(tick => {
+ticks.forEach((tick) => {
     console.log(macd.nextValue(tick.c));
 });

@@ -11,6 +11,7 @@ export class EMA {
     private smooth: number;
     private ema: number;
     private sma: SMA;
+    private fill = 0;
 
     constructor(private period: number) {
         this.smooth = 2 / (this.period + 1);
@@ -22,9 +23,12 @@ export class EMA {
      * affect all next calculations
      */
     nextValue(value: number) {
-        this.ema = this.sma.nextValue(value);
+        this.fill++;
 
-        if (this.ema) {
+        const sma = this.sma.nextValue(value);
+
+        if (this.fill === this.period) {
+            this.ema = sma;
             this.nextValue = (value: number) => {
                 return (this.ema = (value - this.ema) * this.smooth + this.ema);
             };
