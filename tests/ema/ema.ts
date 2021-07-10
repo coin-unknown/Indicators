@@ -57,6 +57,6 @@ const ticks = [
 
 const ema = new EMA(10);
 
-ticks.forEach(tick => {
-    console.log( ema.momentValue(tick), ema.nextValue(tick),);
+ticks.forEach((tick) => {
+    console.log(ema.momentValue(tick), ema.nextValue(tick));
 });

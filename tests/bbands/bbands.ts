@@ -203,7 +203,7 @@ const ticks = [
 ];
 
 const bb = new BollingerBands();
-ticks.forEach(tick => {
+ticks.forEach((tick) => {
     console.log(bb.momentValue(tick.c), bb.nextValue(tick.c));
     // cci.nextValue(tick.h, tick.l, tick.c);
 });

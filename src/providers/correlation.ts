@@ -1,8 +1,9 @@
 import { SMA } from '../sma';
+import { CircularBuffer } from './ring-buffer';
 
 export class Correlation {
-    private pricesX: number[];
-    private pricesY: number[];
+    private pricesX: CircularBuffer;
+    private pricesY: CircularBuffer;
     private filled: boolean;
     private SMAx: SMA;
     private SMAy: SMA;
@@ -12,36 +13,30 @@ export class Correlation {
     constructor(public period: number) {
         this.SMAx = new SMA(this.period);
         this.SMAy = new SMA(this.period);
-        this.pricesX = [];
-        this.pricesY = [];
+        this.pricesX = new CircularBuffer(this.period);
+        this.pricesY = new CircularBuffer(this.period);
     }
 
     nextValue(priceX: number, priceY: number) {
         this.pricesX.push(priceX);
         this.pricesY.push(priceY);
 
-        this.filled = this.filled || this.pricesX.length === this.period;
         this.SMAxValue = this.SMAx.nextValue(priceX);
         this.SMAyValue = this.SMAy.nextValue(priceY);
 
-        if (this.filled && this.SMAxValue && this.SMAyValue) {
-            this.pricesX.shift();
-            this.pricesY.shift();
+        let SSxy = 0;
+        let SSxx = 0;
+        let SSyy = 0;
 
-            let SSxy: number = 0;
-            let SSxx: number = 0;
-            let SSyy: number = 0;
+        for (let i = 0; i < this.period; i++) {
+            const xPrice = this.pricesX[i];
+            const yPrice = this.pricesY[i];
 
-            for (let i = 0; i < this.period; i++) {
-                const xPrice = this.pricesX[i];
-                const yPrice = this.pricesY[i];
-
-                SSxy += (xPrice - this.SMAxValue) * (yPrice - this.SMAyValue);
-                SSxx += (xPrice - this.SMAxValue) ** 2;
-                SSyy += (yPrice - this.SMAyValue) ** 2;
-            }
-
-            return SSxy / Math.sqrt(SSxx * SSyy);
+            SSxy += (xPrice - this.SMAxValue) * (yPrice - this.SMAyValue);
+            SSxx += (xPrice - this.SMAxValue) ** 2;
+            SSyy += (yPrice - this.SMAyValue) ** 2;
         }
+
+        return SSxy / Math.sqrt(SSxx * SSyy);
     }
 }

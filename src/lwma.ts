@@ -7,6 +7,7 @@ import { sum } from './utils';
  * LWMAs are quicker to react to price changes than simple moving averages (SMA) and exponential moving averages (EMA).
  */
 export class LWMA {
+    // Circular buffer ned foreach or reduce for that case
     private arr: number[] = [];
     private filled = false;
     private devider = 0;

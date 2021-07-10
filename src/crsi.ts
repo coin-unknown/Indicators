@@ -21,11 +21,11 @@ export class cRSI {
     private roc: ROC;
     private percentRank: PercentRank;
 
-    constructor(private period = 3, updownRsiPeriod = 2, rocPeriod = 100) {
+    constructor(private period = 3, updownRsiPeriod = 2, percentRankPeriod = 100) {
         this.rsi = new RSI(this.period);
         this.updownRsi = new RSI(updownRsiPeriod);
         this.roc = new ROC(1);
-        this.percentRank = new PercentRank(rocPeriod);
+        this.percentRank = new PercentRank(percentRankPeriod);
         this.updownPeriod = 0;
         this.prevClose = 0;
     }
@@ -34,10 +34,11 @@ export class cRSI {
         const rsi = this.rsi.nextValue(value);
         const percentRank = this.percentRank.nextValue(this.roc.nextValue(value));
 
-        this.updateStreak(value);
+        this.updownPeriod = this.getUpdownPeriod(value);
         this.prevClose = value;
+        this.updownValue = this.updownRsi.nextValue(this.updownPeriod);
 
-        if (this.updownValue === undefined) {
+        if (!this.updownValue) {
             return;
         }
 
@@ -47,37 +48,37 @@ export class cRSI {
     momentValue(value: number) {
         const rsi = this.rsi.momentValue(value);
         const percentRank = this.percentRank.momentValue(this.roc.momentValue(value));
+        const updownPeriod = this.getUpdownPeriod(value);
+        const updownValue = this.updownRsi.momentValue(updownPeriod);
 
-        if (this.updownValue === undefined) {
+        if (!updownValue) {
             return;
         }
 
-        return (rsi + this.updownValue + percentRank) / 3;
+        return (rsi + updownValue + percentRank) / 3;
     }
 
-    private updateStreak(value: number) {
+    private getUpdownPeriod(value: number) {
+        let updownPeriod = this.updownPeriod;
+
         if (value > this.prevClose) {
             // reset negative streak
             if (this.updownPeriod < 0) {
-                this.updownPeriod = 0;
+                updownPeriod = 0;
             }
 
-            this.updownPeriod++;
+            updownPeriod++;
         } else if (value < this.prevClose) {
             // reset positive streak
             if (this.updownPeriod > 0) {
-                this.updownPeriod = 0;
+                updownPeriod = 0;
             }
 
-            this.updownPeriod--;
+            updownPeriod--;
         } else {
-            this.updownPeriod = 0;
+            updownPeriod = 0;
         }
 
-        const res = this.updownRsi.nextValue(this.updownPeriod);
-
-        if (!isNaN(res)) {
-            this.updownValue = res;
-        }
+        return updownPeriod;
     }
 }
