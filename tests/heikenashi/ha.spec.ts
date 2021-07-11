@@ -3,7 +3,7 @@ import { HeikenAshi } from '../../src/heiken-ashi';
 import { HeikinAshi as HeikenAshi2 } from 'technicalindicators';
 
 describe('Heiken Ashi', () => {
-    it.only('Excel Validate', () => {
+    it('Excel Validate', () => {
         const ha = new HeikenAshi();
 
         ohlc.forEach((tick, idx) => {
