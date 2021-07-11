@@ -2,7 +2,7 @@ import { haValues, ohlc } from './excel-data';
 import { HeikenAshi } from '../../src/heiken-ashi';
 
 describe('Heiken Ashi', () => {
-    it.only('Excel Validate', () => {
+    it('Excel Validate', () => {
         const ha = new HeikenAshi();
 
         ohlc.forEach((tick, idx) => {
