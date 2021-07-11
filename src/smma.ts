@@ -13,7 +13,10 @@ export class SMMA {
 
     nextValue(value: number) {
         if (this.filled) {
-            return (this.avg = (this.avg * (this.period - 1) + value) / this.period);
+            if (this.avg) {
+                this.nextValue = (value: number) => (this.avg = (this.avg * (this.period - 1) + value) / this.period);
+                return this.nextValue(value);
+            }
         }
 
         this.sum += value;
