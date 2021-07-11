@@ -22,7 +22,7 @@ describe('Heiken Ashi', () => {
         const ha = new HeikenAshi();
         const first = ohlc[0];
         const ha2 = new HeikenAshi2({ open: [first.o], high: [first.h], low: [first.l], close: [first.c] });
-        const EPSILON = 0.001;
+        const EPSILON = 0.000001;
 
         ohlc.forEach((tick, idx) => {
             const calculated = ha.nextValue(tick.o, tick.h, tick.l, tick.c);
