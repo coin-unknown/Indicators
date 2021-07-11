@@ -5,11 +5,11 @@ import { HeikinAshi as HeikenAshi2 } from 'technicalindicators';
 describe('Heiken Ashi', () => {
     it('Excel Validate', () => {
         const ha = new HeikenAshi();
+        const EPSILON = 0.008;
 
         ohlc.forEach((tick, idx) => {
             const calculated = ha.nextValue(tick.o, tick.h, tick.l, tick.c);
             const excel = haValues[idx];
-            const EPSILON = 0.01;
 
             expect(Math.abs(calculated.o - excel.o)).toBeLessThan(EPSILON);
             expect(Math.abs(calculated.h - excel.h)).toBeLessThan(EPSILON);
@@ -20,16 +20,23 @@ describe('Heiken Ashi', () => {
 
     it('Cross SDK Validate', () => {
         const ha = new HeikenAshi();
-        const ha2 = new HeikenAshi2({ open: [], high: [], low: [], close: [] });
+        const first = ohlc[0];
+        const ha2 = new HeikenAshi2({ open: [first.o], high: [first.h], low: [first.l], close: [first.c] });
+        const EPSILON = 0.001;
 
-        ohlc.forEach((tick) => {
+        ohlc.forEach((tick, idx) => {
             const calculated = ha.nextValue(tick.o, tick.h, tick.l, tick.c);
+
+            if (idx == 0) {
+                return;
+            }
+
             const cross = ha2.nextValue({ open: tick.o, high: tick.h, low: tick.l, close: tick.c });
 
-            expect(calculated.o).toEqual(cross.open);
-            expect(calculated.h).toEqual(cross.high);
-            expect(calculated.l).toEqual(cross.low);
-            expect(calculated.c).toEqual(cross.close);
+            expect(calculated.o - cross.open).toBeLessThan(EPSILON);
+            expect(calculated.h - cross.high).toBeLessThan(EPSILON);
+            expect(calculated.l - cross.low).toBeLessThan(EPSILON);
+            expect(calculated.c - cross.close).toBeLessThan(EPSILON);
         });
     });
 });
