@@ -39,15 +39,15 @@ export class HeikenAshi {
      * Heiken ashi formula
      */
     calculate(o: number, h: number, l: number, c: number) {
-        if (!this.prevOpen) {
-            return { o, h, l, c };
+        c = (o + h + l + c) / 4;
+
+        if (this.prevOpen) {
+            o = (this.prevOpen + this.prevClose) / 2;
         }
 
-        const close = (o + h + l + c) / 4;
-        const open = (this.prevOpen + this.prevClose) / 2;
-        const high = Math.max(h, open, close);
-        const low = Math.min(l, open, close);
+        h = Math.max(h, o, c);
+        l = Math.min(l, o, c);
 
-        return { o: open, h: high, l: low, c: close };
+        return { o, h, l, c };
     }
 }
