@@ -12,6 +12,7 @@ The main feature of these indicators is their continuous operation, which means 
 - Minimal state for calculation
 - Moment value (possible to calculate every tick)
 - Typescript
+- Unit Tested / Cross SDK Validated
 
 ## Available Indicators
 - Average True Range (ATR)
