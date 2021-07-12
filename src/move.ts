@@ -1,5 +1,5 @@
 import { percentChange } from './utils';
-import { CircularBuffer } from './providers/ring-buffer';
+import { CircularBuffer } from './providers/circular-buffer';
 
 export class Move {
     private changes: CircularBuffer;

@@ -1,5 +1,5 @@
 import { getMax, getMin } from './utils';
-import { CircularBuffer } from './providers/ring-buffer';
+import { CircularBuffer } from './providers/circular-buffer';
 
 /**
  * Donchian channels were developed by Richard Donchian, a pioneer of mechanical trend following systems.
@@ -12,9 +12,9 @@ export class DC {
     private max = -Infinity;
     private min = Infinity;
 
-    constructor(private period: number) {
-        this.highest = new CircularBuffer(period);
-        this.lowest = new CircularBuffer(period);
+    constructor(period = 20) {
+        this.highest = new CircularBuffer(period + 1);
+        this.lowest = new CircularBuffer(period + 1);
     }
 
     nextValue(high: number, low: number) {
@@ -29,10 +29,6 @@ export class DC {
         const rmMax = this.highest.push(high);
         const rmMin = this.lowest.push(low);
 
-        if (rmMin === 0 && rmMax === 0) {
-            return;
-        }
-
         // Most perf degrade case
         if (rmMax === this.max && high !== this.max) {
             // console.count('degrade_max');
@@ -46,7 +42,7 @@ export class DC {
             // console.count('degrade_min');
         }
 
-        return { upper: this.max, middle: (high + low) / 2, lower: this.min };
+        return { upper: this.max, middle: (this.max + this.min) / 2, lower: this.min };
     }
 
     momentValue(high: number, low: number) {
@@ -64,7 +60,7 @@ export class DC {
         const rmMax = this.highest.push(high);
         const rmMin = this.lowest.push(low);
 
-        if (rmMin === 0 && rmMax === 0) {
+        if (!this.highest.filled()) {
             return;
         }
 

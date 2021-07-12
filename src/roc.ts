@@ -1,4 +1,4 @@
-import { CircularBuffer } from './providers/ring-buffer';
+import { CircularBuffer } from './providers/circular-buffer';
 /**
  * The Rate-of-Change (ROC) indicator, which is also referred to as simply Momentum,
  * is a pure momentum oscillator that measures the percent change in price from one period to the next.

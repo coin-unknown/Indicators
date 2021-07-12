@@ -1,4 +1,4 @@
-import { CircularBuffer } from './ring-buffer';
+import { CircularBuffer } from './circular-buffer';
 export class MeanDeviationProvider {
     private values: CircularBuffer;
 

@@ -1,4 +1,4 @@
-import { CircularBuffer } from './ring-buffer';
+import { CircularBuffer } from './circular-buffer';
 /**
  * Returns the percentile of a value. Returns the same values as the Excel PERCENTRANK and PERCENTRANK.INC functions.
  */
