@@ -1,4 +1,4 @@
-import { CircularBuffer } from './providers/ring-buffer';
+import { CircularBuffer } from './providers/circular-buffer';
 export class StandardDeviation {
     private values: CircularBuffer;
 

@@ -1,5 +1,5 @@
 import { SMA } from '../sma';
-import { CircularBuffer } from './ring-buffer';
+import { CircularBuffer } from './circular-buffer';
 
 export class Correlation {
     private pricesX: CircularBuffer;

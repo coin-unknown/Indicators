@@ -1,4 +1,4 @@
-import { CircularBuffer } from './providers/ring-buffer';
+import { CircularBuffer } from './providers/circular-buffer';
 // console.log(sma([1, 2, 3, 4, 5, 6, 7, 8, 9], 4));
 //=> [ '2.50', '3.50', '4.50', '5.50', '6.50', '7.50' ]
 //=>   │       │       │       │       │       └─(6+7+8+9)/4
