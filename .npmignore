@@ -6,5 +6,5 @@ coverage
 .prettierrc.js
 README.md
 rollup.config.js
-./**/*.xlsx
-./**/*.xls
+*.xlsx
+*.xls
