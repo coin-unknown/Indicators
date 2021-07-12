@@ -21,27 +21,25 @@ export class RSI {
     }
 
     nextValue(value: number) {
-        const { loss: downAvg, gain: upAvg } = this.change.nextValue(value) || {};
+        const { downAvg, upAvg } = this.change.nextValue(value) || {};
 
         if (upAvg === undefined || downAvg === undefined) {
             return;
         }
 
-        // Для начала подсчитаем через MA просто
-        const RS = upAvg / downAvg;
+        const RS = upAvg / -downAvg;
 
         return 100 - 100 / (1 + RS);
     }
 
     momentValue(value: number) {
-        const { loss: downAvg, gain: upAvg } = this.change.momentValue(value) || {};
+        const { downAvg, upAvg } = this.change.momentValue(value) || {};
 
         if (upAvg === undefined || downAvg === undefined) {
             return;
         }
 
-        // Для начала подсчитаем через MA просто
-        const RS = upAvg / downAvg;
+        const RS = upAvg / -downAvg;
 
         return 100 - 100 / (1 + RS);
     }

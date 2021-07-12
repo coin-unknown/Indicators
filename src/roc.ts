@@ -1,3 +1,4 @@
+import { CircularBuffer } from './providers/circular-buffer';
 /**
  * The Rate-of-Change (ROC) indicator, which is also referred to as simply Momentum,
  * is a pure momentum oscillator that measures the percent change in price from one period to the next.
@@ -10,31 +11,25 @@
  * Identifying overbought or oversold extremes comes naturally to the Rate-of-Change oscillator.
  **/
 export class ROC {
-    private values: number[] = [];
-    private filled = false;
+    private values: CircularBuffer;
 
-    constructor(private period = 5) {}
+    constructor(period = 5) {
+        this.values = new CircularBuffer(period);
+    }
 
     nextValue(value: number) {
-        return this.calculate(value, this.values);
+        const outed = this.values.push(value);
+
+        if (outed !== 0) {
+            return (value - outed) / outed;
+        }
     }
 
     momentValue(value: number) {
-        return this.calculate(value, this.values.slice(0));
-    }
+        const outed = this.values.current();
 
-    private calculate(value: number, values: number[]) {
-        let outed: number;
-        this.filled = this.filled || values.length === this.period;
-
-        values.push(value);
-
-        if (this.filled) {
-            outed = values.shift();
-        } else {
-            return;
+        if (outed !== 0) {
+            return (value - outed) / outed;
         }
-
-        return (value - outed) / outed;
     }
 }

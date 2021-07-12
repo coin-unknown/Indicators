@@ -1,7 +1,8 @@
 import { percentChange } from './utils';
+import { CircularBuffer } from './providers/circular-buffer';
 
 export class Move {
-    private changes: number[] = [];
+    private changes: CircularBuffer;
     private prevPrice: number;
     private value = 0;
 
@@ -10,7 +11,9 @@ export class Move {
      * @param period - целочисленное значение от 1 до  12
      * @param period - период
      */
-    constructor(private period: number) {}
+    constructor(private period: number) {
+        this.changes = new CircularBuffer(period);
+    }
 
     nextValue(close: number) {
         if (this.prevPrice) {
@@ -25,13 +28,8 @@ export class Move {
     }
 
     calculate(change: number) {
-        if (this.changes.length >= this.period) {
-            const rm = this.changes.shift();
-            this.value -= rm;
-        }
-
         this.value += change;
-        this.changes.push(change);
+        this.value -= this.changes.push(change);
 
         return this.value;
     }

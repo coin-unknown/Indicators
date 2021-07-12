@@ -1,23 +1,24 @@
+import { CircularBuffer } from './circular-buffer';
 export class MeanDeviationProvider {
-    private values: number[] = [];
+    private values: CircularBuffer;
 
-    constructor(private period: number) {}
+    constructor(private period: number) {
+        this.values = new CircularBuffer(period);
+    }
 
     nextValue(typicalPrice: number, average?: number) {
-        return this.calculate(this.values, typicalPrice, average);
+        this.values.push(typicalPrice);
+
+        const mean = this.values.toArray().reduce((acc, value) => acc + Math.abs(average - value), 0);
+
+        return average && mean / this.period;
     }
 
     momentValue(typicalPrice: number, average?: number) {
-        return this.calculate(this.values.slice(0), typicalPrice, average);
-    }
+        const rm = this.values.push(typicalPrice);
+        const mean = this.values.toArray().reduce((acc, value) => acc + Math.abs(average - value), 0);
 
-    calculate(values: number[], typicalPrice: number, average?: number) {
-        if (values.length === this.period) {
-            values.shift();
-        }
-
-        values.push(typicalPrice);
-        const mean = values.reduce((acc, value) => acc + Math.abs(average - value), 0);
+        this.values.pushback(rm);
 
         return average && mean / this.period;
     }

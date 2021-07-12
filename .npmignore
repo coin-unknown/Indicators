@@ -1,3 +1,9 @@
 node_modules/
 .nyc_output
 coverage
+src
+.editorconfig
+.eslintrc.js
+.prettierrc.js
+README.md
+rollup.config.js

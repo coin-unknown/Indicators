@@ -1,30 +1,26 @@
+import { CircularBuffer } from './providers/circular-buffer';
 export class StandardDeviation {
-    private values: number[] = [];
-    private filled = false;
+    private values: CircularBuffer;
 
-    constructor(private period: number) {}
+    constructor(private period: number) {
+        this.values = new CircularBuffer(period);
+    }
 
     nextValue(value: number, mean?: number) {
-        return this.calculate(this.values, value, mean);
+        this.values.push(value);
+
+        return Math.sqrt(this.values.toArray().reduce((acc, item) => acc + (item - mean) ** 2, 0) / this.period);
     }
 
     momentValue(value: number, mean?: number) {
-        return this.calculate(this.values.slice(0), value, mean);
+        const rm = this.values.push(value);
+        const result = Math.sqrt(
+            this.values.toArray().reduce((acc, item) => acc + (item - mean) ** 2, 0) / this.period,
+        );
+        this.values.pushback(rm);
+
+        return result;
     }
 
-    calculate(values: number[], value: number, mean?: number) {
-        this.filled = this.filled || values.length === this.period;
-
-        if (this.filled) {
-            values.shift();
-        }
-
-        values.push(value);
-
-        if (!mean) {
-            return;
-        }
-
-        return Math.sqrt(values.reduce((acc, item) => acc + (item - mean) ** 2, 0) / this.period);
-    }
+    calculate(values: number[], value: number, mean?: number) {}
 }
