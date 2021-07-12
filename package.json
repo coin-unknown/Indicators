@@ -18,7 +18,8 @@
         "test": "jest",
         "version": "npm run build",
         "postversion": "git push && git push --tags",
-        "prettier": "prettier --config './.prettierrc.js' --write 'src/**/*.ts'"
+        "prettier": "prettier --config './.prettierrc.js' --write 'src/**/*.ts'",
+        "prebuild": "npm run test"
     },
     "bugs": {
         "url": "https://github.com/debut-js/Indicators/issues"
