@@ -5,6 +5,7 @@
  */
 export class SMMA {
     private sum = 0;
+    private avg = 0;
     private filled = false;
     private fill = 0;
 
@@ -12,12 +13,21 @@ export class SMMA {
 
     nextValue(value: number) {
         if (this.filled) {
-            return (this.sum = (this.sum * (this.period - 1) + value) / this.period);
+            if (this.avg) {
+                this.nextValue = (value: number) => (this.avg = (this.avg * (this.period - 1) + value) / this.period);
+                return this.nextValue(value);
+            }
         }
 
         this.sum += value;
         this.fill++;
-        this.filled = this.fill === this.period;
+
+        if (this.fill === this.period) {
+            this.filled = true;
+            this.avg = this.sum / this.period;
+
+            return this.avg;
+        }
     }
 
     momentValue(value: number) {
@@ -25,6 +35,6 @@ export class SMMA {
             return;
         }
 
-        return (this.sum * (this.period - 1) + value) / this.period;
+        return (this.avg * (this.period - 1) + value) / this.period;
     }
 }

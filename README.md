@@ -85,6 +85,11 @@ sma.nextValue(9); // 7.50
 
 | Indicator   |      @debut/indicators     |   technicalindicators  |   trading-signals  |     ta.js        |
 |:-----------:|:--------------------------:|:----------------------:|:------------------:|:----------------:|
-|     SMA     |       59,913 ops/sec       |      3,754 ops/sec     |    120 ops/sec     |   1,670 ops/sec  |
-|     EMA     |       104,231 ops/sec      |      22,004 ops/sec     |    0.13 ops/sec     |   100,070 ops/sec  |
+|     ATR     |       165,378 ops/sec       |      9,272 ops/sec     |    x     |   x   |
+|     Bollinger Bands     |       42,931 ops/sec       |      585 ops/sec     |    x     |   x   |
 |     CCI     |       33,284 ops/sec       |      866 ops/sec     |    x     |   x   |
+|     EMA     |       243,620 ops/sec      |      22,004 ops/sec     |    0.13 ops/sec     |   100,070 ops/sec  |
+|     MACD     |       123,751 ops/sec       |      4,658 ops/sec     |    x     |   x   |
+|     ROC     |       223,991 ops/sec       |      4,766 ops/sec     |    x     |   x   |
+|     SMA     |       215,303 ops/sec       |      3,754 ops/sec     |    120 ops/sec     |   1,670 ops/sec  |
+|     Stochastic     |       27,363 ops/sec       |      2,156 ops/sec     |    x     |   x   |

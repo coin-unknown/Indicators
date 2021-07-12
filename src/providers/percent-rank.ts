@@ -1,34 +1,43 @@
+import { CircularBuffer } from './circular-buffer';
 /**
  * Returns the percentile of a value. Returns the same values as the Excel PERCENTRANK and PERCENTRANK.INC functions.
  */
 export class PercentRank {
-    private values: number[] = [];
+    private values: CircularBuffer;
+    private fill = 0;
 
-    constructor(private period: number) {}
+    constructor(private period: number) {
+        this.values = new CircularBuffer(period);
+    }
 
     public nextValue(value: number) {
-        const res = this.calculate(this.values, value);
-
-        if (this.values.length === this.period) {
-            this.values.shift();
-        }
-
         this.values.push(value);
+        this.fill++;
 
-        return res;
+        if (this.fill === this.period) {
+            this.nextValue = (value: number) => {
+                const result = this.calc(value);
+
+                this.values.push(value);
+
+                return result;
+            };
+
+            this.momentValue = this.calc;
+
+            return this.calc(value);
+        }
     }
 
-    public momentValue(value: number) {
-        const res = this.calculate(this.values.slice(0), value);
-
-        return res;
+    public momentValue(value: number): number {
+        return;
     }
 
-    private calculate(values: number[], n: number) {
+    private calc(value: number) {
         let count = 0;
 
-        values.forEach((value) => {
-            if (value <= n) count++;
+        this.values.toArray().forEach((item) => {
+            if (item <= value) count++;
         });
 
         return (count / this.period) * 100;

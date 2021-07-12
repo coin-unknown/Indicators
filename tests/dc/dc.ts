@@ -205,7 +205,7 @@ const ticks = [
 
 const dc = new DC(20);
 
-ticks.forEach(tick => {
+ticks.forEach((tick) => {
+    // console.log(dc.momentValue(tick.h, tick.l));
     console.log(dc.nextValue(tick.h, tick.l));
-    // cci.nextValue(tick.h, tick.l, tick.c);
 });

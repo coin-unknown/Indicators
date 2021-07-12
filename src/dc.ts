@@ -1,4 +1,5 @@
 import { getMax, getMin } from './utils';
+import { CircularBuffer } from './providers/circular-buffer';
 
 /**
  * Donchian channels were developed by Richard Donchian, a pioneer of mechanical trend following systems.
@@ -6,20 +7,17 @@ import { getMax, getMin } from './utils';
  * originally 20 days, with the optional middle band calculated as the average of the two.
  */
 export class DC {
-    private highest: number[] = [];
-    private lowest: number[] = [];
-    private filled = false;
-    private max: number = -Infinity;
-    private min: number = Infinity;
+    private highest: CircularBuffer;
+    private lowest: CircularBuffer;
+    private max = -Infinity;
+    private min = Infinity;
 
-    constructor(private period: number) {}
+    constructor(period = 20) {
+        this.highest = new CircularBuffer(period + 1);
+        this.lowest = new CircularBuffer(period + 1);
+    }
 
     nextValue(high: number, low: number) {
-        let rmMax: number;
-        let rmMin: number;
-
-        this.filled = this.filled || this.highest.length === this.period;
-
         if (this.max < high) {
             this.max = high;
         }
@@ -28,67 +26,60 @@ export class DC {
             this.min = low;
         }
 
-        if (this.filled) {
-            rmMax = this.highest.shift();
-            rmMin = this.lowest.shift();
-        }
+        const rmMax = this.highest.push(high);
+        const rmMin = this.lowest.push(low);
 
         // Most perf degrade case
         if (rmMax === this.max && high !== this.max) {
             // console.count('degrade_max');
 
-            this.max = getMax(this.highest).max;
+            this.max = getMax(this.highest.toArray()).max;
         }
 
         // Most perf degrade case
         if (rmMin === this.min && low !== this.min) {
-            this.min = getMin(this.lowest).min;
+            this.min = getMin(this.lowest.toArray()).min;
             // console.count('degrade_min');
         }
 
-        this.highest.push(high);
-        this.lowest.push(low);
+        return { upper: this.max, middle: (this.max + this.min) / 2, lower: this.min };
+    }
 
-        if (!this.filled) {
+    momentValue(high: number, low: number) {
+        let max = this.max;
+        let min = this.min;
+
+        if (max < high) {
+            max = high;
+        }
+
+        if (min > low) {
+            min = low;
+        }
+
+        const rmMax = this.highest.push(high);
+        const rmMin = this.lowest.push(low);
+
+        if (!this.highest.filled()) {
             return;
         }
 
+        // Most perf degrade case
+        if (rmMax === max && high !== max) {
+            // console.count('degrade_max');
+
+            max = getMax(this.highest.toArray()).max;
+        }
+
+        // Most perf degrade case
+        if (rmMin === min && low !== min) {
+            min = getMin(this.lowest.toArray()).min;
+            // console.count('degrade_min');
+        }
+
+        this.highest.pushback(rmMax);
+        this.lowest.pushback(rmMin);
+
         return { upper: this.max, middle: (high + low) / 2, lower: this.min };
     }
-
-    // momentValue(high: number, low: number) {
-    //     let rmMax: number;
-    //     let rmMin: number;
-    //     let max = this.max;
-    //     let min = this.min;
-
-    //     if (!this.filled) {
-    //         return;
-    //     }
-
-    //     if (this.filled) {
-    //         rmMax = this.highest[0];
-    //         rmMin = this.lowest[0];
-    //     }
-
-    //     // Most perf degrade case
-    //     if (rmMax === max) {
-    //         max = getMax(this.highest.slice(1)).max;
-    //     }
-
-    //     // Most perf degrade case
-    //     if (rmMin === min) {
-    //         min = getMin(this.lowest.slice(1)).min;
-    //     }
-
-    //     if (max < high) {
-    //         max = high;
-    //     }
-
-    //     if (min > low) {
-    //         min = low;
-    //     }
-
-    //     return { upper: this.max, middle: (high - low) / 2, lower: this.min };
-    // }
 }
