@@ -20,8 +20,12 @@ export class MACD {
         const emaFast = this.emaFastIndicator.nextValue(value);
         const emaSlow = this.emaSlowIndicator.nextValue(value);
         const macd = emaFast - emaSlow;
-        const signal = macd && this.emaSignalIndicator.nextValue(macd);
-        const histogram = macd - signal;
+        const signal = (macd && this.emaSignalIndicator.nextValue(macd)) || undefined;
+        const histogram = macd - signal || undefined;
+
+        if (isNaN(macd)) {
+            return;
+        }
 
         return {
             macd,

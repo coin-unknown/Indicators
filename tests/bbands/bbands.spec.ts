@@ -28,7 +28,9 @@ describe('Bollinger Bands', () => {
             const local = bb1.nextValue(tick.c);
             const cross = bb2.nextValue(tick.c);
 
-            expect(local).toEqual(cross);
+            expect(local?.lower).toEqual(cross?.lower);
+            expect(local?.middle).toEqual(cross?.middle);
+            expect(local?.upper).toEqual(cross?.upper);
         });
     });
 });
