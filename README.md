@@ -83,9 +83,8 @@ sma.nextValue(9); // 7.50
 - WAVE (directional move with bearish or bullish candle series and power p)
 
 ## [Benchmarks](https://github.com/follow-traders/indicators-benchmark)
-|    Indicator    	| : Performance ops/sec 	                                                   : ||||
+|    Indicator    	|  @debut/indicators (ops/sec)  	| technicalindicators (ops/sec) 	| trading-signals (ops/sec) 	|  ta.js (ops/sec)  	|
 |:---------------:	|:-------------------:	|:-------------------:	|:---------------:	|:-------:	|
-|        x        	|  @debut/indicators  	| technicalindicators 	| trading-signals 	|  ta.js  	|
 |       ATR       	|       165,378       	|        9,272        	|        x        	|    x    	|
 | Bollinger Bands 	|        42,931       	|         585         	|        x        	|    x    	|
 |       CCI       	|        33,284       	|         866         	|        x        	|    x    	|
