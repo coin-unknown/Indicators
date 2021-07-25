@@ -83,14 +83,14 @@ sma.nextValue(9); // 7.50
 - WAVE (directional move with bearish or bullish candle series and power p)
 
 ## [Benchmarks](https://github.com/follow-traders/indicators-benchmark)
-
-| Indicator   |      @debut/indicators     |   technicalindicators  |   trading-signals  |     ta.js        |
-|:-----------:|:--------------------------:|:----------------------:|:------------------:|:----------------:|
-|     ATR     |       165,378 ops/sec       |      9,272 ops/sec     |    x     |   x   |
-|     Bollinger Bands     |       42,931 ops/sec       |      585 ops/sec     |    x     |   x   |
-|     CCI     |       33,284 ops/sec       |      866 ops/sec     |    x     |   x   |
-|     EMA     |       243,620 ops/sec      |      22,004 ops/sec     |    0.13 ops/sec     |   100,070 ops/sec  |
-|     MACD     |       123,751 ops/sec       |      4,658 ops/sec     |    x     |   x   |
-|     ROC     |       223,991 ops/sec       |      4,766 ops/sec     |    x     |   x   |
-|     SMA     |       215,303 ops/sec       |      3,754 ops/sec     |    120 ops/sec     |   1,670 ops/sec  |
-|     Stochastic     |       27,363 ops/sec       |      2,156 ops/sec     |    x     |   x   |
+|    Indicator    	| Performance ops/sec 	                                                    ||||
+|:---------------:	|:-------------------:	|:-------------------:	|:---------------:	|:-------:	|
+|        x        	|  @debut/indicators  	| technicalindicators 	| trading-signals 	|  ta.js  	|
+|       ATR       	|       165,378       	|        9,272        	|        x        	|    x    	|
+| Bollinger Bands 	|        42,931       	|         585         	|        x        	|    x    	|
+|       CCI       	|        33,284       	|         866         	|        x        	|    x    	|
+|       EMA       	|       243,620       	|        22,004       	|       0.13      	| 100,070 	|
+|       MACD      	|       123,751       	|        4,658        	|        x        	|    x    	|
+|       ROC       	|       223,991       	|        4,766        	|        x        	|    x    	|
+|       SMA       	|       215,303       	|        3,754        	|       120       	|  1,670  	|
+|    Stochastic   	|        27,363       	|        2,156        	|       0.13      	|    x    	|
