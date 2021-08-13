@@ -12,6 +12,8 @@
 type PivotMode = 'classic' | 'woodie' | 'camarilla' | 'fibonacci';
 
 interface PivotValue {
+    r6?: number;
+    r5?: number;
     r4?: number;
     r3?: number;
     r2: number;
@@ -21,6 +23,8 @@ interface PivotValue {
     s2: number;
     s3?: number;
     s4?: number;
+    s5?: number;
+    s6?: number;
 }
 export class Pivot {
     private calculator: (h: number, l: number, c: number) => PivotValue;
@@ -82,29 +86,38 @@ export class Pivot {
         return { r2, r1, pp, s1, s2 };
     }
 
-    // Camarilla
-    // R4 = C + ((H-L) x 1.5000)
-    // R3 = C + ((H-L) x 1.2500)
-    // R2 = C + ((H-L) x 1.1666)
-    // R1 = C + ((H-L) x 1.0833)
-    // PP = (H + L + C) / 3
-    // S1 = C – ((H-L) x 1.0833)
-    // S2 = C – ((H-L) x 1.1666)
-    // S3 = C – ((H-L) x 1.2500)
-    // S4 = C – ((H-L) x 1.5000)
+    //Camarilla
+    // pivot = (high + low + close ) / 3.0
+    // range = high - low
+    // h5 = (high/low) * close
+    // h4 = close + (high - low) * 1.1 / 2.0
+    // h3 = close + (high - low) * 1.1 / 4.0
+    // h2 = close + (high - low) * 1.1 / 6.0
+    // h1 = close + (high - low) * 1.1 / 12.0
+    // l1 = close - (high - low) * 1.1 / 12.0
+    // l2 = close - (high - low) * 1.1 / 6.0
+    // l3 = close - (high - low) * 1.1 / 4.0
+    // l4 = close - (high - low) * 1.1 / 2.0
+    // h6 = h5 + 1.168 * (h5 - h4)
+    // l5 = close - (h5 - close)
+    // l6 = close - (h6 - close)
     private camarilla(h: number, l: number, c: number) {
-        const delta = h - l;
+        const delta = (h - l) * 1.1;
         const pp = (h + l + c) / 3;
-        const r4 = c + delta * 1.5;
-        const r3 = c + delta * 1.25;
-        const r2 = c + delta * 1.1666;
-        const r1 = c + delta * 1.0833;
-        const s1 = c - delta * 1.0833;
-        const s2 = c - delta * 1.1666;
-        const s3 = c - delta * 1.25;
-        const s4 = c - delta * 1.5;
+        const r5 = (h / l) * c;
+        const r4 = c + delta / 2;
+        const r6 = r5 + 1.168 * (r5 - r4);
+        const r3 = c + delta / 4;
+        const r2 = c + delta / 6;
+        const r1 = c + delta / 12;
+        const s1 = c - delta / 12;
+        const s2 = c - delta / 6;
+        const s3 = c - delta / 4;
+        const s4 = c - delta / 2;
+        const s5 = c - (r5 - c);
+        const s6 = c - (r6 - c);
 
-        return { r4, r3, r2, r1, pp, s1, s2, s3, s4 };
+        return { r6, r5, r4, r3, r2, r1, pp, s1, s2, s3, s4, s5, s6 };
     }
 
     // Fibonacci Pivot Point
