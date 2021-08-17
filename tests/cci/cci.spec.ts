@@ -18,9 +18,10 @@ describe('CCI', () => {
     });
 
     it('Cross sdk validate', () => {
+        const atr = new CCI(14);
+        const atr2 = new CCI2({ period: 14, high: [], low: [], close: [] });
+
         ohlc.forEach((tick) => {
-            const atr = new CCI(20);
-            const atr2 = new CCI2({ period: 14, high: [], low: [], close: [] });
             const local = atr.nextValue(tick.h, tick.l, tick.c);
             const cross = atr2.nextValue({ high: tick.h, low: tick.l, close: tick.c });
 

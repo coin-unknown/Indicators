@@ -20,13 +20,18 @@ describe('RSI', () => {
     });
 
     it('Cross sdk validate', () => {
+        const rsi = new RSI();
+        const rsi2 = new RSI2({ period: 14, values: [] });
+
         ohlc.forEach((tick) => {
-            const rsi = new RSI();
-            const rsi2 = new RSI2({ period: 14, values: [] });
             const local = rsi.nextValue(tick.c);
             const cross = rsi2.nextValue(tick.c);
 
-            expect(local).toEqual(cross);
+            if (!local || !cross) {
+                expect(local).toEqual(cross);
+            } else {
+                expect(Math.abs(local - cross)).toBeLessThan(0.01);
+            }
         });
     });
 });

@@ -22,15 +22,16 @@ describe('Bollinger Bands', () => {
     });
 
     it('Cross sdk validate', () => {
+        const bb1 = new BollingerBands(14);
+        const bb2 = new BollingerBands2({ period: 14, stdDev: 2, values: [] });
+
         ohlc.forEach((tick) => {
-            const bb1 = new BollingerBands(20);
-            const bb2 = new BollingerBands2({ period: 14, stdDev: 2, values: [] });
             const local = bb1.nextValue(tick.c);
             const cross = bb2.nextValue(tick.c);
 
-            expect(local?.lower).toEqual(cross?.lower);
-            expect(local?.middle).toEqual(cross?.middle);
-            expect(local?.upper).toEqual(cross?.upper);
+            expect(Math.abs((local?.lower || 0) - (cross?.lower || 0))).toBeLessThan(0.000001);
+            expect(Math.abs((local?.middle || 0) - (cross?.middle || 0))).toBeLessThan(0.000001);
+            expect(Math.abs((local?.upper || 0) - (cross?.upper || 0))).toBeLessThan(0.000001);
         });
     });
 });
