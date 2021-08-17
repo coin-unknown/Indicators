@@ -2,7 +2,7 @@ import { EMA } from '../../src/ema';
 import { EMA as EMA2 } from 'technicalindicators';
 import { emaValues, closes } from './excel-data';
 
-describe('CCI', () => {
+describe('EMA', () => {
     it('Excel Validate', () => {
         const ema = new EMA(10);
 
@@ -19,9 +19,10 @@ describe('CCI', () => {
     });
 
     it('Cross sdk validate', () => {
+        const ema = new EMA(14);
+        const ema2 = new EMA2({ period: 14, values: [] });
+
         closes.forEach((c) => {
-            const ema = new EMA(20);
-            const ema2 = new EMA2({ period: 14, values: [] });
             const local = ema.nextValue(c);
             const cross = ema2.nextValue(c);
 

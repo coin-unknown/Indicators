@@ -18,16 +18,17 @@ describe('MACD', () => {
     });
 
     it('Cross sdk validate', () => {
+        const macd = new MACD();
+        const macd2 = new MACD2({
+            values: [],
+            SimpleMAOscillator: false,
+            SimpleMASignal: false,
+            fastPeriod: 12,
+            slowPeriod: 26,
+            signalPeriod: 9,
+        });
+
         closes.forEach((tick) => {
-            const macd = new MACD();
-            const macd2 = new MACD2({
-                values: [],
-                SimpleMAOscillator: false,
-                SimpleMASignal: false,
-                fastPeriod: 12,
-                slowPeriod: 26,
-                signalPeriod: 9,
-            });
 
             const local = macd.nextValue(tick);
             const cross = macd2.nextValue(tick);

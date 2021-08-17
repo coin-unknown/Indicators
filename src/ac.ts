@@ -10,11 +10,7 @@ export class AC {
     private sma: SMA;
     private ao: AO;
     private smaValue: number;
-    private aoValue: {
-        smaSlowValue: number;
-        smaFastValue: number;
-        ao: number;
-    };
+    private aoValue: number;
 
     constructor() {
         this.sma = new SMA(5);
@@ -23,15 +19,33 @@ export class AC {
 
     nextValue(high: number, low: number) {
         this.aoValue = this.ao.nextValue(high, low);
-        this.smaValue = this.sma.nextValue(this.aoValue.ao);
 
-        return this.aoValue.ao - this.smaValue;
+        if (typeof this.aoValue !== 'number') {
+            return;
+        }
+
+        this.smaValue = this.sma.nextValue(this.aoValue);
+
+        if (typeof this.smaValue !== 'number') {
+            return;
+        }
+
+        return this.aoValue - this.smaValue;
     }
 
     momentValue(high: number, low: number) {
         const aoValue = this.ao.momentValue(high, low);
-        const smaValue = this.sma.momentValue(aoValue.ao);
 
-        return aoValue.ao - smaValue;
+        if (typeof aoValue !== 'number') {
+            return;
+        }
+
+        const smaValue = this.sma.momentValue(aoValue);
+
+        if (typeof smaValue !== 'number') {
+            return;
+        }
+
+        return aoValue - smaValue;
     }
 }
