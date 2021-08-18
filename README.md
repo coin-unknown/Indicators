@@ -22,6 +22,7 @@ The main feature of these indicators is their continuous operation, which means 
 - Commodity Channel Index (CCI).
 - Connor's RSI (CRSI)
 - Donchian channels (DC).
+- Exponential Moving Average (EMA).
 - Linearly weighted moving average (LWMA).
 - Moving Average Convergence Divergence (MACD).
 - Pivot Point Levels (classic / woodie /camarilla / fibonacci).
@@ -30,8 +31,7 @@ The main feature of these indicators is their continuous operation, which means 
 - Relative Moving Average (RMA)
 - Simple Moving Average (SMA).
 - Smoothed Moving Average (SMMA).
-- Stochastic Oscillator (KD).
-- Exponential Moving Average (EMA).
+- Stochastic Oscillator (KD)
 - Weighted Moving Average (WMA).
 
 ## Candles
