@@ -15,7 +15,9 @@ The main feature of these indicators is their continuous operation, which means 
 - Unit Tested / Cross SDK Validated
 
 ## Available Indicators
+- Accelerator Oscillator (AO).
 - Average True Range (ATR)
+- Awesome Oscillator (AC).
 - Bollinger Bands (BB).
 - Commodity Channel Index (CCI).
 - Connor's RSI (CRSI)
@@ -31,8 +33,6 @@ The main feature of these indicators is their continuous operation, which means 
 - Stochastic Oscillator (KD).
 - Exponential Moving Average (EMA).
 - Weighted Moving Average (WMA).
-- Awesome Oscillator (AC).
-- Accelerator Oscillator (AO).
 
 ## Candles
 - Heiken Ashi.
