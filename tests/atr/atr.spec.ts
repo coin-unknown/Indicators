@@ -4,32 +4,33 @@ import { atrValues, ohlc } from './excel-data';
 
 describe('ATR', () => {
     it('Excel Validate', () => {
-        const atr = new ATR();
+        const period = 14;
+        const atr = new ATR(period, 'SMA');
+
         ohlc.forEach((tick, idx) => {
             const calculated = atr.nextValue(tick.h, tick.l, tick.c);
             const excel = atrValues[idx];
 
-            if (!excel && !calculated) {
-                expect(excel).toEqual(calculated);
-            } else {
+            if (idx > period) {
                 expect(Math.abs(calculated - excel)).toBeLessThan(0.007);
             }
         });
     });
 
-    // todo FIX!
-    // Expected: undefined
-    // Received: 1.2567928571428573
+    it.skip('Cross sdk validate', () => {
+        const period = 14;
+        const atr = new ATR(period, 'SMMA');
+        const atr2 = new ATR2({ period, high: [], low: [], close: [] });
 
-    // it('Cross sdk validate', () => {
-    //     const atr = new ATR(14);
-    //     const atr2 = new ATR2({ period: 14, high: [], low: [], close: [] });
-    //
-    //     ohlc.forEach((tick) => {
-    //         const local = atr.nextValue(tick.h, tick.l, tick.c);
-    //         const cross = atr2.nextValue({ high: tick.h, low: tick.l, close: tick.c });
-    //
-    //         expect(local).toEqual(cross);
-    //     });
-    // });
+        ohlc.forEach((tick, idx) => {
+            const local = atr.nextValue(tick.h, tick.l, tick.c);
+            const cross = atr2.nextValue({ high: tick.h, low: tick.l, close: tick.c });
+
+            // FIX: cross === undefioned at 14 pos, local is fine?
+            if (idx > period) {
+                // console.log(local, cross);
+                expect(local).toEqual(cross);
+            }
+        });
+    });
 });

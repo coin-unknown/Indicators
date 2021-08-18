@@ -1,14 +1,39 @@
+import { SMMA } from './smma';
+import { EMA } from './ema';
+import { RMA } from './rma';
+import { LWMA } from './lwma';
 import { SMA } from './sma';
+import { EWMA } from './ewma';
 export class ATR {
     private prevClose: number;
-    private avg: SMA;
+    private avg: EMA | SMMA | RMA | LWMA | SMA | EWMA;
 
     /**
      * Конструктор
      * @param period - период по умолчанию 14
      */
-    constructor(period = 14) {
-        this.avg = new SMA(period);
+    constructor(period = 14, smoothing: 'SMA' | 'EMA' | 'SMMA' | 'RMA' | 'LWMA' | 'EWMA' = 'RMA') {
+        switch (smoothing) {
+            case 'SMA':
+                this.avg = new SMA(period);
+                break;
+            case 'EMA':
+                this.avg = new EMA(period);
+                break;
+            case 'SMMA':
+                this.avg = new SMMA(period);
+                break;
+            case 'RMA':
+                this.avg = new RMA(period);
+                break;
+            case 'LWMA':
+                this.avg = new LWMA(period);
+                break;
+            case 'EWMA':
+                this.avg = new EWMA(0.2);
+                break;
+        }
+
         this.prevClose = 0;
     }
 
