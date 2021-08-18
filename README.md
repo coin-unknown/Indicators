@@ -23,6 +23,7 @@ The main feature of these indicators is their continuous operation, which means 
 - Connor's RSI (CRSI)
 - Donchian channels (DC).
 - Exponential Moving Average (EMA).
+- Exponential Weighted Moving Average (EWMA).
 - Linearly weighted moving average (LWMA).
 - Moving Average Convergence Divergence (MACD).
 - Pivot Point Levels (classic / woodie /camarilla / fibonacci).
