@@ -1,4 +1,5 @@
 import { SMA } from '../../src/sma';
+import { SMA as SMA2 } from 'technicalindicators';
 
 describe('Simple Moving Average', () => {
     const ticks = [120, 150, 240, 540, 210, 380, 120, 870, 250, 1100, 500, 950];
@@ -44,6 +45,18 @@ describe('Simple Moving Average', () => {
             if (interval6[idx]) {
                 expect(Math.abs(sma6Calc - interval6[idx])).toBeLessThan(EPSILON);
             }
+        });
+    });
+
+    it('Cross validate', () => {
+        const localSMA = new SMA(6);
+        const crossSMA = new SMA2({ period: 6, values: [] });
+
+        ticks.forEach((tick) => {
+            const calc = localSMA.nextValue(tick);
+            const cross = crossSMA.nextValue(tick);
+
+            expect(calc).toEqual(cross);
         });
     });
 });
