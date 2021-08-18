@@ -22,7 +22,7 @@ export class AO {
         this.smaSlowValue = this.smaSlow.nextValue((high + low) / 2);
         this.smaFastValue = this.smaFast.nextValue((high + low) / 2);
 
-        if (typeof this.smaSlowValue !== 'number' || typeof this.smaFastValue !== 'number') {
+        if (this.smaSlowValue === undefined || this.smaFastValue === undefined) {
             return;
         }
 
@@ -33,7 +33,7 @@ export class AO {
         const smaSlowValue = this.smaSlow.momentValue((high + low) / 2);
         const smaFastValue = this.smaFast.momentValue((high + low) / 2);
 
-        if (typeof smaSlowValue !== 'number' || typeof smaFastValue !== 'number') {
+        if (smaSlowValue === undefined || smaFastValue === undefined) {
             return;
         }
 

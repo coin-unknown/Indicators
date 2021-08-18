@@ -20,13 +20,13 @@ export class AC {
     nextValue(high: number, low: number) {
         this.aoValue = this.ao.nextValue(high, low);
 
-        if (typeof this.aoValue !== 'number') {
+        if (this.aoValue === undefined) {
             return;
         }
 
         this.smaValue = this.sma.nextValue(this.aoValue);
 
-        if (typeof this.smaValue !== 'number') {
+        if (this.smaValue === undefined) {
             return;
         }
 
@@ -36,13 +36,13 @@ export class AC {
     momentValue(high: number, low: number) {
         const aoValue = this.ao.momentValue(high, low);
 
-        if (typeof aoValue !== 'number') {
+        if (aoValue === undefined) {
             return;
         }
 
         const smaValue = this.sma.momentValue(aoValue);
 
-        if (typeof smaValue !== 'number') {
+        if (smaValue === undefined) {
             return;
         }
 
