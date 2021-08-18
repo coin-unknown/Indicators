@@ -21,7 +21,7 @@ export class ROC {
         const outed = this.values.push(value);
 
         if (outed !== 0) {
-            return (value - outed) / outed;
+            return ((value - outed) / outed) * 100;
         }
     }
 
@@ -29,7 +29,7 @@ export class ROC {
         const outed = this.values.current();
 
         if (outed !== 0) {
-            return (value - outed) / outed;
+            return ((value - outed) / outed) * 100;
         }
     }
 }

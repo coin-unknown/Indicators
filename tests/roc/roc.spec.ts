@@ -13,23 +13,21 @@ describe('ROC', () => {
             if (!excel && !calculated) {
                 expect(excel).toEqual(calculated);
             } else {
-                expect(Math.abs(calculated - excel)).toBeLessThan(0.0001);
+                expect(Math.abs(calculated - excel * 100)).toBeLessThan(0.0001);
             }
         });
     });
 
-    // todo FIX!
-    // Expected: 1.911999019487685
-    // Received: 0.01911999019487685
+    it('Cross sdk validate', () => {
+        const roc = new ROC(5);
+        const roc2 = new ROC2({ period: 5, values: [] });
 
-    // it('Cross sdk validate', () => {
-    //     closes.forEach((c) => {
-    //         const roc = new ROC(5);
-    //         const roc2 = new ROC2({ period: 5, values: [] });
-    //         const local = roc.nextValue(c);
-    //         const cross = roc2.nextValue(c);
-    //
-    //         expect(local).toEqual(cross);
-    //     });
-    // });
+        closes.forEach((c) => {
+            const local = roc.nextValue(c);
+            const cross = roc2.nextValue(c);
+
+            // console.log(local, cross);
+            expect(local).toEqual(cross);
+        });
+    });
 });
