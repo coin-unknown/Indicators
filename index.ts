@@ -3,6 +3,7 @@ export { Correlation } from './src/providers/correlation';
 export { SMA } from './src/sma';
 export { RMA } from './src/rma';
 export { EMA } from './src/ema';
+export { EWMA } from './src/ewma';
 export { AO } from './src/ao';
 export { AC } from './src/ac';
 export { Move } from './src/move';
