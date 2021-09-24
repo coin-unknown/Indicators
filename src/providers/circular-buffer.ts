@@ -1,13 +1,13 @@
-export class CircularBuffer {
-    private pointer = 0;
-    private buffer: Array<number>;
-    private filledCache = false;
+export class CircularBuffer<T = number> {
+    protected pointer = 0;
+    protected buffer: Array<T>;
+    protected filledCache = false;
 
     constructor(public length: number) {
-        this.buffer = new Array(length).fill(0);
+        this.buffer = new Array(length);
     }
 
-    public push(item: number) {
+    public push(item: T) {
         const overwrited = this.buffer[this.pointer];
         this.buffer[this.pointer] = item;
         this.pointer = (this.length + this.pointer + 1) % this.length;
@@ -15,7 +15,7 @@ export class CircularBuffer {
         return overwrited;
     }
 
-    public pushback(item: number) {
+    public pushback(item: T) {
         this.pointer = (this.length + this.pointer - 1) % this.length;
         const overwrited = this.buffer[this.pointer];
         this.buffer[this.pointer] = item;
