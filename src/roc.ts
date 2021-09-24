@@ -20,7 +20,7 @@ export class ROC {
     nextValue(value: number) {
         const outed = this.values.push(value);
 
-        if (outed !== 0) {
+        if (outed) {
             return ((value - outed) / outed) * 100;
         }
     }
@@ -28,7 +28,7 @@ export class ROC {
     momentValue(value: number) {
         const outed = this.values.current();
 
-        if (outed !== 0) {
+        if (outed) {
             return ((value - outed) / outed) * 100;
         }
     }

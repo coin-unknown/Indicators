@@ -19,7 +19,7 @@ export class SMA {
 
     nextValue(value: number) {
         this.sum += value;
-        this.sum -= this.circular.push(value);
+        this.sum -= this.circular.push(value) || 0;
 
         this.fill++;
 
@@ -29,7 +29,7 @@ export class SMA {
 
         this.nextValue = (value: number) => {
             this.sum += value;
-            this.sum -= this.circular.push(value);
+            this.sum -= this.circular.push(value) || 0;
 
             return this.sum / this.period;
         };
