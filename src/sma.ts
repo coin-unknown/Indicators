@@ -15,11 +15,12 @@ export class SMA {
 
     constructor(private period: number) {
         this.circular = new CircularBuffer(period);
+        this.circular.fill(0);
     }
 
     nextValue(value: number) {
         this.sum += value;
-        this.sum -= this.circular.push(value) || 0;
+        this.sum -= this.circular.push(value);
 
         this.fill++;
 
@@ -29,13 +30,13 @@ export class SMA {
 
         this.nextValue = (value: number) => {
             this.sum += value;
-            this.sum -= this.circular.push(value) || 0;
+            this.sum -= this.circular.push(value);
 
             return this.sum / this.period;
         };
 
         this.momentValue = (value: number) => {
-            const rmValue = this.circular.current();
+            const rmValue = this.circular.peek();
 
             return (this.sum - rmValue + value) / this.period;
         };

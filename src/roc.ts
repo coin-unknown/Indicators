@@ -26,7 +26,7 @@ export class ROC {
     }
 
     momentValue(value: number) {
-        const outed = this.values.current();
+        const outed = this.values.peek();
 
         if (outed) {
             return ((value - outed) / outed) * 100;
