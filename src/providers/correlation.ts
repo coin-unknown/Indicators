@@ -29,8 +29,8 @@ export class Correlation {
         let SSyy = 0;
 
         for (let i = 0; i < this.period; i++) {
-            const xPrice = this.pricesX[i];
-            const yPrice = this.pricesY[i];
+            const xPrice = this.pricesX.toArray()[i];
+            const yPrice = this.pricesY.toArray()[i];
 
             SSxy += (xPrice - this.SMAxValue) * (yPrice - this.SMAyValue);
             SSxx += (xPrice - this.SMAxValue) ** 2;
