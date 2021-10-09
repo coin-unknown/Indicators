@@ -50,7 +50,7 @@ export class CircularBuffer<T = number> {
      * Array like forEach loop
      */
     public forEach(callback: (value: T, index?: number) => void) {
-        const end = (this.length + this.pointer - 1) % this.length;
+        const end = (this.length + this.pointer) % this.length;
         let idx = this.pointer;
         let virtualIdx = 0;
 
@@ -81,6 +81,7 @@ export class CircularBuffer<T = number> {
      */
     public fill(item: T) {
         this.buffer.fill(item);
+        this.filledCache = true;
     }
 
     /**
@@ -94,8 +95,14 @@ export class CircularBuffer<T = number> {
      * Detect buffer filled fully more than one time
      */
     public filled() {
-        this.filledCache = this.filledCache || this.pointer === this.length - 1;
+        if (this.filledCache) {
+            return true;
+        }
 
-        return this.filledCache;
+        return (this.filledCache = this.pointer === this.length - 1);
+    }
+
+    public get(idx: number) {
+        return this.buffer[(this.length + this.pointer + idx) % this.length];
     }
 }
