@@ -1,84 +1,39 @@
 import { CircularBuffer } from './circular-buffer';
 
-export class Extremums extends CircularBuffer {
-    private comparator: Function;
-    private prevIx: number;
+export class Extremums {
+    private values: CircularBuffer;
+    private comparator: (a: number, b: number, c: number) => boolean;
 
-    constructor(public period = 100, private mode: 'max' | 'min') {
-        super(period);
-        this.comparator = mode === 'max' ? this.maxComporator : this.mminComporator;
+    constructor(mode: 'max' | 'min') {
+        this.values = new CircularBuffer(3);
+        this.comparator = mode === 'max' ? this.maxComporator : this.minComporator;
     }
 
     nextValue(value: number) {
-        this.push(value);
+        this.values.push(value);
 
-        return this.getExtremum();
+        const first = this.values.get(0);
+        const middle = this.values.get(1);
+        const last = value;
+
+        if (this.comparator(first, middle, last)) {
+            return middle;
+        }
     }
 
-    momentValue(value: number) {
-        const rm = this.push(value);
-        const extr = this.getExtremum();
-        this.pushback(rm);
-
-        return extr;
-    }
-
-    private maxComporator(a: number, b: number) {
-        if (a > b) {
+    private maxComporator(a: number, b: number, c: number) {
+        if (a <= b && b >= c) {
             return true;
         }
 
         return false;
     }
 
-    private mminComporator(a: number, b: number) {
-        if (a < b) {
+    private minComporator(a: number, b: number, c: number) {
+        if (a >= b && b <= c) {
             return true;
         }
 
         return false;
-    }
-
-    public getExtremum(shallow?: boolean): number {
-        let extremumIdx = (this.length + this.pointer - 2) % this.length;
-        let extremum: number = this.mode === 'max' ? -Infinity : Infinity;
-
-        if (!this.filled) {
-            return 0;
-        }
-
-        while (extremumIdx !== this.pointer) {
-            const before = this.buffer[(this.length + extremumIdx - 1) % this.length];
-            const after = this.buffer[(this.length + extremumIdx + 1) % this.length];
-            const foundExtremum = this.buffer[extremumIdx];
-
-            if (
-                this.comparator(foundExtremum, extremum) &&
-                this.comparator(foundExtremum, before) &&
-                this.comparator(foundExtremum, after)
-            ) {
-                extremum = foundExtremum;
-
-                if (this.prevIx === extremumIdx) {
-                    return null;
-                }
-
-                this.prevIx = extremumIdx;
-
-                if (shallow) {
-                    return extremum;
-                }
-            }
-
-            extremumIdx = (this.length + extremumIdx - 1) % this.length;
-        }
-
-        if (isFinite(extremum)) {
-            return extremum;
-        }
-
-        this.prevIx = null;
-
-        return null;
     }
 }
