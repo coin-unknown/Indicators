@@ -1,8 +1,10 @@
-import { ExtremumsItem, LineEvent } from './types';
+import { LineEvent } from './types';
 
+export type LineType = 'hLine' | 'lLine';
 export class HighLine {
     public startPoint: number;
     public static minK = -0.0001;
+    public lineType: LineType = 'hLine';
     public archived = false;
     public bounced = 0;
     public maxDelta = 0;
@@ -16,6 +18,7 @@ export class HighLine {
     private subtrendMultiplier = 2;
     private subtrends: Array<LowLine | HighLine> = [];
     private prevValue: number;
+    private waitSubtrend: LineType = 'hLine';
 
     constructor(public k: number, public b: number, public startIdx: number, private allowSub: boolean = true) {
         this.startPoint = this.valueAtPoint(this.startIdx);
@@ -110,8 +113,9 @@ export class HighLine {
 }
 
 export class LowLine {
-    public static minK = 0.0001;
     public startPoint: number;
+    public static minK = 0.0001;
+    public lineType: LineType = 'lLine';
     public archived = false;
     public bounced = 0;
     public maxDelta = 0;
@@ -125,6 +129,7 @@ export class LowLine {
     private subtrendMultiplier = 2;
     private subtrends: Array<LowLine | HighLine> = [];
     private prevValue: number;
+    private waitSubtrend: LineType = 'lLine';
 
     constructor(public k: number, public b: number, public startIdx: number, private allowSub: boolean = true) {
         this.startPoint = this.valueAtPoint(this.startIdx);
@@ -176,9 +181,9 @@ export class LowLine {
         }
 
         if (this.subtrends.length) {
-            const subtrendEvent = this.subtrends[this.subtrends.length - 1].update(value, i);
+            const subEvent = this.subtrends[this.subtrends.length - 1].update(value, i);
 
-            if (subtrendEvent === LineEvent.BREAKDOWN) {
+            if (subEvent === LineEvent.BREAKDOWN) {
                 this.subtrends.length = 0;
             }
         }
@@ -204,12 +209,19 @@ export class LowLine {
     private trySubtrend(value: number, i: number) {
         const k = value - this.prevValue;
         const b = value - k * i;
-        const subtrend = this.subtrends[this.subtrends.length - 1];
 
-        // Нормальные условия линии
-        if (k > this.k * this.subtrendMultiplier && (!subtrend || k > subtrend.k * this.subtrendMultiplier)) {
-            this.subtrends.push(new LowLine(k, b, i - 1, false));
-            // console.log(this.k, k, k / this.k);
+        if (this.waitSubtrend === 'lLine') {
+            const subtrend = this.subtrends[this.subtrends.length - 1];
+
+            // Нормальные условия нижней линии сабтренда
+            if (k > this.k * this.subtrendMultiplier && (!subtrend || k > subtrend.k * this.subtrendMultiplier)) {
+                this.subtrends.push(new LowLine(k, b, i - 1, false));
+            }
+        } else if (this.waitSubtrend === 'hLine') {
+             // Нормальные условия верхней линии сабтренда
+             if () {
+                this.subtrends.push(new HighLine(k, b, i - 1, false));
+            }
         }
     }
 }
