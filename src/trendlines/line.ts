@@ -1,4 +1,5 @@
-import { LineEvent } from './types';
+import { LineEvent, ExtremumsItem } from './types';
+import { Extremums } from './extremum';
 
 export type LineType = 'hLine' | 'lLine';
 export class HighLine {
@@ -11,6 +12,7 @@ export class HighLine {
     public maxDeltaIdx = 0;
     public maxDeltaPrice = 0;
     public breakdowned = false;
+    public extremumGetter: Extremums;
     private smoothK = 0;
     private smoothB = 0;
     private smoothPrice = 0;
@@ -22,6 +24,7 @@ export class HighLine {
 
     constructor(public k: number, public b: number, public startIdx: number, private allowSub: boolean = true) {
         this.startPoint = this.valueAtPoint(this.startIdx);
+        this.extremumGetter = new Extremums();
     }
 
     getSubtrendValue(i: number) {
@@ -40,18 +43,19 @@ export class HighLine {
         return this.k * i + this.b;
     }
 
-    update(value: number, i: number): LineEvent {
+    update(min: number, max: number, i: number): LineEvent {
+        // this.max = max;
         const pointValue = this.valueAtPoint(i);
-        const delta = pointValue - value;
+        const delta = pointValue - min;
         let event: LineEvent;
 
         if (this.maxDelta < delta) {
             this.maxDeltaIdx = i;
             this.maxDelta = delta;
-            this.maxDeltaPrice = value;
+            this.maxDeltaPrice = min;
         }
 
-        if (this.smoothK !== 0 && this.smoothPrice > value) {
+        if (this.smoothK !== 0 && this.smoothPrice > min) {
             this.k = this.smoothK;
             this.b = this.smoothB;
             this.maxDelta = this.valueAtPoint(this.maxDeltaIdx) - this.maxDeltaPrice;
@@ -61,7 +65,7 @@ export class HighLine {
             this.smoothPrice = 0;
 
             event = LineEvent.SMOOTH;
-        } else if (value > pointValue && this.maxDelta > this.minDeltaDepth && this.bounced > 0) {
+        } else if (min > pointValue && this.maxDelta > this.minDeltaDepth && this.bounced > 0) {
             event = LineEvent.BREAKDOWN;
             this.archived = true;
             // строим новую линию
@@ -70,20 +74,20 @@ export class HighLine {
             // ускорение производное скорости, как текущая дельта - предыдущую
             // если разница > CONSTANT P , то мы начинаем строить новую трендовую линию через текущую точку и предыдущую
         } else if (delta < 0) {
-            event = this.trySmooth(value, i);
-        } else if (delta > 0 && this.prevValue > value && this.allowSub) {
-            this.trySubtrend(value, i);
+            event = this.trySmooth(min, i);
+        } else if (delta > 0 && this.prevValue > min && this.allowSub) {
+            this.trySubtrend(min, i);
         }
 
         if (this.subtrends.length) {
-            const subtrendEvent = this.subtrends[this.subtrends.length - 1].update(value, i);
+            const subtrendEvent = this.subtrends[this.subtrends.length - 1].update(min, max, i);
 
             if (subtrendEvent === LineEvent.BREAKDOWN) {
                 this.subtrends.length = 0;
             }
         }
 
-        this.prevValue = value;
+        this.prevValue = min;
 
         return event;
     }
@@ -130,6 +134,7 @@ export class LowLine {
     private subtrends: Array<LowLine | HighLine> = [];
     private prevValue: number;
     private waitSubtrend: LineType = 'lLine';
+    private localExtremum: ExtremumsItem;
 
     constructor(public k: number, public b: number, public startIdx: number, private allowSub: boolean = true) {
         this.startPoint = this.valueAtPoint(this.startIdx);
@@ -151,18 +156,22 @@ export class LowLine {
         return this.k * i + this.b;
     }
 
-    update(value: number, i: number): LineEvent {
+    update(min: number, max: number, i: number): LineEvent {
         const pointValue = this.valueAtPoint(i);
-        const delta = value - pointValue;
+        const delta = min - pointValue;
         let event: LineEvent;
+
+        if (!this.localExtremum || this.localExtremum.value < max) {
+            this.localExtremum = { value: max, idx: i };
+        }
 
         if (this.maxDelta < delta) {
             this.maxDeltaIdx = i;
             this.maxDelta = delta;
-            this.maxDeltaPrice = value;
+            this.maxDeltaPrice = min;
         }
 
-        if (this.smoothK !== 0 && this.smoothPrice < value) {
+        if (this.smoothK !== 0 && this.smoothPrice < min) {
             this.k = this.smoothK;
             this.b = this.smoothB;
             this.maxDelta = this.maxDeltaPrice ? this.maxDeltaPrice - this.valueAtPoint(this.maxDeltaIdx) : 0;
@@ -172,23 +181,28 @@ export class LowLine {
             this.smoothPrice = 0;
 
             event = LineEvent.SMOOTH;
-        } else if (value < pointValue && this.maxDelta > this.minDeltaDepth && this.bounced > 0) {
+        } else if (min < pointValue && this.maxDelta > this.minDeltaDepth && this.bounced > 0) {
             event = LineEvent.BREAKDOWN;
         } else if (delta < 0) {
-            event = this.trySmooth(value, i);
-        } else if (delta > 0 && this.prevValue < value && this.allowSub) {
-            this.trySubtrend(value, i);
+            event = this.trySmooth(min, i);
+        } else if (delta > 0 && this.prevValue < min && this.allowSub) {
+            this.trySubtrend(min, max, i);
         }
 
         if (this.subtrends.length) {
-            const subEvent = this.subtrends[this.subtrends.length - 1].update(value, i);
+            const subtrend = this.subtrends[this.subtrends.length - 1];
+            const subEvent = subtrend.update(min, max, i);
 
             if (subEvent === LineEvent.BREAKDOWN) {
+                // this.subtrends.pop();
                 this.subtrends.length = 0;
+                // if (this.subtrends.length == 0) {
+                this.waitSubtrend = subtrend.lineType === 'lLine' ? 'hLine' : 'lLine';
+                // }
             }
         }
 
-        this.prevValue = value;
+        this.prevValue = min;
 
         return event;
     }
@@ -206,21 +220,25 @@ export class LowLine {
         }
     }
 
-    private trySubtrend(value: number, i: number) {
-        const k = value - this.prevValue;
-        const b = value - k * i;
-
+    private trySubtrend(min: number, max: number, i: number) {
         if (this.waitSubtrend === 'lLine') {
+            const k = min - this.prevValue;
+            const b = min - k * i;
             const subtrend = this.subtrends[this.subtrends.length - 1];
 
             // Нормальные условия нижней линии сабтренда
             if (k > this.k * this.subtrendMultiplier && (!subtrend || k > subtrend.k * this.subtrendMultiplier)) {
+                this.subtrends.length = 0;
                 this.subtrends.push(new LowLine(k, b, i - 1, false));
             }
         } else if (this.waitSubtrend === 'hLine') {
-             // Нормальные условия верхней линии сабтренда
-             if () {
-                this.subtrends.push(new HighLine(k, b, i - 1, false));
+            const k = (max - this.localExtremum.value) / (i - this.localExtremum.idx);
+            const b = max - k * i;
+
+            // Нормальные условия верхней линии сабтренда
+            if (k < HighLine.minK) {
+                this.subtrends.push(new HighLine(k, b, this.localExtremum.idx, false));
+                this.waitSubtrend = null;
             }
         }
     }

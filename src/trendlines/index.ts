@@ -35,7 +35,7 @@ export class TrendLines {
         let result: number[];
 
         if (this.hLine) {
-            const event = this.hLine.update(max, this.i);
+            const event = this.hLine.update(max, max, this.i);
 
             if (event === LineEvent.BREAKDOWN) {
                 // Пробой, удаляем активную линию сопротивления
@@ -51,12 +51,13 @@ export class TrendLines {
                     undefined,
                     undefined,
                     this.hLine.getSubtrendValue(this.i),
+                    undefined,
                 ];
             }
         }
 
         if (this.lLine) {
-            const event = this.lLine.update(min, this.i);
+            const event = this.lLine.update(min, max, this.i);
 
             if (event === LineEvent.BREAKDOWN) {
                 this.lLine = null;
