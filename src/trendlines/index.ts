@@ -19,6 +19,7 @@ export class TrendLines {
         const max = o >= c ? o : c;
         const min = o >= c ? c : o;
 
+        // TODO: Исключить. Перенести в прямую
         this.extremumGetter.updateMax(max, this.i);
         this.extremumGetter.updateMin(min, this.i);
 
@@ -82,27 +83,26 @@ export class TrendLines {
         return result;
     }
 
-    private createHighLine(max: number) {
+    private createHighLine(max: number): void {
         const extremum = this.extremumGetter.getMax();
 
         if (!extremum) {
-            return false;
+            return;
         }
 
-        // Условия переопределения экстремума
-        //  1ая итерация, k,b - неизвестны
         const k = (max - extremum.value) / (this.i - extremum.idx);
         const b = max - k * this.i;
 
-        // Нормальные условия линии
+        // Начало тренда сопротивления
         if (k < HighLine.minK) {
             const line = new HighLine(k, b, extremum.idx);
             this.hLine = line;
             this.lines.push(line);
+            // TODO Deprecated. Use line.startPoint, line.startIdx
             this.highExtremum = extremum;
             this.waitNext = null;
+            // Начинаем искать минимальное значение за период текущего тренда
             this.extremumGetter.resetMin();
-            return true;
         }
     }
 

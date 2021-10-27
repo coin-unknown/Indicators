@@ -11,8 +11,13 @@ export class Extremums {
         this.maxValues = new CircularBuffer(3);
         this.minValues = new CircularBuffer(3);
     }
-
-    public updateMax(value: number, idx: number) {
+    /**
+     * Обновлет данные максимум на текущем отрезке времени
+     * @param value - Max value from open | close
+     * @param idx - Текущая координата времени
+     * @return - true если произошло обновление величины
+     */
+    public updateMax(value: number, idx: number): boolean {
         this.maxValues.push(value);
 
         const first = this.maxValues.get(0);
@@ -25,7 +30,12 @@ export class Extremums {
             return true;
         }
     }
-
+    /**
+     * Обновлет данные минимум на текущем отрезке времени
+     * @param value - Min value from open | close
+     * @param idx - Текущая координата времени
+     * @return - true если произошло обновление величины
+     */
     public updateMin(value: number, idx: number) {
         this.minValues.push(value);
 
