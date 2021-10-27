@@ -8,9 +8,11 @@ export class HighLine {
     public lineType: LineType = 'hLine';
     public archived = false;
     public bounced = 0;
+    // Max bounce paramenets
     public maxDelta = 0;
     public maxDeltaIdx = 0;
     public maxDeltaPrice = 0;
+
     public breakdowned = false;
     public extremumGetter: Extremums;
     private smoothK = 0;
@@ -38,34 +40,46 @@ export class HighLine {
 
         return null;
     }
-
+    /**
+     * Значение в координате i
+     * @param i candle number
+     * @returns Значение во время i
+     */
     valueAtPoint(i: number) {
         return this.k * i + this.b;
     }
-
+    /**
+     * Resistance trend update
+     * @param min - min of open, close
+     * @param max
+     * @param i
+     * @returns
+     */
     update(min: number, max: number, i: number): LineEvent {
-        // this.max = max;
         const pointValue = this.valueAtPoint(i);
+        //difference of line and candle value
         const delta = pointValue - min;
         let event: LineEvent;
-
+        // Store max delta during the line period to mesure the bounce
         if (this.maxDelta < delta) {
             this.maxDeltaIdx = i;
             this.maxDelta = delta;
             this.maxDeltaPrice = min;
         }
-
+        // prepare data in case of bounce
+        // TODO smoothK Deprecated. Calculate on the base of i-1
         if (this.smoothK !== 0 && this.smoothPrice > min) {
             this.k = this.smoothK;
             this.b = this.smoothB;
             this.maxDelta = this.valueAtPoint(this.maxDeltaIdx) - this.maxDeltaPrice;
-            this.bounced = 1;
+            this.bounced++;
             this.smoothB = 0;
             this.smoothK = 0;
             this.smoothPrice = 0;
 
             event = LineEvent.SMOOTH;
-        } else if (min > pointValue && this.maxDelta > this.minDeltaDepth && this.bounced > 0) {
+            // TODO this.bounced > 1 || this.bounced > 0
+        } else if (min > pointValue && this.maxDelta > this.minDeltaDepth && this.bounced > 1) {
             event = LineEvent.BREAKDOWN;
             this.archived = true;
             // строим новую линию
@@ -76,17 +90,20 @@ export class HighLine {
         } else if (delta < 0) {
             event = this.trySmooth(min, i);
         } else if (delta > 0 && this.prevValue > min && this.allowSub) {
+            // Acceleration hypotise found
             this.trySubtrend(min, i);
         }
 
+        // If subtrend exists then calculate last one
         if (this.subtrends.length) {
             const subtrendEvent = this.subtrends[this.subtrends.length - 1].update(min, max, i);
-
+            // Wait for brakedown of the subtrend
             if (subtrendEvent === LineEvent.BREAKDOWN) {
                 this.subtrends.length = 0;
             }
         }
 
+        // Store last value to use on the next step
         this.prevValue = min;
 
         return event;
