@@ -14,7 +14,7 @@ export class TrendLines {
     constructor() {
         this.extremumGetter = new Extremums();
     }
-
+    //Next value
     nextValue(o: number, c: number) {
         const max = o >= c ? o : c;
         const min = o >= c ? c : o;
@@ -47,7 +47,7 @@ export class TrendLines {
                 result = [
                     this.hLine.valueAtPoint(this.i),
                     HighLine.minK * this.i +
-                        (this.highExtremum.value - HighLine.minK - HighLine.minK * this.highExtremum.idx),
+                    (this.highExtremum.value - HighLine.minK - HighLine.minK * this.highExtremum.idx),
                     undefined,
                     undefined,
                     this.hLine.getSubtrendValue(this.i),
@@ -70,7 +70,7 @@ export class TrendLines {
                     undefined,
                     this.lLine.valueAtPoint(this.i),
                     LowLine.minK * this.i +
-                        (this.lowExtremum.value - LowLine.minK - LowLine.minK * this.lowExtremum.idx),
+                    (this.lowExtremum.value - LowLine.minK - LowLine.minK * this.lowExtremum.idx),
                     undefined,
                     this.lLine.getSubtrendValue(this.i),
                 ];
