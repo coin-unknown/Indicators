@@ -34,9 +34,9 @@ export class TrendLines {
         }
 
         let result: number[];
-
+        // Обновляем тренд сопротивления
         if (this.hLine) {
-            const event = this.hLine.update(max, max, this.i);
+            const event = this.hLine.update(min, max, this.i);
 
             if (event === LineEvent.BREAKDOWN) {
                 // Пробой, удаляем активную линию сопротивления
@@ -46,7 +46,9 @@ export class TrendLines {
                 this.createLowLine(min);
             } else {
                 result = [
+                    // Current line value
                     this.hLine.valueAtPoint(this.i),
+                    //Pure line value
                     HighLine.minK * this.i +
                     (this.highExtremum.value - HighLine.minK - HighLine.minK * this.highExtremum.idx),
                     undefined,
@@ -56,7 +58,7 @@ export class TrendLines {
                 ];
             }
         }
-
+        // Обновляем тренд поддержки
         if (this.lLine) {
             const event = this.lLine.update(min, max, this.i);
 
@@ -69,10 +71,13 @@ export class TrendLines {
                 result = [
                     undefined,
                     undefined,
+                    // Current line value
                     this.lLine.valueAtPoint(this.i),
+                    // Pure line value
                     LowLine.minK * this.i +
                     (this.lowExtremum.value - LowLine.minK - LowLine.minK * this.lowExtremum.idx),
                     undefined,
+                    // Subtrend for lLine
                     this.lLine.getSubtrendValue(this.i),
                 ];
             }
@@ -106,14 +111,13 @@ export class TrendLines {
         }
     }
 
-    private createLowLine(min: number) {
+    private createLowLine(min: number): void {
         const extremum = this.extremumGetter.getMin();
 
         if (!extremum) {
-            return false;
+            return;
         }
 
-        //  1ая итерация, k,b - неизвестны
         const k = (min - extremum.value) / (this.i - extremum.idx);
         const b = min - k * this.i;
 
@@ -122,10 +126,11 @@ export class TrendLines {
             const line = new LowLine(k, b, extremum.idx);
             this.lLine = line;
             this.lines.push(line);
+            // TODO Deprecated. Use line.startPoint, line.startIdx
             this.lowExtremum = extremum;
             this.waitNext = null;
+            // Начинаем искать максиманое значение за период текущего тренда
             this.extremumGetter.resetMax();
-            return true;
         }
     }
 }
