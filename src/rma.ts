@@ -1,8 +1,8 @@
 import { SMA } from './sma';
 
 /**
- * The RMA (Relative Moving Average) is a powerful indicator based on the Simple Moving Average indicator.
- * The Simple Moving Average (SMA) indicator is useful to identify the start and rreversal of a trend.
+ * The RMA (Wilder's Smoothed Moving Average) is a powerful indicator based on the Simple Moving Average indicator.
+ * The Simple Moving Average (SMA) indicator is useful to identify the start and reversal of a trend.
  */
 export class RMA {
     private smooth: number;
