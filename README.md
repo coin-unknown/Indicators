@@ -30,11 +30,11 @@ The main feature of these indicators is their continuous operation, which means 
 - Pivot Point Levels (classic / woodie /camarilla / fibonacci).
 - Rate of Change (ROC).
 - Relative Strength Index (RSI).
-- Relative Moving Average (RMA)
 - Simple Moving Average (SMA).
 - Smoothed Moving Average (SMMA).
 - Stochastic Oscillator (KD)
 - Weighted Moving Average (WMA).
+- Wilder's Smoothed Moving Average (WEMA)
 
 ## Candles
 - Heiken Ashi.

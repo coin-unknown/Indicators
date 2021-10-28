@@ -1,14 +1,14 @@
-import { RMA } from '../rma';
+import { WEMA } from '../wema';
 import { EMA } from '../ema';
 import { SMA } from '../sma';
 
 export class Level {
-    private sample1Up: RMA | SMA | EMA;
-    private sample2Up: RMA | SMA | EMA;
-    private sample3Up: RMA | SMA | EMA;
-    private sample1Low: RMA | SMA | EMA;
-    private sample2Low: RMA | SMA | EMA;
-    private sample3Low: RMA | SMA | EMA;
+    private sample1Up: WEMA | SMA | EMA;
+    private sample2Up: WEMA | SMA | EMA;
+    private sample3Up: WEMA | SMA | EMA;
+    private sample1Low: WEMA | SMA | EMA;
+    private sample2Low: WEMA | SMA | EMA;
+    private sample3Low: WEMA | SMA | EMA;
 
     private upper = 0;
     private lower = 0;
@@ -19,7 +19,7 @@ export class Level {
         public period: number,
         public samples: number,
         public redunant = 0.85,
-        private type: 'RMA' | 'EMA' | 'SMA' = 'RMA',
+        private type: 'WEMA' | 'EMA' | 'SMA' = 'WEMA',
     ) {
         this.sample1Up = this.createSample();
         this.sample2Up = this.createSample();
@@ -95,8 +95,8 @@ export class Level {
         switch (this.type) {
             case 'EMA':
                 return new EMA(this.period);
-            case 'RMA':
-                return new RMA(this.period);
+            case 'WEMA':
+                return new WEMA(this.period);
             case 'SMA':
                 return new SMA(this.period);
         }

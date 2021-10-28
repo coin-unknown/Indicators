@@ -1,12 +1,12 @@
 import { SMA } from './sma';
 
 /**
- * The RMA (Wilder's Smoothed Moving Average) is a powerful indicator based on the Simple Moving Average indicator.
+ * The WEMA (Wilder's Smoothed Moving Average) is a powerful indicator based on the Simple Moving Average indicator.
  * The Simple Moving Average (SMA) indicator is useful to identify the start and reversal of a trend.
  */
-export class RMA {
+export class WEMA {
     private smooth: number;
-    private rma: number;
+    private wema: number;
     private sma: SMA;
 
     constructor(private period: number) {
@@ -19,15 +19,15 @@ export class RMA {
      * affect all next calculations
      */
     nextValue(value: number) {
-        if (!this.rma) {
-            return (this.rma = this.sma.nextValue(value));
+        if (!this.wema) {
+            return (this.wema = this.sma.nextValue(value));
         }
 
-        if (this.rma) {
-            this.rma = (value - this.rma) * this.smooth + this.rma;
+        if (this.wema) {
+            this.wema = (value - this.wema) * this.smooth + this.wema;
         }
 
-        return this.rma;
+        return this.wema;
     }
 
     /**
@@ -35,10 +35,10 @@ export class RMA {
      * does not affect any next calculations
      */
     momentValue(value: number) {
-        if (!this.rma) {
+        if (!this.wema) {
             return;
         }
 
-        return (value - this.rma) * this.smooth + this.rma;
+        return (value - this.wema) * this.smooth + this.wema;
     }
 }
