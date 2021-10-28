@@ -15,6 +15,7 @@
     "scripts": {
         "start": "ts-node --",
         "build": "rollup -c ./rollup.config.js",
+        "watch": "rollup -cw ./rollup.config.js",
         "test": "jest",
         "version": "npm run build",
         "postversion": "git push && git push --tags",
