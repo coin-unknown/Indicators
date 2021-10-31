@@ -33,7 +33,6 @@ The main feature of these indicators is their continuous operation, which means 
 - Simple Moving Average (SMA).
 - Smoothed Moving Average (SMMA).
 - Stochastic Oscillator (KD)
-- Weighted Moving Average (WMA).
 - Wilder's Smoothed Moving Average (WEMA)
 
 ## Candles
