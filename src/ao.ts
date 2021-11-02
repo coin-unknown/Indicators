@@ -26,17 +26,21 @@ export class AO {
             return;
         }
 
+        this.nextValue = (high: number, low: number) => {
+            this.smaSlowValue = this.smaSlow.nextValue((high + low) / 2);
+            this.smaFastValue = this.smaFast.nextValue((high + low) / 2);
+
+            return this.smaFastValue - this.smaSlowValue;
+        };
+
+        this.momentValue = (high: number, low: number) => {
+            return this.smaFast.momentValue((high + low) / 2) - this.smaSlow.momentValue((high + low) / 2);
+        };
+
         return this.smaFastValue - this.smaSlowValue;
     }
 
-    momentValue(high: number, low: number) {
-        const smaSlowValue = this.smaSlow.momentValue((high + low) / 2);
-        const smaFastValue = this.smaFast.momentValue((high + low) / 2);
-
-        if (smaSlowValue === undefined || smaFastValue === undefined) {
-            return;
-        }
-
-        return smaFastValue - smaSlowValue;
+    momentValue(high: number, low: number): number {
+        return;
     }
 }

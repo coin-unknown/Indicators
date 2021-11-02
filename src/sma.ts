@@ -11,34 +11,27 @@ import { CircularBuffer } from './providers/circular-buffer';
 export class SMA {
     private circular: CircularBuffer;
     private sum = 0;
-    private fill = 0;
 
     constructor(private period: number) {
         this.circular = new CircularBuffer(period);
-        this.circular.fill(0);
     }
 
     nextValue(value: number) {
+        this.circular.push(value);
         this.sum += value;
-        this.sum -= this.circular.push(value);
 
-        this.fill++;
-
-        if (this.fill !== this.period) {
+        if (!this.circular.filled) {
             return;
         }
 
         this.nextValue = (value: number) => {
-            this.sum += value;
-            this.sum -= this.circular.push(value);
+            this.sum = this.sum - this.circular.push(value) + value;
 
             return this.sum / this.period;
         };
 
         this.momentValue = (value: number) => {
-            const rmValue = this.circular.peek();
-
-            return (this.sum - rmValue + value) / this.period;
+            return (this.sum - this.circular.peek() + value) / this.period;
         };
 
         return this.sum / this.period;

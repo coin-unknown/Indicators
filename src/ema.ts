@@ -11,7 +11,6 @@ export class EMA {
     private smooth: number;
     private ema: number;
     private sma: SMA;
-    private fill = 0;
 
     constructor(private period: number) {
         this.smooth = 2 / (this.period + 1);
@@ -23,29 +22,26 @@ export class EMA {
      * affect all next calculations
      */
     nextValue(value: number) {
-        this.fill++;
-
         const sma = this.sma.nextValue(value);
 
-        if (this.fill === this.period) {
+        if (sma) {
             this.ema = sma;
             this.nextValue = (value: number) => {
                 return (this.ema = (value - this.ema) * this.smooth + this.ema);
             };
+            this.momentValue = (value: number) => {
+                return (value - this.ema) * this.smooth + this.ema;
+            };
         }
 
-        return this.ema;
+        return sma;
     }
 
     /**
      * Get next value for non closed (tick) candle hlc
      * does not affect any next calculations
      */
-    momentValue(value: number) {
-        if (!this.ema) {
-            return;
-        }
-
-        return (value - this.ema) * this.smooth + this.ema;
+    momentValue(value: number): number {
+        return;
     }
 }
