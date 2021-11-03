@@ -2,7 +2,7 @@ import { WEMA as WEMA1 } from 'technicalindicators';
 import { WEMA as WEMA2 } from '../../src/wema';
 import { ohlc } from './data';
 
-describe.only("Wilder's Smoothed Moving Average", () => {
+describe("Wilder's Smoothed Moving Average", () => {
     it('Cross validate', () => {
         const cross = new WEMA1({ period: 6, values: [] });
         const local = new WEMA2(6);
