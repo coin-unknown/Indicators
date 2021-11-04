@@ -48,7 +48,7 @@ export class TrendLines {
                 result = [
                     // Current line value
                     this.hLine.valueAtPoint(this.i),
-                    //Pure line value
+                    //Poor line value
                     HighLine.minK * this.i +
                     (this.highExtremum.value - HighLine.minK - HighLine.minK * this.highExtremum.idx),
                     undefined,
@@ -73,7 +73,7 @@ export class TrendLines {
                     undefined,
                     // Current line value
                     this.lLine.valueAtPoint(this.i),
-                    // Pure line value
+                    // Poor line value
                     LowLine.minK * this.i +
                     (this.lowExtremum.value - LowLine.minK - LowLine.minK * this.lowExtremum.idx),
                     undefined,
