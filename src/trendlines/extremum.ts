@@ -1,6 +1,28 @@
 import { CircularBuffer } from '../providers/circular-buffer';
 import { ExtremumsItem } from './types';
 
+/**
+ * TODO
+ * Здесь нам нужно делать оценку ситуации, опираясь на динамику экстремумов.
+ * Различаем state:
+ * 1. flat. (lastmax-lastmin) < flatSize
+ * 2. steadyFlat. ((lastmax-lastmin) < flatSize && (prelastmax-prelastmin) < flatSize)
+ * 3. rizing. (prelastmax < lastmax && prelastmin < lastmin)
+ * 4. break ((prelastmax - prelastmin) << (prelastmax - prelastmin)).
+ * 4. squeez. (prelastmax < lastmax && prelastmim > lastmin). TODO obtain a squeez point.
+ * 4. unstable. (prelastmax > lastmax && prelastmim > lastmin).
+ * 5. falling. (prelastmin > lastmax)
+ * 6. fastFalling. (prelastmin >> lastmax)
+ * Экстремумы стоит смотреть не только по 3 точкам, но и по 5 точкам, чтобы
+ * исключить однократные выбросы.
+ * Тенденцию максимумов можно прогнозировать:
+ * 1. breakUp || unstable. ((lastmax - lastmin) << (cur-lastmax))
+ * 2. breakDown || unstable ((lastmax - lastmin) >> (cur - lastmin))
+ * 3. squizeBreakUp
+ * 4. squizeBreakDown
+ * 5. PushSize - breakUp - lastmax
+ */
+
 export class Extremums {
     private maxValues: CircularBuffer;
     private minValues: CircularBuffer;
