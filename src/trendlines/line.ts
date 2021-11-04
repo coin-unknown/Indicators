@@ -4,7 +4,7 @@ import { Extremums } from './extremum';
 export type LineType = 'hLine' | 'lLine';
 export class HighLine {
     public startPoint: number;
-    public static minK = -0.0001;
+    public static minK = -0.01;
     public lineType: LineType = 'hLine';
     public archived = false;
     public bounced = 0;
@@ -18,11 +18,12 @@ export class HighLine {
     private smoothK = 0;
     private smoothB = 0;
     private smoothPrice = 0;
-    private minDeltaDepth = 0.02;
+    private minDeltaDepth = 50;
     private subtrendMultiplier = 2;
     private subtrends: Array<LowLine | HighLine> = [];
     private prevValue: number;
     private waitSubtrend: LineType = 'hLine';
+    private localExtremum: ExtremumsItem;
 
     constructor(public k: number, public b: number, public startIdx: number, private allowSub: boolean = true) {
         this.startPoint = this.valueAtPoint(this.startIdx);
@@ -49,6 +50,14 @@ export class HighLine {
         return this.k * i + this.b;
     }
     /**
+     * Draw the poor resistence line throug first point
+     * @param i - time
+     * @returns - y
+     */
+    valueAtPoorLine(i: number) {
+        return HighLine.minK * i + this.startPoint - HighLine.minK * this.startIdx;
+    }
+    /**
      * Resistance trend update
      * @param min - min of open, close
      * @param max
@@ -58,53 +67,91 @@ export class HighLine {
     update(min: number, max: number, i: number): LineEvent {
         const pointValue = this.valueAtPoint(i);
         //difference of line and candle value
-        const delta = pointValue - min;
+        const delta = pointValue - max;
         let event: LineEvent;
+
+        if (!this.localExtremum || this.localExtremum.value < min) {
+            this.localExtremum = { value: min, idx: i };
+        }
         // Store max delta during the line period to mesure the bounce
         if (this.maxDelta < delta) {
             this.maxDeltaIdx = i;
             this.maxDelta = delta;
-            this.maxDeltaPrice = min;
+            this.maxDeltaPrice = max;
+        }
+        //New model
+        if (delta < 0) {
+            //Line crossing
+            if (this.maxDelta > this.minDeltaDepth && this.bounced >= 0) {
+                event = LineEvent.BREAKDOWN;
+                this.archived = true;
+            } else if (max > this.valueAtPoorLine(i)) {
+                //Break of the Poor line going through the first tranding line point
+                console.log('Breked on poor cond', i, max, this.valueAtPoorLine(i));
+                event = LineEvent.BREAKDOWN;
+                this.archived = true;
+            } else if (this.smoothK !== 0 && this.smoothPrice > max) {
+                //Seaching for local maximum to change the tranding line
+                this.k = this.smoothK;
+                this.b = this.smoothB;
+                //Correct the maxDelta value for the new Tline.. TODO Correct the methode
+                this.maxDeltaPrice ? this.maxDeltaPrice - this.valueAtPoint(this.maxDeltaIdx) : 0;
+                this.smoothB = 0;
+                this.smoothK = 0;
+                this.smoothPrice = 0;
+                event = LineEvent.SMOOTH;
+            } else {
+                event = this.trySmooth(max, i);
+            }
+        } else {
+            //TODO. Looking for bounce. Extremum should be close to the TLine
+            //TODO. Looking for a subtrend
         }
         // prepare data in case of bounce
         // TODO smoothK Deprecated. Calculate on the base of i-1
-        if (this.smoothK !== 0 && this.smoothPrice > min) {
-            this.k = this.smoothK;
-            this.b = this.smoothB;
-            this.maxDelta = this.valueAtPoint(this.maxDeltaIdx) - this.maxDeltaPrice;
-            this.bounced++;
-            this.smoothB = 0;
-            this.smoothK = 0;
-            this.smoothPrice = 0;
+        /*         if (this.smoothK !== 0 && this.smoothPrice > max) {
+                    this.k = this.smoothK;
+                    this.b = this.smoothB;
+                    if (this.maxDeltaIdx !== 0) {//Smoothing without delta init
+                        this.maxDelta = this.valueAtPoint(this.maxDeltaIdx) - this.maxDeltaPrice;
+                    }
+                    this.bounced++;
+                    this.smoothB = 0;
+                    this.smoothK = 0;
+                    this.smoothPrice = 0;
 
-            event = LineEvent.SMOOTH;
-            // TODO this.bounced > 1 || this.bounced > 0
-        } else if (min > pointValue && this.maxDelta > this.minDeltaDepth && this.bounced > 1) {
-            event = LineEvent.BREAKDOWN;
-            this.archived = true;
-            // строим новую линию
-            // строим новую лонг линию (по минимумам)
-            // нужно считать производную дельты
-            // ускорение производное скорости, как текущая дельта - предыдущую
-            // если разница > CONSTANT P , то мы начинаем строить новую трендовую линию через текущую точку и предыдущую
-        } else if (delta < 0) {
-            event = this.trySmooth(min, i);
-        } else if (delta > 0 && this.prevValue > min && this.allowSub) {
-            // Acceleration hypotise found
-            this.trySubtrend(min, i);
-        }
+                    event = LineEvent.SMOOTH;
+                    // TODO this.bounced > 1 || this.bounced > 0
+                } else if (max > pointValue && this.maxDelta > this.minDeltaDepth && this.bounced > 0) {
+                    event = LineEvent.BREAKDOWN;
+                    this.archived = true;
+                    // строим новую линию
+                    // строим новую лонг линию (по минимумам)
+                    // нужно считать производную дельты
+                    // ускорение производное скорости, как текущая дельта - предыдущую
+                    // если разница > CONSTANT P , то мы начинаем строить новую трендовую линию через текущую точку и предыдущую
+                } else if (max > this.valueAtPoorLine(i)) {
+                    //Break of the Poor line going through the first tranding line point
+                    console.log('Breked on poor cond', i, max, this.valueAtPoorLine(i));
+                    event = LineEvent.BREAKDOWN;
+                } else if (delta < 0) {
+                    event = this.trySmooth(max, i);
+                } else if (delta > 0 && this.prevValue > max && this.allowSub) {
+                    // Acceleration hypotise found
+                    //this.trySubtrend(max, i);
+                }
 
-        // If subtrend exists then calculate last one
-        if (this.subtrends.length) {
-            const subtrendEvent = this.subtrends[this.subtrends.length - 1].update(min, max, i);
-            // Wait for brakedown of the subtrend
-            if (subtrendEvent === LineEvent.BREAKDOWN) {
-                this.subtrends.length = 0;
-            }
-        }
-
+                // If subtrend exists then calculate last one
+                if (this.subtrends.length) {
+                    const subtrendEvent = this.subtrends[this.subtrends.length - 1].update(min, max, i);
+                    // Wait for brakedown of the subtrend
+                    if (subtrendEvent === LineEvent.BREAKDOWN) {
+                        this.subtrends.length = 0;
+                    }
+                }
+         */
         // Store last value to use on the next step
-        this.prevValue = min;
+        this.prevValue = max;
 
         return event;
     }
@@ -135,7 +182,7 @@ export class HighLine {
 
 export class LowLine {
     public startPoint: number;
-    public static minK = 0.0001;
+    public static minK = 0.01;
     public lineType: LineType = 'lLine';
     public archived = false;
     public bounced = 0;
@@ -146,7 +193,7 @@ export class LowLine {
     private smoothK = 0;
     private smoothB = 0;
     private smoothPrice = 0;
-    private minDeltaDepth = 0.02;
+    private minDeltaDepth = 50;
     private subtrendMultiplier = 2;
     private subtrends: Array<LowLine | HighLine> = [];
     private prevValue: number;
@@ -172,7 +219,21 @@ export class LowLine {
     valueAtPoint(i: number) {
         return this.k * i + this.b;
     }
-
+    /**
+     * Draw the poor resistence line throug first point
+     * @param i - time
+     * @returns - y
+     */
+    valueAtPoorLine(i: number) {
+        return HighLine.minK * i + this.startPoint - HighLine.minK * this.startIdx;
+    }
+    /**
+     * Resistance trend update
+     * @param min - min of open, close
+     * @param max
+     * @param i
+     * @returns
+     */
     update(min: number, max: number, i: number): LineEvent {
         const pointValue = this.valueAtPoint(i);
         const delta = min - pointValue;
@@ -182,43 +243,77 @@ export class LowLine {
             this.localExtremum = { value: max, idx: i };
         }
 
+        // Store max delta during the line period to mesure the bounce
         if (this.maxDelta < delta) {
             this.maxDeltaIdx = i;
             this.maxDelta = delta;
             this.maxDeltaPrice = min;
         }
-
-        if (this.smoothK !== 0 && this.smoothPrice < min) {
-            this.k = this.smoothK;
-            this.b = this.smoothB;
-            this.maxDelta = this.maxDeltaPrice ? this.maxDeltaPrice - this.valueAtPoint(this.maxDeltaIdx) : 0;
-            this.bounced = 1;
-            this.smoothB = 0;
-            this.smoothK = 0;
-            this.smoothPrice = 0;
-
-            event = LineEvent.SMOOTH;
-        } else if (min < pointValue && this.maxDelta > this.minDeltaDepth && this.bounced > 0) {
-            event = LineEvent.BREAKDOWN;
-        } else if (delta < 0) {
-            event = this.trySmooth(min, i);
-        } else if (delta > 0 && this.prevValue < min && this.allowSub) {
-            this.trySubtrend(min, max, i);
-        }
-
-        if (this.subtrends.length) {
-            const subtrend = this.subtrends[this.subtrends.length - 1];
-            const subEvent = subtrend.update(min, max, i);
-
-            if (subEvent === LineEvent.BREAKDOWN) {
-                // this.subtrends.pop();
-                this.subtrends.length = 0;
-                // if (this.subtrends.length == 0) {
-                this.waitSubtrend = subtrend.lineType === 'lLine' ? 'hLine' : 'lLine';
-                // }
+        //New model
+        if (delta < 0) {
+            //Line crossing
+            if (this.maxDelta > this.minDeltaDepth && this.bounced >= 0) {
+                event = LineEvent.BREAKDOWN;
+                this.archived = true;
+            } else if (min > this.valueAtPoorLine(i)) {
+                //Break of the Poor line going through the first tranding line point
+                console.log('Breked on poor cond', i, min, this.valueAtPoorLine(i));
+                event = LineEvent.BREAKDOWN;
+                this.archived = true;
+            } else if (this.smoothK !== 0 && this.smoothPrice > min) {
+                //Seaching for local maximum to change the tranding line
+                this.k = this.smoothK;
+                this.b = this.smoothB;
+                //Correct the maxDelta value for the new Tline.. TODO Correct the methode
+                this.maxDelta = this.maxDeltaPrice ? this.maxDeltaPrice - this.valueAtPoint(this.maxDeltaIdx) : 0;
+                this.smoothB = 0;
+                this.smoothK = 0;
+                this.smoothPrice = 0;
+                event = LineEvent.SMOOTH;
+            } else {
+                event = this.trySmooth(min, i);
             }
+        } else {
+            //TODO. Looking for bounce. Extremum should be close to the TLine
+            //TODO. Looking for a subtrend
         }
 
+        /*
+                if (this.smoothK !== 0 && this.smoothPrice < min) {
+                    this.k = this.smoothK;
+                    this.b = this.smoothB;
+                    this.maxDelta = this.maxDeltaPrice ? this.maxDeltaPrice - this.valueAtPoint(this.maxDeltaIdx) : 0;
+                    this.bounced = 1;
+                    this.smoothB = 0;
+                    this.smoothK = 0;
+                    this.smoothPrice = 0;
+
+                    event = LineEvent.SMOOTH;
+                } else if (min < pointValue && this.maxDelta > this.minDeltaDepth && this.bounced > 0) {
+                    event = LineEvent.BREAKDOWN;
+                } else if (min > this.valueAtPoorLine(i)) {
+                    //Break of the Poor line going through the first tranding line point
+                    console.log('Breked on poor cond', i, min, this.valueAtPoorLine(i));
+                    event = LineEvent.BREAKDOWN;
+                } else if (delta < 0) {
+                    event = this.trySmooth(min, i);
+                } else if (delta > 0 && this.prevValue < min && this.allowSub) {
+                    //this.trySubtrend(min, max, i);
+                }
+
+                if (this.subtrends.length) {
+                    const subtrend = this.subtrends[this.subtrends.length - 1];
+                    const subEvent = subtrend.update(min, max, i);
+
+                    if (subEvent === LineEvent.BREAKDOWN) {
+                        // this.subtrends.pop();
+                        this.subtrends.length = 0;
+                        // if (this.subtrends.length == 0) {
+                        this.waitSubtrend = subtrend.lineType === 'lLine' ? 'hLine' : 'lLine';
+                        // }
+                    }
+                }
+         */
         this.prevValue = min;
 
         return event;
