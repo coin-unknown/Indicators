@@ -34,7 +34,6 @@ The main feature of these indicators is their continuous operation, which means 
 - Smoothed Moving Average (SMMA).
 - Stochastic Oscillator (KD)
 - Wilder's Smoothed Moving Average (WEMA)
-- Wilder's Smoothed Moving Average (WEMA)
 - Parabolic Stop And Reverse (PSAR)
 
 ## Candles
