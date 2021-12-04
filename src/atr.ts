@@ -42,11 +42,19 @@ export class ATR {
 
         this.prevClose = close;
 
+        if(!trueRange) {
+            return;
+        }
+
         return this.avg.nextValue(trueRange);
     }
 
     momentValue(high: number, low: number) {
         const trueRange = this.getTrueRange(high, low);
+
+        if(!trueRange) {
+            return;
+        }
 
         return this.avg.momentValue(trueRange);
     }
@@ -56,7 +64,7 @@ export class ATR {
             return Math.max(high - low, Math.abs(high - this.prevClose), Math.abs(low - this.prevClose));
         }
 
-        return high - low;
+        return null;
     }
 }
 
