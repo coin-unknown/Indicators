@@ -8,7 +8,7 @@
 The main feature of these indicators is their continuous operation, which means that you can use them both for real trading and for teaching trading strategies on history, since this is a passage from the beginning to the end of the stream of candles. This approach allows you to reduce the number of necessary calculations by tens of times and is the most optimal in terms of performance.
 
 ## Features
-- High perfomance
+- High performance
 - Easy to use with candles streaming
 - Minimal state for calculation
 - Moment value (possible to calculate every tick)
@@ -34,6 +34,7 @@ The main feature of these indicators is their continuous operation, which means 
 - Smoothed Moving Average (SMMA).
 - Stochastic Oscillator (KD)
 - Wilder's Smoothed Moving Average (WEMA)
+- Parabolic Stop And Reverse (PSAR)
 
 ## Candles
 - Heiken Ashi.
@@ -53,7 +54,7 @@ Releases are available under Node Package Manager (npm):
 
     npm install @debut/indicators
 
-## Exapmle with Simple Moving Average
+## Example with Simple Moving Average
 
 ```js
 import { SMA } from '@debut/indicators';
