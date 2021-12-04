@@ -17,20 +17,19 @@ describe('ATR', () => {
         });
     });
 
-    it.skip('Cross sdk validate', () => {
+    it('Cross sdk validate', () => {
         const period = 14;
-        const atr = new ATR(period, 'SMMA');
+        const atr = new ATR(period);
         const atr2 = new ATR2({ period, high: [], low: [], close: [] });
 
-        ohlc.forEach((tick, idx) => {
-            const local = atr.nextValue(tick.h, tick.l, tick.c);
-            const cross = atr2.nextValue({ high: tick.h, low: tick.l, close: tick.c });
+        const local = []
+        const cross = []
 
-            // FIX: cross === undefioned at 14 pos, local is fine?
-            if (idx > period) {
-                // console.log(local, cross);
-                expect(local).toEqual(cross);
-            }
+        ohlc.forEach((tick) => {
+            local.push(atr.nextValue(tick.h, tick.l, tick.c));
+            cross.push(atr2.nextValue({ high: tick.h, low: tick.l, close: tick.c }));
         });
+
+        expect(local).toEqual(cross)
     });
 });
