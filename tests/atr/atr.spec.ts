@@ -22,14 +22,14 @@ describe('ATR', () => {
         const atr = new ATR(period);
         const atr2 = new ATR2({ period, high: [], low: [], close: [] });
 
-        const local = []
-        const cross = []
+        const local = [];
+        const cross = [];
 
         ohlc.forEach((tick) => {
             local.push(atr.nextValue(tick.h, tick.l, tick.c));
             cross.push(atr2.nextValue({ high: tick.h, low: tick.l, close: tick.c }));
         });
 
-        expect(local).toEqual(cross)
+        expect(local).toEqual(cross);
     });
 });
