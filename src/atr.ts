@@ -67,11 +67,11 @@ export class ATR {
             const hc = high > this.prevClose ? high - this.prevClose : this.prevClose - high;
             const lc = low > this.prevClose ? low - this.prevClose : this.prevClose - low;
 
-            if (hl > hc && hl > lc) {
+            if (hl >= hc && hl >= lc) {
                 return hl;
             }
 
-            if (hc > hl && hc > lc) {
+            if (hc >= hl && hc >= lc) {
                 return hc;
             }
 
