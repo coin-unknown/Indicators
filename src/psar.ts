@@ -27,7 +27,7 @@ export class PSAR {
     private high1: number;
     private low2: number;
     private high2: number;
-    private accelerationForce: number;
+    private accelerationFactor: number;
     private lowest: number;
     private highest: number;
 
@@ -39,9 +39,7 @@ export class PSAR {
         this.isBullTrend = true;
     }
 
-    nextValue({ h: high, l: low, c: close }: { h: number; l: number; c: number }) {
-        let isReverse = false;
-
+    nextValue(high: number, low: number, close: number) {
         if (!this.result) {
             this.result = close;
             this.low1 = low;
@@ -50,40 +48,29 @@ export class PSAR {
             this.high2 = high;
             this.highest = high;
             this.lowest = low;
-            this.accelerationForce = this.start;
+            this.accelerationFactor = this.start;
 
             return low;
         }
 
         if (this.isBullTrend) {
-            this.psar = this.result + this.accelerationForce * (this.highest - this.result);
+            this.psar = this.result + this.accelerationFactor * (this.highest - this.result);
         } else {
-            this.psar = this.result + this.accelerationForce * (this.lowest - this.result);
+            this.psar = this.result + this.accelerationFactor * (this.lowest - this.result);
         }
 
         if (this.isBullTrend) {
             if (low < this.psar) {
                 this.isBullTrend = false;
-                isReverse = true;
                 this.psar = this.highest;
                 this.lowest = low;
-                this.accelerationForce = this.start;
-            }
-        } else {
-            if (high > this.psar) {
-                this.isBullTrend = true;
-                isReverse = true;
-                this.psar = this.lowest;
-                this.highest = high;
-                this.accelerationForce = this.start;
-            }
-        }
-
-        if (!isReverse) {
-            if (this.isBullTrend) {
+                this.accelerationFactor = this.start;
+            } else {
                 if (high > this.highest) {
                     this.highest = high;
-                    this.accelerationForce = Math.min(this.accelerationForce + this.acceleration, this.max);
+
+                    const sumOfAcceleration = this.accelerationFactor + this.acceleration
+                    this.accelerationFactor = sumOfAcceleration > this.max ? this.max : sumOfAcceleration;
                 }
                 if (this.low1 < this.psar) {
                     this.psar = this.low1;
@@ -91,10 +78,19 @@ export class PSAR {
                 if (this.low2 < this.psar) {
                     this.psar = this.low2;
                 }
+            }
+        } else {
+            if (high > this.psar) {
+                this.isBullTrend = true;
+                this.psar = this.lowest;
+                this.highest = high;
+                this.accelerationFactor = this.start;
             } else {
                 if (low < this.lowest) {
                     this.lowest = low;
-                    this.accelerationForce = Math.min(this.accelerationForce + this.acceleration, this.max);
+
+                    const sumOfAcceleration = this.accelerationFactor + this.acceleration
+                    this.accelerationFactor = sumOfAcceleration > this.max ? this.max : sumOfAcceleration;
                 }
                 if (this.high1 > this.psar) {
                     this.psar = this.high1;
@@ -114,12 +110,11 @@ export class PSAR {
         return this.result;
     }
 
-    momentValue({ h: high, l: low }: { h: number; l: number }) {
+    momentValue(high: number, low: number) {
         if (!this.result) {
-            return;
+            return low;
         }
 
-        let isReverse = false;
         let isBullTrend = this.isBullTrend;
         let result = this.result;
         let low1 = this.low1;
@@ -128,38 +123,30 @@ export class PSAR {
         let high2 = this.high2;
         let highest = this.highest;
         let lowest = this.lowest;
-        let accelerationForce = this.accelerationForce;
+        let accelerationFactor = this.accelerationFactor;
 
         let psar;
 
         if (isBullTrend) {
-            psar = result + accelerationForce * (highest - result);
+            psar = result + accelerationFactor * (highest - result);
         } else {
-            psar = result + accelerationForce * (lowest - result);
+            psar = result + accelerationFactor * (lowest - result);
         }
 
         if (isBullTrend) {
             if (low < psar) {
-                isBullTrend = false;
-                isReverse = true;
                 psar = highest;
-            }
-        } else {
-            if (high > psar) {
-                isBullTrend = true;
-                isReverse = true;
-                psar = lowest;
-            }
-        }
-
-        if (!isReverse) {
-            if (isBullTrend) {
+            } else {
                 if (low1 < psar) {
                     psar = low1;
                 }
                 if (low2 < psar) {
                     psar = low2;
                 }
+            }
+        } else {
+            if (high > psar) {
+                psar = lowest;
             } else {
                 if (high1 > psar) {
                     psar = high1;
