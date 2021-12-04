@@ -61,7 +61,23 @@ export class ATR {
 
     private getTrueRange(high: number, low: number) {
         if (this.prevClose) {
-            return Math.max(high - low, Math.abs(high - this.prevClose), Math.abs(low - this.prevClose));
+            // Linear conditions without max min and abs
+            // Perormance reason
+            const hl = high - low;
+            const hc = high > this.prevClose ? high - this.prevClose : this.prevClose - high;
+            const lc = low > this.prevClose ? low - this.prevClose : this.prevClose - low;
+
+            if (hl > hc && hl > lc) {
+                return hl;
+            }
+
+            if (hc > hl && hc > lc) {
+                return hc;
+            }
+
+            return lc;
+
+            // return Math.max(high - low, Math.abs(high - this.prevClose), Math.abs(low - this.prevClose));
         }
 
         return null;
