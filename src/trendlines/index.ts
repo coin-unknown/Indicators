@@ -3,6 +3,13 @@ import { HighLine, LowLine } from './line';
 import { ExtremumsItem, LineId, LineEvent } from './types';
 
 export class TrendLines {
+    private waitNext: 'hLine' | 'lLine' = 'hLine';
+    private hLines: LineModel[]
+    private lLines: LineModel[]
+    private step: number = 1
+    public hLineDirectives: LineDirective[]
+    public lLineDirectives: LineDirective[]
+    // DEPRECATED
     private lines: Array<HighLine | LowLine> = [];
     private hLine: HighLine;
     private lLine: LowLine;
@@ -10,32 +17,55 @@ export class TrendLines {
     private highExtremum: ExtremumsItem | null = null;
     private lowExtremum: ExtremumsItem | null = null;
     private i = 0;
-    private waitNext: 'hLine' | 'lLine' = 'hLine';
-    private tLines: LineModel[]
-    private step: number = 1
     constructor() {
         this.extremumGetter = new Extremums();
     }
-    //Next value
+    // Next value
     nextValue(o: number, c: number, h: number, l: number) {
-        //New model. Отличия:
-        //Анализ по h/l, а не по max/min
-        //Поиск ускорений после потенциального отскока
-        //Одновременный поиск трендов сверху и снизу
-        const max = h; //o >= c ? o : c;
-        const min = l; //o >= c ? c : o;
-        //init tLines
-        if (!this.tLines) {
-            //TODO Load i from candels data
-            let tLine = new LineModel(h, null, this.i, this.step)
-            this.tLines.push(tLine)
-            tLine = new LineModel(null, l, this.i, this.step)
-            this.tLines.push(tLine)
+        // New model
+        const max = h;
+        const min = l;
+        // Apply low line directives
+        if (this.lLineDirectives) {
+            console.log(this.i, this.lLineDirectives)
+            this.lLineDirectives.forEach(d => {
+                //Fork lines
+                //delete lines
+            })
         }
-        this.tLines.forEach(tline => tline.update(h, l, this.i))
+        // Apply high line directives
+        if (this.hLineDirectives) {
+            console.log(this.i, this.hLineDirectives)
+            this.hLineDirectives.forEach(d => {
+                //Fork lines
+                //delete lines
+            })
+        }
+        // TODO apply line conbinations directives. Ex, based on line.length difference. Maybe on Strategy level
 
-        // Old model
+        //Update lines and get future directives
+        this.hLineDirectives = []
+        this.lLineDirectives = []
+        if (!this.hLines) {
+            let tLine = new LineModel(h, null, this.i, this.step, this.hLines.length)
+            this.hLines.push(tLine)
+            tLine = new LineModel(null, l, this.i, this.step, this.lLines.length)
+            this.lLines.push(tLine)
+        } else {
+            this.hLines.forEach(tline => {
+                let result = tline.update(h, null, this.i)
+                if (result)
+                    this.hLineDirectives.push(result)
+            })
+            this.lLines.forEach(tline => {
+                let result = tline.update(null, l, this.i)
+                if (result)
+                    this.lLineDirectives.push(result)
+            })
+        }
 
+
+        // Old model. DEPRECATED
         // TODO: Исключить. Перенести в прямую
         this.extremumGetter.updateMax(max, this.i);
         this.extremumGetter.updateMin(min, this.i);
@@ -160,9 +190,16 @@ export interface LineDirective {
     condition: 'lt' | 'gt' | 'lgt'
     value: number
     action: string
+    lineIndex: number
 }
+/**
+ * Line Model class.
+ * this.index - index in lineDirectives array
+ */
 export class LineModel {
     private type = 'h' || 'l'
+    public index: number
+    public length: number //Line's living time
     private startPoint: Point
     private prevPoint: Point
     private nextPoint: Point
@@ -171,8 +208,9 @@ export class LineModel {
     private b: number
     private step: number //Шаг времени в минутах
     private error: number
-    constructor(h, l, i, step) {
+    constructor(h, l, i, step, index) {
         this.step = step
+        this.index = index
         this.init(h, l, i)
         this.startPoint = this.curPoint
     }
@@ -182,16 +220,12 @@ export class LineModel {
             y: h || l,
             x: i
         }
+        this.length = this.curPoint.x - this.startPoint.x
         this.prevPoint = this.curPoint
     }
 
     /**
-     * Пусть минимальный временной шаг в минутах. Но данные могу поступать с разнуми интервалами. Поэтому t имеет значение.
-     * На второй точке получаем К
-     * Если точка близка к линии - выделяем точку ка индикатор
-     * Если текущая точка пробивает линию перестраиваемся
-     * Если перестройка ведкт к К меньше К предыдущей линии - сигнал
-     * Если перестройка ведет к смене знака К - сигнал (перелом тренда). Может возникнуть только на fork
+     * Update line object. Returns LineDirectives - actions list for the next candle based on predicion
      * @param h
      * @param l
      * @param i
@@ -199,14 +233,18 @@ export class LineModel {
     update(h, l, i): LineDirective {
         this.init(h, l, i)
         // инициализация К b
-        this.k ??= (this.curPoint.y - this.startPoint.y) / (this.curPoint.x - this.startPoint.x)
-        this.b ??= this.curPoint.y - this.k * this.curPoint.x
-        //Update incline
-        if ((this.type == 'h' && this.nextPoint.y > this.curPoint.y) || (this.type == 'l' && this.nextPoint.y < this.curPoint.y)) {
-            this.k ??= (this.curPoint.y - this.startPoint.y) / (this.curPoint.x - this.startPoint.x)
-            this.b ??= this.curPoint.y - this.k * this.curPoint.x
+        if (!this.k){
+            this.k = (this.curPoint.y - this.startPoint.y) / (this.curPoint.x - this.startPoint.x)
+            this.b = this.curPoint.y - this.k * this.curPoint.x
         }
-        //Update next point
+        //Update incline
+        if ((this.type == 'h' && this.nextPoint.y > this.curPoint.y) || (this.type == 'l' && this.nextPoint.y > this.curPoint.y)) {
+            if (!this.k){
+                this.k = (this.curPoint.y - this.startPoint.y) / (this.curPoint.x - this.startPoint.x)
+                this.b = this.curPoint.y - this.k * this.curPoint.x
+            }
+        }  // else Fork
+        // Update next point
         this.nextPoint = {
             y: this.k * (this.curPoint.x + this.step) + this.b,
             x: i + this.step
@@ -214,7 +252,8 @@ export class LineModel {
         return {
             condition: this.type == 'h' ? 'lt' : 'gt',
             value: this.nextPoint.y,
-            action: 'fork'
+            action: 'fork',
+            lineIndex: this.index
         }
     }
 
