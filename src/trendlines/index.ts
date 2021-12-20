@@ -23,6 +23,7 @@ export class TrendLines {
     // Next value
     nextValue(o: number, c: number, h: number, l: number) {
         // New model
+        let result: number[];
         const max = h;
         const min = l;
         // Apply low line directives
@@ -46,11 +47,24 @@ export class TrendLines {
         //Update lines and get future directives
         this.hLineDirectives = []
         this.lLineDirectives = []
+        result = [
+            undefined,
+            undefined,
+            // First level low TL
+            this.lLines && this.lLines[0] && this.lLines[0].nextPoint ? this.lLines[0].nextPoint.y : undefined,
+            // Second level low TL
+            this.lLines && this.lLines[1] && this.lLines[1].nextPoint ? this.lLines[1].nextPoint.y : undefined,
+            this.lLines && this.lLines[2] && this.lLines[2].nextPoint ? this.lLines[2].nextPoint.y : undefined,
+            this.hLines && this.hLines[0] && this.hLines[0].nextPoint ? this.hLines[0].nextPoint.y : undefined,
+            // Second level high TL
+            this.hLines && this.hLines[1] && this.hLines[1].nextPoint ? this.hLines[1].nextPoint.y : undefined,
+            this.hLines && this.hLines[2] && this.hLines[2].nextPoint ? this.hLines[2].nextPoint.y : undefined
+        ];
         if (!this.hLines) {
-            let tLine = new LineModel(h, null, this.i, this.step, this.hLines.length)
-            this.hLines.push(tLine)
-            tLine = new LineModel(null, l, this.i, this.step, this.lLines.length)
-            this.lLines.push(tLine)
+            let tLine = new LineModel(h, null, this.i, this.step, 0)
+            this.hLines = [tLine]
+            tLine = new LineModel(null, l, this.i, this.step, 0)
+            this.lLines = [tLine]
         } else {
             this.hLines.forEach(tline => {
                 let result = tline.update(h, null, this.i)
@@ -62,72 +76,6 @@ export class TrendLines {
                 if (result)
                     this.lLineDirectives.push(result)
             })
-        }
-
-
-        // Old model. DEPRECATED
-        // TODO: Исключить. Перенести в прямую
-        this.extremumGetter.updateMax(max, this.i);
-        this.extremumGetter.updateMin(min, this.i);
-
-        // Генератор линий поддержки
-        if (this.waitNext === 'hLine') {
-            this.createHighLine(max);
-        }
-
-        // Генератор линий сопротивления
-        if (this.waitNext === 'lLine') {
-            this.createLowLine(min);
-        }
-
-        let result: number[];
-        // Обновляем тренд сопротивления
-        if (this.hLine) {
-            const event = this.hLine.update(min, max, this.i);
-
-            if (event === LineEvent.BREAKDOWN) {
-                // Пробой, удаляем активную линию сопротивления
-                this.highExtremum = null;
-                this.hLine = null;
-                this.waitNext = 'lLine';
-                this.createLowLine(min);
-            } else {
-                result = [
-                    // Current line value
-                    this.hLine.valueAtPoint(this.i),
-                    //Poor line value
-                    HighLine.minK * this.i +
-                    (this.highExtremum.value - HighLine.minK - HighLine.minK * this.highExtremum.idx),
-                    undefined,
-                    undefined,
-                    this.hLine.getSubtrendValue(this.i),
-                    undefined,
-                ];
-            }
-        }
-        // Обновляем тренд поддержки
-        if (this.lLine) {
-            const event = this.lLine.update(min, max, this.i);
-
-            if (event === LineEvent.BREAKDOWN) {
-                this.lLine = null;
-                this.lowExtremum = null;
-                this.waitNext = 'hLine';
-                this.createHighLine(max);
-            } else {
-                result = [
-                    undefined,
-                    undefined,
-                    // Current line value
-                    this.lLine.valueAtPoint(this.i),
-                    // Poor line value
-                    LowLine.minK * this.i +
-                    (this.lowExtremum.value - LowLine.minK - LowLine.minK * this.lowExtremum.idx),
-                    undefined,
-                    // Subtrend for lLine
-                    this.lLine.getSubtrendValue(this.i),
-                ];
-            }
         }
 
         this.i++;
@@ -197,68 +145,71 @@ export interface LineDirective {
  * this.index - index in lineDirectives array
  */
 export class LineModel {
-    private type = 'h' || 'l'
+    private type: 'h' | 'l'
     public index: number
     public length: number //Line's living time
     private startPoint: Point
     private prevPoint: Point
-    private nextPoint: Point
-    private curPoint: Point
+    public nextPoint: Point
+    public curPoint: Point
     private k: number
     private b: number
     private step: number //Шаг времени в минутах
     private error: number
-    constructor(h, l, i, step, index) {
-        this.step = step
-        this.index = index
-        this.init(h, l, i)
-        this.startPoint = this.curPoint
+constructor(h, l, i, step, index) {
+    this.type = 'h';
+    this.step = step;
+    this.index = index;
+    this.startPoint = {
+        y: h || l,
+        x: i
     }
-    init(h, l, i) {
-        this.type = h ? 'h' : 'l'
-        this.curPoint = {
-            y: h || l,
-            x: i
-        }
-        this.length = this.curPoint.x - this.startPoint.x
-        this.prevPoint = this.curPoint
+    this.init(h, l, i);
+}
+init(h, l, i) {
+    this.type = h ? 'h' : 'l';
+    this.curPoint = {
+        y: h || l,
+        x: i
     }
+    this.length = this.curPoint.x - this.startPoint.x
+    this.prevPoint = this.curPoint
+}
 
-    /**
-     * Update line object. Returns LineDirectives - actions list for the next candle based on predicion
-     * @param h
-     * @param l
-     * @param i
-     */
-    update(h, l, i): LineDirective {
-        this.init(h, l, i)
-        // инициализация К b
-        if (!this.k){
-            this.k = (this.curPoint.y - this.startPoint.y) / (this.curPoint.x - this.startPoint.x)
-            this.b = this.curPoint.y - this.k * this.curPoint.x
-        }
-        //Update incline
-        if ((this.type == 'h' && this.nextPoint.y > this.curPoint.y) || (this.type == 'l' && this.nextPoint.y > this.curPoint.y)) {
-            if (!this.k){
-                this.k = (this.curPoint.y - this.startPoint.y) / (this.curPoint.x - this.startPoint.x)
-                this.b = this.curPoint.y - this.k * this.curPoint.x
-            }
-        }  // else Fork
-        // Update next point
-        this.nextPoint = {
-            y: this.k * (this.curPoint.x + this.step) + this.b,
-            x: i + this.step
-        }
-        return {
-            condition: this.type == 'h' ? 'lt' : 'gt',
-            value: this.nextPoint.y,
-            action: 'fork',
-            lineIndex: this.index
-        }
+/**
+ * Update line object. Returns LineDirectives - actions list for the next candle based on predicion
+ * @param h
+ * @param l
+ * @param i
+ */
+update(h, l, i): LineDirective {
+    this.init(h, l, i)
+    // инициализация К b
+    if (!this.k) {
+        this.k = (this.curPoint.y - this.startPoint.y) / (this.curPoint.x - this.startPoint.x)
+        this.b = this.curPoint.y - this.k * this.curPoint.x
+        this.nextPoint = { y: this.curPoint.y, x: 0 }
     }
+    //Update incline
+    if ((this.type == 'h' && this.nextPoint.y < this.curPoint.y) || (this.type == 'l' && this.nextPoint.y > this.curPoint.y)) {
+        this.k = (this.curPoint.y - this.startPoint.y) / (this.curPoint.x - this.startPoint.x)
+        this.b = this.curPoint.y - this.k * this.curPoint.x
+    }  // else Fork
+    // Update next point
+    this.nextPoint = {
+        y: this.k * (this.curPoint.x + this.step) + this.b,
+        x: i + this.step
+    }
+    return {
+        condition: this.type == 'h' ? 'lt' : 'gt',
+        value: this.nextPoint.y,
+        action: 'fork',
+        lineIndex: this.index
+    }
+}
 
-    updateStep(step) {
-        this.step = step
-    }
+updateStep(step) {
+    this.step = step
+}
 
 }
