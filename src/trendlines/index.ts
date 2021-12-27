@@ -63,8 +63,8 @@ export class TrendLines {
             })
         }
         // Update lines and get future directives
-        this.hLineDirectives = []
-        this.lLineDirectives = []
+        this.hLineDirectives.length = 0
+        this.lLineDirectives.length = 0
         if (!this.hLines) {
             let tLine = new LineModel(h, null, this.i, this.step, 0)
             this.hLines = [tLine]
@@ -136,8 +136,8 @@ export class TrendLines {
         }
 
         if (this.slidingMethod) {
-            let hll = this.hLines.length + 1
-            let lll = this.lLines.length + 1
+            let hll = this.hLines.length
+            let lll = this.lLines.length
             result = [
                 this.hLines && hll > 0 && this.hLines[hll - 1] && this.hLines[hll - 1].thisPoint ? this.hLines[hll - 1].thisPoint.y : undefined,
                 this.hLines && hll > 1 && this.hLines[hll - 2] && this.hLines[hll - 2].thisPoint ? this.hLines[hll - 2].thisPoint.y : undefined,
