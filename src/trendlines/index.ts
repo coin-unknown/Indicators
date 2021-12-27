@@ -1,4 +1,4 @@
-import {LineModel} from './line'
+import { LineModel } from './line'
 import { LineEvent, LineDirective, Point } from './types'
 
 export class TrendLines {
@@ -47,23 +47,22 @@ export class TrendLines {
             this.log('Before ldirs', [this.localCounter, ...this.lLineDirectives, this.lLines.length])
             // TODO Fork only last line in Array
             this.lLineDirectives.forEach((d, i) => {
-                if (d.condition == 'gt' && l > d.value && d.action == 'fork'){
+                if (d.condition == 'gt' && l > d.value && d.action == 'fork') {
                     let NL = new LineModel(null, l, this.i, this.step, this.lLines.length)
-                        this.lLines.push(NL)
+                    this.lLines.push(NL)
                 }
             })
         }
         if (this.hLines && this.hLineDirectives) {
             this.log('Before hdirs', [this.localCounter, ...this.hLineDirectives, this.hLines.length])
             this.hLineDirectives.forEach((d, i) => {
-                if (d.condition == 'lt' && h < d.value && d.action == 'fork'){
+                if (d.condition == 'lt' && h < d.value && d.action == 'fork') {
                     let NL = new LineModel(h, null, this.i, this.step, this.hLines.length)
-                        this.hLines.push(NL)
+                    this.hLines.push(NL)
                 }
             })
         }
-
-        //Update lines and get future directives
+        // Update lines and get future directives
         this.hLineDirectives = []
         this.lLineDirectives = []
         if (!this.hLines) {
@@ -73,19 +72,26 @@ export class TrendLines {
             this.lLines = [tLine]
         } else {
             let updated
-            this.hLines.forEach(tline => {
+            this.hLines.forEach((tline, i) => {
                 updated = null
                 if (tline.startPoint.x < this.i) // Skip the case if line was just created. TODO make it gracefully
                     updated = tline.update(h, null, this.i)
                 if (updated)
                     this.hLineDirectives.push(updated)
+                // Drop extreme lines
+                if (tline.thisPoint.y > h * 1.2)
+                    this.hLines.splice(i, 1)
+
             })
-            this.lLines.forEach(tline => {
+            this.lLines.forEach((tline, i) => {
                 updated = null
                 if (tline.startPoint.x < this.i) // Skip the case if line was just created. TODO make it gracefully
                     updated = tline.update(null, l, this.i)
                 if (updated)
                     this.lLineDirectives.push(updated)
+                // Drop extreme lines
+                if (tline.thisPoint.y < l * 0.8)
+                    this.lLines.splice(i, 1)
             })
         }
 
@@ -129,17 +135,19 @@ export class TrendLines {
             }
         }
 
-        if (this.slidingMethod)
+        if (this.slidingMethod) {
+            let hll = this.hLines.length + 1
+            let lll = this.lLines.length + 1
             result = [
-                this.hLines && this.hLines.length > 0 && this.hLines[this.hLines.length - 1] && this.hLines[this.hLines.length - 1].thisPoint ? this.hLines[this.hLines.length - 1].thisPoint.y : undefined,
-                this.hLines && this.hLines.length > 1 && this.hLines[this.hLines.length - 2] && this.hLines[this.hLines.length - 2].thisPoint ? this.hLines[this.hLines.length - 2].thisPoint.y : undefined,
-                this.hLines && this.hLines.length > 2 && this.hLines[this.hLines.length - 3] && this.hLines[this.hLines.length - 3].thisPoint ? this.hLines[this.hLines.length - 3].thisPoint.y : undefined,
+                this.hLines && hll > 0 && this.hLines[hll - 1] && this.hLines[hll - 1].thisPoint ? this.hLines[hll - 1].thisPoint.y : undefined,
+                this.hLines && hll > 1 && this.hLines[hll - 2] && this.hLines[hll - 2].thisPoint ? this.hLines[hll - 2].thisPoint.y : undefined,
+                this.hLines && hll > 2 && this.hLines[hll - 3] && this.hLines[hll - 3].thisPoint ? this.hLines[hll - 3].thisPoint.y : undefined,
 
-                this.lLines && this.lLines.length > 0 && this.lLines[this.lLines.length - 1] && this.lLines[this.lLines.length - 1].thisPoint ? this.lLines[this.lLines.length - 1].thisPoint.y : undefined,
-                this.lLines && this.lLines.length > 1 && this.lLines[this.lLines.length - 2] && this.lLines[this.lLines.length - 2].thisPoint ? this.lLines[this.lLines.length - 2].thisPoint.y : undefined,
-                this.lLines && this.lLines.length > 2 && this.lLines[this.lLines.length - 3] && this.lLines[this.lLines.length - 3].thisPoint ? this.lLines[this.lLines.length - 3].thisPoint.y : undefined
+                this.lLines && lll > 0 && this.lLines[lll - 1] && this.lLines[lll - 1].thisPoint ? this.lLines[lll - 1].thisPoint.y : undefined,
+                this.lLines && lll > 1 && this.lLines[lll - 2] && this.lLines[lll - 2].thisPoint ? this.lLines[lll - 2].thisPoint.y : undefined,
+                this.lLines && lll > 2 && this.lLines[lll - 3] && this.lLines[lll - 3].thisPoint ? this.lLines[lll - 3].thisPoint.y : undefined
             ]
-        else
+        } else
             result = [
                 this.hLines && this.hLines[0] && this.hLines[0].thisPoint ? this.hLines[0].thisPoint.y : undefined,
                 this.hLines && this.hLines[1] && this.hLines[1].thisPoint ? this.hLines[1].thisPoint.y : undefined,
