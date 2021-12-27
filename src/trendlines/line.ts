@@ -4,15 +4,16 @@ import { LineEvent, LineDirective, Point } from './types'
  * Line Model class.
  * this.index - index in lineDirectives array
  */
- export class LineModel {
+export class LineModel {
     private type: 'h' | 'l'
     public index: number
     public length: number //Line's living time
+    //TODO Make points window in FIFO stack
     public startPoint: Point
     private prevPoint: Point
-    public thisPoint: Point //Current Point on the line
+    public thisPoint: Point // Current Point on the line
     public nextPoint: Point
-    public curPoint: Point
+    public candlePoint: Point  // Point on the current candle
     private k: number
     private b: number
     private step: number //Шаг времени в минутах
@@ -21,21 +22,32 @@ import { LineEvent, LineDirective, Point } from './types'
         this.type = 'h';
         this.step = step;
         this.index = index;
+        // TODO On fork startPoint is the fork point not the candle point
         this.startPoint = {
             y: h || l,
             x: i
         }
         this.init(h, l, i);
+        this.thisPoint = this.startPoint
     }
 
     init(h, l, i) {
         this.type = h ? 'h' : 'l';
-        this.curPoint = {
+        this.candlePoint = {
             y: h || l,
             x: i
         }
-        this.length = this.curPoint.x - this.startPoint.x
-        this.prevPoint = this.curPoint
+        this.length = this.candlePoint.x - this.startPoint.x
+        // Shift window if data exists
+        if (this.thisPoint) {
+            this.prevPoint = this.thisPoint
+            if (this.nextPoint)
+                this.thisPoint = this.nextPoint
+                this.nextPoint = {
+                    y: this.k * (this.candlePoint.x + this.step) + this.b,
+                    x: this.candlePoint.x + this.step
+                }
+        }
     }
 
     /**
@@ -45,35 +57,44 @@ import { LineEvent, LineDirective, Point } from './types'
      * @param i
      */
     update(h, l, i): LineDirective {
-        this.init(h, l, i)
         let result = null
+        this.init(h, l, i)
         // Init К b
         if (!this.k || isNaN(this.k)) {
-            this.k = (this.curPoint.y - this.startPoint.y) / (this.curPoint.x - this.startPoint.x)
-            this.b = this.curPoint.y - this.k * this.curPoint.x
-            this.nextPoint = { y: this.curPoint.y, x: 0 }
-        }
-        // Update incline
-        if ((this.type == 'h' && this.nextPoint.y < this.curPoint.y) || (this.type == 'l' && this.nextPoint.y > this.curPoint.y)) {
-            this.k = (this.curPoint.y - this.startPoint.y) / (this.curPoint.x - this.startPoint.x)
-            this.b = this.curPoint.y - this.k * this.curPoint.x
+            this.k = (this.candlePoint.y - this.startPoint.y) / (this.candlePoint.x - this.startPoint.x)
+            this.b = this.candlePoint.y - this.k * this.candlePoint.x
+            this.prevPoint = this.startPoint
+            this.thisPoint = this.candlePoint
+            this.nextPoint = {
+                y: this.k * (this.candlePoint.x + this.step) + this.b,
+                x: this.candlePoint.x + this.step
+            }
             result = {
                 condition: this.type == 'h' ? 'lt' : 'gt',
-                value: this.curPoint.y,
+                value: this.nextPoint.y,
+                action: 'fork',
+                lineIndex: this.index
+            }
+
+        }
+        // Update incline
+        if ((this.type == 'h' && this.thisPoint.y < this.candlePoint.y) || (this.type == 'l' && this.thisPoint.y > this.candlePoint.y)) {
+            this.k = (this.candlePoint.y - this.startPoint.y) / (this.candlePoint.x - this.startPoint.x)
+            this.b = this.candlePoint.y - this.k * this.candlePoint.x
+            this.thisPoint = this.candlePoint
+            this.nextPoint = {
+                y: this.k * (this.candlePoint.x + this.step) + this.b,
+                x: this.candlePoint.x + this.step
+            }
+            // Wait for bounce
+            result = {
+                condition: this.type == 'h' ? 'lt' : 'gt',
+                value: this.nextPoint.y,
                 action: 'fork',
                 lineIndex: this.index
             }
         }
 
-        // Update next point
-        this.thisPoint = {
-            y: this.k * (this.curPoint.x) + this.b,
-            x: i
-        }
-        this.nextPoint = {
-            y: this.k * (this.curPoint.x + this.step) + this.b,
-            x: i + this.step
-        }
         return result
     }
 
