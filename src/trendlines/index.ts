@@ -14,16 +14,20 @@ export class TrendLines {
     // Debug values
     localCounter = 0
     consoleWindow: boolean
+    minLog
+    maxLog
 
-    constructor(maxForks = 10, slidingMethod = true) {
+    constructor(maxForks = 10, slidingMethod = true, minLog = 0, maxLog = 10) {
         this.maxForks = maxForks
         this.slidingMethod = slidingMethod
+        this.minLog = minLog
+        this.maxLog = maxLog
     }
 
     log(title, ...data) {
-        this.consoleWindow = 10 < this.localCounter && this.localCounter < 40
+        this.consoleWindow = this.minLog < this.localCounter && this.localCounter < this.maxLog
         if (this.consoleWindow)
-            console.log(title, data)
+            console.log(title, ...data)
     }
 
     /**
@@ -40,15 +44,17 @@ export class TrendLines {
 
         // Apply line directives got on prevues step
         if (this.lLines && this.lLineDirectives) {
-            this.log('Before dirs', [this.lLineDirectives, this.lLines.length])
+            this.log('Before ldirs', [this.localCounter, ...this.lLineDirectives, this.lLines.length])
+            // TODO Fork only last line in Array
             this.lLineDirectives.forEach((d, i) => {
-                if (d.condition == 'gt' && l < d.value && d.action == 'fork'){
+                if (d.condition == 'gt' && l > d.value && d.action == 'fork'){
                     let NL = new LineModel(null, l, this.i, this.step, this.lLines.length)
                         this.lLines.push(NL)
                 }
             })
         }
         if (this.hLines && this.hLineDirectives) {
+            this.log('Before hdirs', [this.localCounter, ...this.hLineDirectives, this.hLines.length])
             this.hLineDirectives.forEach((d, i) => {
                 if (d.condition == 'lt' && h < d.value && d.action == 'fork'){
                     let NL = new LineModel(h, null, this.i, this.step, this.hLines.length)
@@ -66,15 +72,16 @@ export class TrendLines {
             tLine = new LineModel(null, l, this.i, this.step, 0)
             this.lLines = [tLine]
         } else {
-            let updated = null
+            let updated
             this.hLines.forEach(tline => {
+                updated = null
                 if (tline.startPoint.x < this.i) // Skip the case if line was just created. TODO make it gracefully
                     updated = tline.update(h, null, this.i)
                 if (updated)
                     this.hLineDirectives.push(updated)
             })
-            updated = null
             this.lLines.forEach(tline => {
+                updated = null
                 if (tline.startPoint.x < this.i) // Skip the case if line was just created. TODO make it gracefully
                     updated = tline.update(null, l, this.i)
                 if (updated)
