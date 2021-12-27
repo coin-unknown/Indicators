@@ -43,10 +43,10 @@ export class LineModel {
             this.prevPoint = this.thisPoint
             if (this.nextPoint)
                 this.thisPoint = this.nextPoint
-                this.nextPoint = {
-                    y: this.k * (this.candlePoint.x + this.step) + this.b,
-                    x: this.candlePoint.x + this.step
-                }
+            this.nextPoint = {
+                y: this.k * (this.candlePoint.x + this.step) + this.b,
+                x: this.candlePoint.x + this.step
+            }
         }
     }
 
