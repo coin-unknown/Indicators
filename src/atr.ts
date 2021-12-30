@@ -4,6 +4,7 @@ import { WEMA } from './wema';
 import { LWMA } from './lwma';
 import { SMA } from './sma';
 import { EWMA } from './ewma';
+import { getTrueRange } from './providers/true-range';
 export class ATR {
     private prevClose: number;
     private avg: EMA | SMMA | WEMA | LWMA | SMA | EWMA;
@@ -38,7 +39,7 @@ export class ATR {
     }
 
     nextValue(high: number, low: number, close: number) {
-        const trueRange = this.getTrueRange(high, low);
+        const trueRange = getTrueRange(high, low, this.prevClose);
 
         this.prevClose = close;
 
@@ -50,7 +51,7 @@ export class ATR {
     }
 
     momentValue(high: number, low: number) {
-        const trueRange = this.getTrueRange(high, low);
+        const trueRange = getTrueRange(high, low, this.prevClose);
 
         if (!trueRange) {
             return;
@@ -58,34 +59,4 @@ export class ATR {
 
         return this.avg.momentValue(trueRange);
     }
-
-    private getTrueRange(high: number, low: number) {
-        if (this.prevClose) {
-            // Linear conditions without max min and abs
-            // Perormance reason
-            const hl = high - low;
-            const hc = high > this.prevClose ? high - this.prevClose : this.prevClose - high;
-            const lc = low > this.prevClose ? low - this.prevClose : this.prevClose - low;
-
-            if (hl >= hc && hl >= lc) {
-                return hl;
-            }
-
-            if (hc >= hl && hc >= lc) {
-                return hc;
-            }
-
-            return lc;
-
-            // return Math.max(high - low, Math.abs(high - this.prevClose), Math.abs(low - this.prevClose));
-        }
-
-        return null;
-    }
 }
-
-/**
- * fast abs
- * mask = input >> 31;
- * abs = ( input + mast ) ^ mask
- */

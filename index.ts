@@ -22,3 +22,5 @@ export { HeikenAshi } from './src/heiken-ashi';
 export { Pivot } from './src/pivot';
 export { LWMA } from './src/lwma';
 export { PSAR } from './src/psar';
+export { ADX } from './src/adx';
+export { WWS } from './src/wws';
