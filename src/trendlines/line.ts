@@ -14,7 +14,7 @@ export class LineModel {
     public thisPoint: Point // Current Point on the line
     public nextPoint: Point
     public candlePoint: Point  // Point on the current candle
-    private k: number
+    public k: number
     private b: number
     private step: number //Шаг времени в минутах
 
