@@ -19,6 +19,7 @@ The main feature of these indicators is their continuous operation, which means 
 - Accelerator Oscillator (AO).
 - Average True Range (ATR)
 - Awesome Oscillator (AC).
+- Average Directional Index  (ADX).
 - Bollinger Bands (BB).
 - Commodity Channel Index (CCI).
 - Connor's RSI (CRSI)
@@ -34,6 +35,8 @@ The main feature of these indicators is their continuous operation, which means 
 - Smoothed Moving Average (SMMA).
 - Stochastic Oscillator (KD)
 - Wilder's Smoothed Moving Average (WEMA)
+- Welles Wilder's Smoothing Average (WWS)
+- Weighted moving average (WMA)
 - Parabolic Stop And Reverse (PSAR)
 
 ## Candles
