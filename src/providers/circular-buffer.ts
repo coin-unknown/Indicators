@@ -54,11 +54,10 @@ export class CircularBuffer<T = number> {
      * Array like forEach loop
      */
     public forEach(callback: (value: T, index?: number) => void) {
-        const end = (this.length + this.pointer - 1) % this.length;
         let idx = this.pointer;
         let virtualIdx = 0;
 
-        while (idx !== end) {
+        while (virtualIdx !== this.length) {
             callback(this.buffer[idx], virtualIdx);
             idx = (this.length + idx + 1) % this.length;
             virtualIdx++;
@@ -69,11 +68,10 @@ export class CircularBuffer<T = number> {
      * Array like forEach loop, but from last to first (reversal forEach)
      */
     forEachRight(callback: (value: T, index?: number) => void) {
-        const end = this.pointer;
         let idx = (this.length + this.pointer - 1) % this.length;
         let virtualIdx = this.length - 1;
 
-        while (idx !== end) {
+        while (virtualIdx !== this.length) {
             callback(this.buffer[idx], virtualIdx);
             idx = (this.length + idx - 1) % this.length;
             virtualIdx--;
