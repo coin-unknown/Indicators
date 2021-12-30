@@ -2,6 +2,7 @@ export { Level } from './src/providers/level';
 export { Correlation } from './src/providers/correlation';
 export { SMA } from './src/sma';
 export { WEMA } from './src/wema';
+export { WMA } from './src/wma';
 export { EMA } from './src/ema';
 export { EWMA } from './src/ewma';
 export { AO } from './src/ao';
