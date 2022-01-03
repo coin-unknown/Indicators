@@ -25,3 +25,4 @@ export { LWMA } from './src/lwma';
 export { PSAR } from './src/psar';
 export { ADX } from './src/adx';
 export { WWS } from './src/wws';
+export { SuperTrend } from './src/supertrend';
