@@ -26,11 +26,16 @@ export class SuperTrend {
             this.nextValue = (h: number, l: number, c: number) => {
                 const cci = this.cci.nextValue(h, l, c);
                 const atr = this.atr.nextValue(h, l, c);
+                const sh = h + atr;
+                const sl = l - atr;
 
-                return cci > 0 ? h + atr : l - atr;
+                return { sh, sl, st: cci > 0 ? sh : sl, cci };
             };
 
-            return cci > 0 ? h + atr : l - atr;
+            const sh = h + atr;
+            const sl = l - atr;
+
+            return { sh, sl, st: cci > 0 ? sh : sl, cci };
         }
     }
 
