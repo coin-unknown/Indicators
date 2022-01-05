@@ -1,5 +1,11 @@
 # Trend Lines indicator
 
+Trendlines are a key part of delving into technical analysis and trading off of charts. When used correctly, they're a helpful, clear, and relatively simple tool for traders.
+
+## Sample result
+
+![Trend lines provided by the indicator](./sample.jpg)
+
 ## Description
 
 The search for support and resistance lines is carried out by squeezing to the center of the price movement.
@@ -9,7 +15,7 @@ maxForks = 10 - limit number of branches
 slidingMethod - sliding method.
      0 - non-sliding Trend Line (Zero element of the array outside the line),
      1 - moving Trend Line (Zero element of the array is closer to the current price)
-minLog, maxLog - the range of candlestick data log output
+minLog, maxLog - the range of candlestick log data output
 To display the slope data closer to the candlestick data on the chart, normalization is used
         let scale = {
             y: 1000,    // Shift
