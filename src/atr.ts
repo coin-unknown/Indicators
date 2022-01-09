@@ -1,18 +1,19 @@
 import { SMMA } from './smma';
 import { EMA } from './ema';
-import { RMA } from './rma';
+import { WEMA } from './wema';
 import { LWMA } from './lwma';
 import { SMA } from './sma';
 import { EWMA } from './ewma';
+import { getTrueRange } from './providers/true-range';
 export class ATR {
     private prevClose: number;
-    private avg: EMA | SMMA | RMA | LWMA | SMA | EWMA;
+    private avg: EMA | SMMA | WEMA | LWMA | SMA | EWMA;
 
     /**
      * Конструктор
      * @param period - период по умолчанию 14
      */
-    constructor(period = 14, smoothing: 'SMA' | 'EMA' | 'SMMA' | 'RMA' | 'LWMA' | 'EWMA' = 'RMA') {
+    constructor(period = 14, smoothing: 'SMA' | 'EMA' | 'SMMA' | 'WEMA' | 'LWMA' | 'EWMA' = 'WEMA') {
         switch (smoothing) {
             case 'SMA':
                 this.avg = new SMA(period);
@@ -23,8 +24,8 @@ export class ATR {
             case 'SMMA':
                 this.avg = new SMMA(period);
                 break;
-            case 'RMA':
-                this.avg = new RMA(period);
+            case 'WEMA':
+                this.avg = new WEMA(period);
                 break;
             case 'LWMA':
                 this.avg = new LWMA(period);
@@ -38,30 +39,24 @@ export class ATR {
     }
 
     nextValue(high: number, low: number, close: number) {
-        const trueRange = this.getTrueRange(high, low);
+        const trueRange = getTrueRange(high, low, this.prevClose);
 
         this.prevClose = close;
+
+        if (!trueRange) {
+            return;
+        }
 
         return this.avg.nextValue(trueRange);
     }
 
     momentValue(high: number, low: number) {
-        const trueRange = this.getTrueRange(high, low);
+        const trueRange = getTrueRange(high, low, this.prevClose);
+
+        if (!trueRange) {
+            return;
+        }
 
         return this.avg.momentValue(trueRange);
     }
-
-    private getTrueRange(high: number, low: number) {
-        if (this.prevClose) {
-            return Math.max(high - low, Math.abs(high - this.prevClose), Math.abs(low - this.prevClose));
-        }
-
-        return high - low;
-    }
 }
-
-/**
- * fast abs
- * mask = input >> 31;
- * abs = ( input + mast ) ^ mask
- */

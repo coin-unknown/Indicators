@@ -8,7 +8,7 @@
 The main feature of these indicators is their continuous operation, which means that you can use them both for real trading and for teaching trading strategies on history, since this is a passage from the beginning to the end of the stream of candles. This approach allows you to reduce the number of necessary calculations by tens of times and is the most optimal in terms of performance.
 
 ## Features
-- High perfomance
+- High performance
 - Easy to use with candles streaming
 - Minimal state for calculation
 - Moment value (possible to calculate every tick)
@@ -19,6 +19,7 @@ The main feature of these indicators is their continuous operation, which means 
 - Accelerator Oscillator (AO).
 - Average True Range (ATR)
 - Awesome Oscillator (AC).
+- Average Directional Index  (ADX).
 - Bollinger Bands (BB).
 - Commodity Channel Index (CCI).
 - Connor's RSI (CRSI)
@@ -30,11 +31,14 @@ The main feature of these indicators is their continuous operation, which means 
 - Pivot Point Levels (classic / woodie /camarilla / fibonacci).
 - Rate of Change (ROC).
 - Relative Strength Index (RSI).
-- Relative Moving Average (RMA)
 - Simple Moving Average (SMA).
 - Smoothed Moving Average (SMMA).
+- SuperTrend MTF (ST MTF).
 - Stochastic Oscillator (KD)
-- Weighted Moving Average (WMA).
+- Wilder's Smoothed Moving Average (WEMA)
+- Welles Wilder's Smoothing Average (WWS)
+- Weighted moving average (WMA)
+- Parabolic Stop And Reverse (PSAR)
 
 ## Candles
 - Heiken Ashi.
@@ -54,7 +58,7 @@ Releases are available under Node Package Manager (npm):
 
     npm install @debut/indicators
 
-## Exapmle with Simple Moving Average
+## Example with Simple Moving Average
 
 ```js
 import { SMA } from '@debut/indicators';
@@ -90,13 +94,17 @@ sma.nextValue(9); // 7.50
 
 |    Indicator    	|  @debut/indicators (ops/sec)  	| technicalindicators (ops/sec) 	| trading-signals (ops/sec) 	|  ta.js (ops/sec)  	|
 |:---------------:	|:---------------------------------:|:---------------------------------:|:-----------------------------:|:-----------------:	|
-| AwesomeOscillator |            433,754            	|             17,110             	|             x             	|         x         	|
-|       ATR       	|            1,144,114            	|             100,685             	|             x             	|         x         	|
-| Bollinger Bands 	|             400,497            	|              6,198              	|             x             	|         x         	|
-|       CCI       	|             338,016            	|              8,268              	|             x             	|         x         	|
-|       EMA       	|            2,231,699            	|             294,657            	|            4.81           	|      740,489      	|
-|       MACD      	|            1,118,681            	|             46,323             	|             x             	|         x         	|
-|       ROC       	|            2,181,411            	|             33,253             	|             x             	|         x         	|
-|       RSI       	|            1,207,454            	|             21,072             	|            148             	|         x         	|
-|       SMA       	|            2,013,733            	|             32,479             	|            120            	|       1,670       	|
-|    Stochastic   	|             277,308            	|             18,914             	|             x             	|         x    	        |
+| AwesomeOscillator |            458,936            	|             13,517             	|             732             	|         x         	|
+|       ATR       	|            720,049            	|             85,709             	|            1,400             	|         x         	|
+| Bollinger Bands 	|             273,562            	|              6,588             	|             62.93            	|         x         	|
+|       CCI       	|             235,552            	|              9,268              	|             x             	|         x         	|
+|       EMA       	|            2,451,966            	|             322,287            	|            4.90           	|      740,489      	|
+|       MACD      	|            1,146,681            	|             48,323             	|             2.10             	|         x         	|
+|       ROC       	|            2,256,411            	|             49,253             	|            617             	|         x         	|
+|       RSI       	|            1,207,454            	|             21,272             	|            148             	|         x         	|
+|       SMA       	|            2,034,006            	|             45,479             	|            1,506            	|       1,670       	|
+|    Stochastic   	|             189,514            	|             20,914             	|             197             	|         x    	        |
+|      WEMA     	|             937,491            	|            296,787             	|             x             	|         x    	        |
+|      PSAR     	|             1,084,123            	|            166,158             	|             x             	|         x
+|       ADX      	|              356,637             	|              26,581           	|             x             	|         x
+|       WMA     	|             97,807            	|            22,617             	|             x             	|         x
