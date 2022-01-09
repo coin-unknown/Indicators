@@ -57,7 +57,7 @@ export class TrendLines {
                         this.lLines[d.lineIndex] = NL
                         this.lLines[d.lineIndex].index = d.lineIndex
                     }
-                    else{
+                    else {
                         this.lLines.push(NL)
                     }
                 }
@@ -67,7 +67,7 @@ export class TrendLines {
             this.hLineDirectives.forEach((d, i) => {
                 if (d.condition == 'lt' && h < d.value && d.action == 'fork') {
                     let NL = new LineModel(h, null, this.i, this.step, this.hLines.length)
-                    if (d.lineIndex != undefined && this.hLines[d.lineIndex] != undefined && this.hLines[d.lineIndex].k > 0){
+                    if (d.lineIndex != undefined && this.hLines[d.lineIndex] != undefined && this.hLines[d.lineIndex].k > 0) {
                         // New extremum found
                         this.hLines[d.lineIndex] = NL
                         this.hLines[d.lineIndex].index = d.lineIndex
@@ -147,60 +147,32 @@ export class TrendLines {
                 this.hLines = IntermediateResult
             }
         }
+        // Estimate trend
+
+        // Return result
+        let lines = [this.hLines, this.lLines]
+        let ind = [1, 2, 3, 4, 5]
+        result = []
         if (this.slidingMethod == 1) {
-            let hll = this.hLines.length
-            let lll = this.lLines.length
-            result = [
-                this.hLines && hll > 0 && this.hLines[hll - 1] && this.hLines[hll - 1].thisPoint ? this.hLines[hll - 1].thisPoint.y : undefined,
-                this.hLines && hll > 1 && this.hLines[hll - 2] && this.hLines[hll - 2].thisPoint ? this.hLines[hll - 2].thisPoint.y : undefined,
-                this.hLines && hll > 2 && this.hLines[hll - 3] && this.hLines[hll - 3].thisPoint ? this.hLines[hll - 3].thisPoint.y : undefined,
-                this.hLines && hll > 3 && this.hLines[hll - 4] && this.hLines[hll - 4].thisPoint ? this.hLines[hll - 4].thisPoint.y : undefined,
-                this.hLines && hll > 4 && this.hLines[hll - 5] && this.hLines[hll - 5].thisPoint ? this.hLines[hll - 5].thisPoint.y : undefined,
-
-                this.lLines && lll > 0 && this.lLines[lll - 1] && this.lLines[lll - 1].thisPoint ? this.lLines[lll - 1].thisPoint.y : undefined,
-                this.lLines && lll > 1 && this.lLines[lll - 2] && this.lLines[lll - 2].thisPoint ? this.lLines[lll - 2].thisPoint.y : undefined,
-                this.lLines && lll > 2 && this.lLines[lll - 3] && this.lLines[lll - 3].thisPoint ? this.lLines[lll - 3].thisPoint.y : undefined,
-                this.lLines && lll > 3 && this.lLines[lll - 4] && this.lLines[lll - 4].thisPoint ? this.lLines[lll - 4].thisPoint.y : undefined,
-                this.lLines && lll > 4 && this.lLines[lll - 5] && this.lLines[lll - 5].thisPoint ? this.lLines[lll - 5].thisPoint.y : undefined,
-
-                this.lLines && this.lLines[0] && this.lLines[0].k ? this.lLines[0].k * scale.k + scale.y : undefined,
-                this.lLines && this.lLines[1] && this.lLines[1].k ? this.lLines[1].k * scale.k + scale.y : undefined,
-                this.lLines && this.lLines[2] && this.lLines[2].k ? this.lLines[2].k * scale.k + scale.y : undefined,
-                this.lLines && this.lLines[3] && this.lLines[3].k ? this.lLines[3].k * scale.k + scale.y : undefined,
-                this.lLines && this.lLines[4] && this.lLines[4].k ? this.lLines[4].k * scale.k + scale.y : undefined,
-
-                this.hLines && this.hLines[0] && this.hLines[0].k ? this.hLines[0].k * scale.k + scale.y : undefined,
-                this.hLines && this.hLines[1] && this.hLines[1].k ? this.hLines[1].k * scale.k + scale.y : undefined,
-                this.hLines && this.hLines[2] && this.hLines[2].k ? this.hLines[2].k * scale.k + scale.y : undefined,
-                this.hLines && this.hLines[3] && this.hLines[3].k ? this.hLines[3].k * scale.k + scale.y : undefined,
-                this.hLines && this.hLines[4] && this.hLines[4].k ? this.hLines[4].k * scale.k + scale.y : undefined
-            ]
-        } else if (this.slidingMethod == 0)
-            result = [
-                this.hLines && this.hLines[0] && this.hLines[0].thisPoint ? this.hLines[0].thisPoint.y : undefined,
-                this.hLines && this.hLines[1] && this.hLines[1].thisPoint ? this.hLines[1].thisPoint.y : undefined,
-                this.hLines && this.hLines[2] && this.hLines[2].thisPoint ? this.hLines[2].thisPoint.y : undefined,
-                this.hLines && this.hLines[3] && this.hLines[3].thisPoint ? this.hLines[3].thisPoint.y : undefined,
-                this.hLines && this.hLines[4] && this.hLines[4].thisPoint ? this.hLines[4].thisPoint.y : undefined,
-
-                this.lLines && this.lLines[0] && this.lLines[0].thisPoint ? this.lLines[0].thisPoint.y : undefined,
-                this.lLines && this.lLines[1] && this.lLines[1].thisPoint ? this.lLines[1].thisPoint.y : undefined,
-                this.lLines && this.lLines[2] && this.lLines[2].thisPoint ? this.lLines[2].thisPoint.y : undefined,
-                this.hLines && this.lLines[3] && this.lLines[3].thisPoint ? this.lLines[3].thisPoint.y : undefined,
-                this.hLines && this.lLines[4] && this.lLines[4].thisPoint ? this.lLines[4].thisPoint.y : undefined,
-
-                this.hLines && this.hLines[0] && this.hLines[0].k ? this.hLines[0].k * scale.k + scale.y : undefined,
-                this.hLines && this.hLines[1] && this.hLines[1].k ? this.hLines[1].k * scale.k + scale.y : undefined,
-                this.hLines && this.hLines[2] && this.hLines[2].k ? this.hLines[2].k * scale.k + scale.y : undefined,
-                this.hLines && this.hLines[3] && this.hLines[3].k ? this.hLines[3].k * scale.k + scale.y : undefined,
-                this.hLines && this.hLines[4] && this.hLines[4].k ? this.hLines[4].k * scale.k + scale.y : undefined,
-
-                this.lLines && this.lLines[0] && this.lLines[0].k ? this.lLines[0].k * scale.k + scale.y : undefined,
-                this.lLines && this.lLines[1] && this.lLines[1].k ? this.lLines[1].k * scale.k + scale.y : undefined,
-                this.lLines && this.lLines[2] && this.lLines[2].k ? this.lLines[2].k * scale.k + scale.y : undefined,
-                this.lLines && this.lLines[3] && this.lLines[3].k ? this.lLines[3].k * scale.k + scale.y : undefined,
-                this.lLines && this.lLines[4] && this.lLines[4].k ? this.lLines[4].k * scale.k + scale.y : undefined
-            ]
+            lines.forEach((line, lIndex) => {
+                let ll = lIndex == 0 ? this.hLines.length : this.lLines.length
+                ind.forEach(i => {
+                    result.push(line && ll > i - 1 && line[ll - i] && line[ll - i].thisPoint ? line[ll - i].thisPoint.y : undefined)
+                })
+                ind.forEach(i =>
+                    result.push(line && line[ll - i] && line[ll - i].k ? line[0].k * scale.k + scale.y : undefined)
+                )
+            })
+        } else if (this.slidingMethod == 0) {
+            lines.forEach(line => {
+                ind.forEach(i => {
+                    result.push(line && line[i - 1] && line[i - 1].thisPoint && line[i - 1].rollback == null ? line[i - 1].thisPoint.y : undefined)
+                })
+                ind.forEach(i =>
+                    result.push(line && line[i - 1] && line[i - 1].k ? line[i - 1].k * scale.k + scale.y : undefined)
+                )
+            })
+        }
         this.i++
         return result;
     }
