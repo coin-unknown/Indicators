@@ -60,7 +60,7 @@ export class DC {
         const rmMax = this.highest.push(high);
         const rmMin = this.lowest.push(low);
 
-        if (!this.highest.filled()) {
+        if (!this.highest.filled) {
             return;
         }
 

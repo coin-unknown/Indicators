@@ -1,7 +1,8 @@
 export { Level } from './src/providers/level';
 export { Correlation } from './src/providers/correlation';
 export { SMA } from './src/sma';
-export { RMA } from './src/rma';
+export { WEMA } from './src/wema';
+export { WMA } from './src/wma';
 export { EMA } from './src/ema';
 export { EWMA } from './src/ewma';
 export { AO } from './src/ao';
@@ -22,3 +23,7 @@ export { HeikenAshi } from './src/heiken-ashi';
 export { Pivot } from './src/pivot';
 export { LWMA } from './src/lwma';
 export { TrendLines } from './src/trendlines';
+export { PSAR } from './src/psar';
+export { ADX } from './src/adx';
+export { WWS } from './src/wws';
+export { SuperTrend } from './src/supertrend';

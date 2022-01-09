@@ -30,22 +30,23 @@ export class AC {
             return;
         }
 
+        // Performance hack with method overrides speed up +30_000 op/sec
+        this.nextValue = (high: number, low: number) => {
+            this.aoValue = this.ao.nextValue(high, low);
+            this.smaValue = this.sma.nextValue(this.aoValue);
+
+            return this.aoValue - this.smaValue;
+        };
+
+        // Performance hack with method overrides
+        this.momentValue = (high: number, low: number) => {
+            return this.ao.momentValue(high, low) - this.sma.momentValue(this.aoValue);
+        };
+
         return this.aoValue - this.smaValue;
     }
 
     momentValue(high: number, low: number) {
-        const aoValue = this.ao.momentValue(high, low);
-
-        if (aoValue === undefined) {
-            return;
-        }
-
-        const smaValue = this.sma.momentValue(aoValue);
-
-        if (smaValue === undefined) {
-            return;
-        }
-
-        return aoValue - smaValue;
+        return;
     }
 }
