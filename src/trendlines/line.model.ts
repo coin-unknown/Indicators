@@ -5,21 +5,27 @@ import { LineEvent, LineDirective, Point } from './types'
  * this.index - index in lineDirectives array
  */
 export class LineModel {
-    private type: 'h' | 'l'
+    public type: 'h' | 'l'
     public index: number
-    public length: number //Line's living time
+    public length: number       //Line's living time
     //TODO Make points window in FIFO stack
     public startPoint: Point
     private prevPoint: Point
-    public thisPoint: Point // Current Point on the line
+    public thisPoint: Point     // Current Point on the line
     public nextPoint: Point
-    public candlePoint: Point  // Point on the current candle
+    public candlePoint: Point   // Point on the current candle
+    public forked: boolean = false      // Flag of bounced line
     public k: number
     private b: number
-    private step: number //Шаг времени в минутах
+    private step: number        // Step of time in minutes
+    // rollback of the line: the case when a price change direction is opposite the line direction
+    public rollback: {
+        k: number
+        b: number
+        length: number
+    } | null
 
     constructor(h, l, i, step, index) {
-        this.type = 'h';
         this.step = step;
         this.index = index;
         // TODO On fork startPoint is the fork point not the candle point
@@ -32,9 +38,10 @@ export class LineModel {
     }
 
     init(h, l, i) {
-        this.type = h ? 'h' : 'l';
+        if (!this.type)
+            this.type = h ? 'h' : 'l';
         this.candlePoint = {
-            y: h || l,
+            y: this.type == 'h' ? h : l,
             x: i
         }
         this.length = this.candlePoint.x - this.startPoint.x
@@ -86,6 +93,15 @@ export class LineModel {
                 y: this.k * (this.candlePoint.x + this.step) + this.b,
                 x: this.candlePoint.x + this.step
             }
+            let rollbackTime = this.rollback ? this.rollback.length : 0
+            let rollbackIncline = this.candlePoint.y - this.prevPoint.y // Take only one candle
+            if ((this.type == 'h' ? rollbackIncline > 0 : rollbackIncline < 0))
+                this.rollback = {
+                    k: rollbackIncline,
+                    b: this.candlePoint.y - rollbackIncline * this.candlePoint.x,
+                    length: rollbackTime + 1
+                }
+            else this.rollback = null
             // Wait for bounce
             result = {
                 condition: this.type == 'h' ? 'lt' : 'gt',
@@ -93,6 +109,9 @@ export class LineModel {
                 action: 'fork',
                 lineIndex: this.index
             }
+        } else {
+            // TODO keep rollback length over 1-2 steps going by the line
+            this.rollback = null
         }
 
         return result
