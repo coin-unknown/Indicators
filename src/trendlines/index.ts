@@ -1,11 +1,17 @@
-import { LineModel } from './line'
+import { LineModel } from './line.model'
+import { LinesModel } from './lines.model'
 import { LineEvent, LineDirective, Point } from './types'
+import { TrendStateModel } from './trend.model'
 
 export class TrendLines {
     public hLineDirectives: LineDirective[] = []
     public lLineDirectives: LineDirective[] = []
+    private hLineIndex: number = 1
+    private lLineIndex: number = 1
+    public trend: TrendStateModel
     private hLines: LineModel[]
     private lLines: LineModel[]
+    private lines: LinesModel
     private step: number = 1        // TODO operate in different time scale
     private i: number = 0
     // Settings
@@ -22,6 +28,8 @@ export class TrendLines {
         this.slidingMethod = slidingMethod
         this.minLog = minLog
         this.maxLog = maxLog
+        this.lines = new LinesModel(this.step)
+        this.trend = new TrendStateModel(this.lines)
     }
 
     log(title, ...data) {
@@ -40,137 +48,116 @@ export class TrendLines {
      */
     nextValue(o: number, c: number, h: number, l: number) {
         let result: number[];
+
+        // Debug only
         let scale = {
             y: 1000,
             k: 20
         }
-        this.localCounter++ // Debug only
+        let scaleState = {
+            y: 2780,
+            delta: 20
+        }
+        this.localCounter++
 
         // Apply line directives got on prevues step
-        if (this.lLines && this.lLineDirectives) {
+        if (this.lLineDirectives.length > 0) {
             // TODO Fork only last line in Array
             this.lLineDirectives.forEach((d, i) => {
                 if (d.condition == 'gt' && l > d.value && d.action == 'fork') {
-                    let NL = new LineModel(null, l, this.i, this.step, this.lLines.length)
-                    if (d.lineIndex != undefined && this.lLines[d.lineIndex] != undefined && this.lLines[d.lineIndex].k < 0) {
-                        // New extremum found
-                        this.lLines[d.lineIndex] = NL
-                        this.lLines[d.lineIndex].index = d.lineIndex
-                    }
-                    else {
-                        this.lLines.push(NL)
+                    if (this.lines.id[d.lineIndex]) {
+                        this.lines.id[d.lineIndex].forked = true
+                        if (d.lineIndex != undefined && this.lines.id[d.lineIndex] != undefined && this.lines.id[d.lineIndex].k < 0)
+                            this.lines.add(null, l, this.i, d.lineIndex) // New extremum found
+                        else
+                            this.lines.add(null, l, this.i)
                     }
                 }
             })
         }
-        if (this.hLines && this.hLineDirectives) {
+        if (this.hLineDirectives.length > 0) {
             this.hLineDirectives.forEach((d, i) => {
                 if (d.condition == 'lt' && h < d.value && d.action == 'fork') {
-                    let NL = new LineModel(h, null, this.i, this.step, this.hLines.length)
-                    if (d.lineIndex != undefined && this.hLines[d.lineIndex] != undefined && this.hLines[d.lineIndex].k > 0) {
-                        // New extremum found
-                        this.hLines[d.lineIndex] = NL
-                        this.hLines[d.lineIndex].index = d.lineIndex
+                    if (this.lines.id[d.lineIndex]) {
+                        this.lines.id[d.lineIndex].forked = true
+                        if (this.lines.id[d.lineIndex].k > 0)
+                            this.lines.add(h, null, this.i, d.lineIndex) // New extremum found
+                        else
+                            this.lines.add(h, null, this.i)
                     }
-                    else
-                        this.hLines.push(NL)
                 }
             })
         }
         // Update lines and get future directives
         this.hLineDirectives.length = 0
         this.lLineDirectives.length = 0
-        if (!this.hLines) {
-            let tLine = new LineModel(h, null, this.i, this.step, 0)
-            this.hLines = [tLine]
-            tLine = new LineModel(null, l, this.i, this.step, 0)
-            this.lLines = [tLine]
+        if (this.lines.list[0].length < 1) {
+            this.lines.add(h, null, this.i)
+            this.lines.add(null, l, this.i)
         } else {
             let updated
-            this.hLines.forEach((tline, i) => {
-                updated = null
-                if (tline.startPoint.x < this.i) // Skip the case if line was just created. TODO make it gracefully
-                    updated = tline.update(h, null, this.i)
-                if (updated)
-                    this.hLineDirectives.push(updated)
-                // Drop extreme lines
-                if (tline.thisPoint.y > h * 1.2)
-                    this.hLines.splice(i, 1)
-
-            })
-            this.lLines.forEach((tline, i) => {
-                updated = null
-                if (tline.startPoint.x < this.i) // Skip the case if line was just created. TODO make it gracefully
-                    updated = tline.update(null, l, this.i)
-                if (updated)
-                    this.lLineDirectives.push(updated)
-                // Drop extreme lines
-                if (tline.thisPoint.y < l * 0.8)
-                    this.lLines.splice(i, 1)
-            })
+            this.lines.list.forEach(ofLines =>
+                ofLines.forEach(lineID => {
+                    if (this.lines.id[lineID] && this.lines.id[lineID].type) {
+                        updated = null
+                        if (this.lines.id[lineID] && this.lines.id[lineID].startPoint.x < this.i) // Skip the case if line was just created. TODO make it gracefully
+                            updated = this.lines.update(lineID, h, l, this.i)
+                        let type = this.lines.id[lineID].type
+                        if (updated)
+                            type == 'h' ? this.hLineDirectives.push(updated) : this.lLineDirectives.push(updated)
+                        // Deprecated
+                        if ((type == 'h' && this.lines.id[lineID].thisPoint.y > h * 1.2) || (type == 'l' && this.lines.id[lineID].thisPoint.y < l * 0.8))
+                            this.lines.delete(lineID)
+                    }
+                })
+            )
         }
 
-        //Delete passed trends
-        let toDelete
-        let IntermediateResult
-
-        if (this.lLines) {
-            toDelete = []
-            this.lLines.forEach((l, i) => {
-                if (i > 0 && this.lLines[i].thisPoint && this.lLines[i - 1].thisPoint.y >= this.lLines[i].thisPoint.y || i > this.maxForks) {
-                    toDelete.push(i)
-                }
-            })
-            IntermediateResult = []
-            this.lLines.forEach((line, i) => {
-                if (toDelete.indexOf(i) < 0)
-                    IntermediateResult.push(line)
-            })
-            if (IntermediateResult.length > 0) {
-                this.lLines = IntermediateResult
+        //Delete passed lines
+        let toDelete = []
+        this.lines.list.forEach(ofLines => {
+            if (ofLines) {
+                toDelete = []
+                ofLines.forEach((lineID, i) => {
+                    let thisLine = this.lines.id[ofLines[i]]
+                    let prevLine = this.lines.id[ofLines[i - 1]]
+                    if (
+                        (i > 0 && thisLine && prevLine && thisLine.type == 'h' && thisLine.thisPoint && prevLine.thisPoint.y <= thisLine.thisPoint.y || i > this.maxForks) ||
+                        (i > 0 && thisLine && prevLine && thisLine.type == 'l' && thisLine.thisPoint && prevLine.thisPoint.y >= thisLine.thisPoint.y || i > this.maxForks)
+                    ) {
+                        toDelete.push(lineID)
+                    }
+                })
+                toDelete.forEach(lineID => this.lines.delete(lineID))
             }
-        }
-        if (this.hLines) {
-            toDelete = []
-            this.hLines.forEach((l, i) => {
-                if (i > 0 && this.hLines[i].thisPoint && this.hLines[i - 1].thisPoint.y <= this.hLines[i].thisPoint.y || i > this.maxForks) {
-                    toDelete.push(i)
-                }
-            })
-            IntermediateResult = []
-            this.hLines.forEach((line, i) => {
-                if (toDelete.indexOf(i) < 0) {
-                    IntermediateResult.push(line)
-                }
-            })
-            if (IntermediateResult.length > 0) {
-                this.hLines = IntermediateResult
-            }
-        }
+        })
+
         // Estimate trend
-
+        this.trend.update(this.lines.list[0], this.lines.list[1])
         // Return result
-        let lines = [this.hLines, this.lLines]
-        let ind = [1, 2, 3, 4, 5]
+        const ind = [0, 1, 2, 3, 4]
         result = []
         if (this.slidingMethod == 1) {
-            lines.forEach((line, lIndex) => {
-                let ll = lIndex == 0 ? this.hLines.length : this.lLines.length
+            this.lines.list.forEach((lineIDs, side) => {
+                const ll = this.lines.list[side].length
                 ind.forEach(i => {
-                    result.push(line && ll > i - 1 && line[ll - i] && line[ll - i].thisPoint ? line[ll - i].thisPoint.y : undefined)
+                    const closerLineID = this.lines.list[side][ll - i]
+                    const closerLine = this.lines[closerLineID]
+                    result.push(closerLine && ll > i - 1 && closerLine.thisPoint ? closerLine.thisPoint.y : undefined)
                 })
-                ind.forEach(i =>
-                    result.push(line && line[ll - i] && line[ll - i].k ? line[0].k * scale.k + scale.y : undefined)
-                )
             })
         } else if (this.slidingMethod == 0) {
-            lines.forEach(line => {
+            this.lines.list.forEach((lineIDs, side) => {
                 ind.forEach(i => {
-                    result.push(line && line[i - 1] && line[i - 1].thisPoint && line[i - 1].rollback == null ? line[i - 1].thisPoint.y : undefined)
+                    const thisLineID = this.lines.list[side][i]
+                    const thisLine = this.lines.id[thisLineID]
+                    result.push(thisLine && thisLine.thisPoint ? thisLine.thisPoint.y : undefined) // && thisLine.rollback == null
                 })
-                ind.forEach(i =>
-                    result.push(line && line[i - 1] && line[i - 1].k ? line[i - 1].k * scale.k + scale.y : undefined)
-                )
+                /*                 ind.forEach(i => {
+                                    const thisLineID = this.lines.list[side][i]
+                                    const thisLine = this.lines.id[thisLineID]
+                                    result.push(thisLine && thisLine.k ? thisLine.k * scale.k + scale.y : undefined)
+                                }) */
             })
         }
         this.i++
