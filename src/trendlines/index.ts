@@ -133,10 +133,10 @@ export class TrendLines {
         })
 
         // Estimate trend
-        this.trend.update(this.lines.list[0], this.lines.list[1])
+        let trendData = this.trend.update(this.lines.list[0], this.lines.list[1])
         // Return result
         const ind = [0, 1, 2, 3, 4]
-        result = []
+        result = [...trendData]
         if (this.slidingMethod == 1) {
             this.lines.list.forEach((lineIDs, side) => {
                 const ll = this.lines.list[side].length
@@ -151,13 +151,13 @@ export class TrendLines {
                 ind.forEach(i => {
                     const thisLineID = this.lines.list[side][i]
                     const thisLine = this.lines.id[thisLineID]
-                    result.push(thisLine && thisLine.thisPoint ? thisLine.thisPoint.y : undefined) // && thisLine.rollback == null
+                    result.push(thisLine && thisLine.thisPoint && thisLine.rollback == null ? thisLine.thisPoint.y : undefined)
                 })
                 /*                 ind.forEach(i => {
                                     const thisLineID = this.lines.list[side][i]
                                     const thisLine = this.lines.id[thisLineID]
                                     result.push(thisLine && thisLine.k ? thisLine.k * scale.k + scale.y : undefined)
-                                }) */
+                }) */
             })
         }
         this.i++

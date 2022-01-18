@@ -89,12 +89,14 @@ export class LineModel {
             this.k = (this.candlePoint.y - this.startPoint.y) / (this.candlePoint.x - this.startPoint.x)
             this.b = this.candlePoint.y - this.k * this.candlePoint.x
             this.thisPoint = this.candlePoint
+            this.length = 0
             this.nextPoint = {
                 y: this.k * (this.candlePoint.x + this.step) + this.b,
                 x: this.candlePoint.x + this.step
             }
             let rollbackTime = this.rollback ? this.rollback.length : 0
             let rollbackIncline = this.candlePoint.y - this.prevPoint.y // Take only one candle
+            // TODO Compare not by y axis but by the line projection
             if ((this.type == 'h' ? rollbackIncline > 0 : rollbackIncline < 0))
                 this.rollback = {
                     k: rollbackIncline,
