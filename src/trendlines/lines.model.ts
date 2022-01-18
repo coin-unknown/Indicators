@@ -42,7 +42,7 @@ export class LinesModel {
         if (this.id[lineID].type == 'h')
             this.list[0].splice(this.list[0].indexOf(lineID), 1)
         else
-            this.list[1].splice(this.list[0].indexOf(lineID), 1)
+            this.list[1].splice(this.list[1].indexOf(lineID), 1)
         delete this.id[lineID]
     }
 }
