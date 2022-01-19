@@ -22,6 +22,11 @@ export class TrendLines {
     consoleWindow: boolean
     minLog
     maxLog
+    prevPoint: {
+        x: number,
+        l: number,
+        h: number
+    } = null
 
     constructor(maxForks = 10, slidingMethod = 1, minLog = 0, maxLog = 10) {
         this.maxForks = maxForks
@@ -68,7 +73,7 @@ export class TrendLines {
                     if (this.lines.id[d.lineIndex]) {
                         this.lines.id[d.lineIndex].forked = true
                         if (d.lineIndex != undefined && this.lines.id[d.lineIndex] != undefined && this.lines.id[d.lineIndex].k < 0)
-                            this.lines.add(null, l, this.i, d.lineIndex) // New extremum found
+                            this.lines.add(null, l, this.i, d.lineIndex, this.prevPoint) // New extremum found
                         else
                             this.lines.add(null, l, this.i)
                     }
@@ -81,7 +86,7 @@ export class TrendLines {
                     if (this.lines.id[d.lineIndex]) {
                         this.lines.id[d.lineIndex].forked = true
                         if (this.lines.id[d.lineIndex].k > 0)
-                            this.lines.add(h, null, this.i, d.lineIndex) // New extremum found
+                            this.lines.add(h, null, this.i, d.lineIndex, this.prevPoint) // New extremum found
                         else
                             this.lines.add(h, null, this.i)
                     }
@@ -159,6 +164,11 @@ export class TrendLines {
                                     result.push(thisLine && thisLine.k ? thisLine.k * scale.k + scale.y : undefined)
                 }) */
             })
+        }
+        this.prevPoint = {
+            x: this.i,
+            h: h,
+            l: l
         }
         this.i++
         return result;

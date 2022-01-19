@@ -10,7 +10,7 @@ export class LineModel {
     public length: number       //Line's living time
     //TODO Make points window in FIFO stack
     public startPoint: Point
-    private prevPoint: Point
+    public prevPoint: Point
     public thisPoint: Point     // Current Point on the line
     public nextPoint: Point
     public candlePoint: Point   // Point on the current candle
@@ -25,14 +25,20 @@ export class LineModel {
         length: number
     } | null
 
-    constructor(h, l, i, step, index) {
-        this.step = step;
-        this.index = index;
+    constructor(h, l, i, step, index, prevPoint = null) {
+        this.step = step
+        this.index = index
+        this.length = 0
         // TODO On fork startPoint is the fork point not the candle point
-        this.startPoint = {
-            y: h || l,
-            x: i
-        }
+        this.startPoint = prevPoint ?
+            {
+                y: h ? prevPoint.h : prevPoint.l,
+                x: prevPoint.x
+            }
+            : {
+                y: h || l,
+                x: i
+            }
         this.init(h, l, i);
         this.thisPoint = this.startPoint
     }
@@ -44,7 +50,6 @@ export class LineModel {
             y: this.type == 'h' ? h : l,
             x: i
         }
-        this.length = this.candlePoint.x - this.startPoint.x
         // Shift window if data exists
         if (this.thisPoint) {
             this.prevPoint = this.thisPoint
@@ -65,6 +70,7 @@ export class LineModel {
      */
     update(h, l, i): LineDirective {
         let result = null
+        this.length++
         this.init(h, l, i)
         // Init К b
         if (!this.k || isNaN(this.k)) {

@@ -14,11 +14,11 @@ export class LinesModel {
     private step: number        // Step of time in minutes
     constructor(step) {
         this.step = step
-        this.list = [[],[]]
+        this.list = [[], []]
         this.id = {}
     }
 
-    add(h: number, l: number, i: number, lineID = null): number {
+    add(h: number, l: number, i: number, lineID = null, prevPoint = null): number {
         let curIndex
         if (lineID == null) {
             curIndex = this.lineIndex
@@ -29,7 +29,7 @@ export class LinesModel {
                 this.list[1].push(curIndex)
         } else
             curIndex = lineID
-        this.id[curIndex] = new LineModel(h, l, i, this.step, curIndex)
+        this.id[curIndex] = new LineModel(h, l, i, this.step, curIndex, lineID != null ? prevPoint : null)
         return curIndex
     }
 
