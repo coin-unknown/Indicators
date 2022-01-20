@@ -10,16 +10,19 @@ export class TrendStateModel {
         state: null | 'unknown' | 'flat' | 'rise' | 'fall' | 'squeeze',
         lineIndex: number | null,
         line: LineModel | null
+        size?: number
     }
     is: {                                                                         // current state
         state: null | 'flat' | 'rise' | 'fall',
         lineIndex: number | null,
-        line: LineModel | null
+        line: LineModel | null,
+        size?: number
     }
     was: {                                                                       // prevues state
         state: null | 'flat' | 'rise' | 'fall',
         lineIndex: number,
-        line: LineModel | null
+        line: LineModel | null,
+        size?: number
     }
     width: number                                           // longer state trend width
     speed: number                                           // longer state trend speed
@@ -55,8 +58,6 @@ export class TrendStateModel {
      * Головная линия не определена.
      * 1. Появилась первая длительная линия.
      * 2. Линия кончилась, есть противоположная линия то сломанную линию в was (точки начала и конца), меняем is на новую линию
-     *
-     *
      * 3. Ждем конца этого тренда (встречное движение), если есть противоположная линия, то сломанная линия в was, меняем is,
      * устанавливаем in в состояние по новой линии.
      * Иначе пропускаем этот шаг, ждем восстановления линии и следующего пробития.
@@ -90,17 +91,34 @@ export class TrendStateModel {
         }
 
         if (this.is.state && !this.was.state) {
+            // Wait from the break
             if (this.lines.id[this.is.lineIndex].rollback) {
                 this.was.state = this.is.state
+                this.was.size = this.is.line.startPoint.y - this.is.line.thisPoint.y
                 if (this.is.state == "fall" ? this.llMaxDuration.length > 1 : this.hlMaxDuration.length > 1) {
                     this.is.line = this.is.state == "fall" ? this.llMaxDuration : this.hlMaxDuration
                     this.is.state = this.is.line.type == 'h' ? 'fall' : 'rise'
                     this.is.lineIndex = this.is.line.index
                 }
-                this.is.state = this.llMaxDuration.length > 3 && this.hlMaxDuration.length < 3 ? 'fall' //hLines
-                    : (this.hlMaxDuration.length > 3 && this.llMaxDuration.length < 3 ? 'rise' : null)
             }
         }
+        if (this.is.state && this.was.state) {
+            // Wait from the break
+            if (this.lines.id[this.is.lineIndex].rollback) {
+                // Calculate and compare was and is
+                this.is.size =  this.is.line.startPoint.y - this.is.line.thisPoint.y
+                this.in.size = this.was.size = this.is.size
+                // Copy is to was
+                this.was = this.is
+                // Update is
+                if (this.is.state == "fall" ? this.llMaxDuration.length > 1 : this.hlMaxDuration.length > 1) {
+                    this.is.line = this.is.state == "fall" ? this.llMaxDuration : this.hlMaxDuration
+                    this.is.state = this.is.line.type == 'h' ? 'fall' : 'rise'
+                    this.is.lineIndex = this.is.line.index
+                }
+            }
+        }
+
         return [(this.is.state && this.is.state == 'fall') ? 2780 : 2800]
     }
 }
