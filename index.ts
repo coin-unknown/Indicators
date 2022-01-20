@@ -1,4 +1,7 @@
+import * as TrendLines from './src/trendlines';
+
 export { Extremums } from './src/providers/extremum';
+export { TrendLines };
 export { Level } from './src/providers/level';
 export { Correlation } from './src/providers/correlation';
 export { SMA } from './src/sma';
@@ -23,7 +26,6 @@ export { MACD } from './src/macd';
 export { HeikenAshi } from './src/heiken-ashi';
 export { Pivot } from './src/pivot';
 export { LWMA } from './src/lwma';
-export { TrendLines } from './src/trendlines';
 export { PSAR } from './src/psar';
 export { ADX } from './src/adx';
 export { WWS } from './src/wws';

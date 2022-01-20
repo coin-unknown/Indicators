@@ -3,7 +3,8 @@ import { LinesModel } from './lines.model'
 import { LineEvent, LineDirective, Point } from './types'
 import { TrendStateModel } from './trend.model'
 
-export class TrendLines {
+export type { LinesModel };
+export class Indicator {
     public hLineDirectives: LineDirective[] = []
     public lLineDirectives: LineDirective[] = []
     private hLineIndex: number = 1
@@ -22,11 +23,6 @@ export class TrendLines {
     consoleWindow: boolean
     minLog
     maxLog
-    prevPoint: {
-        x: number,
-        l: number,
-        h: number
-    } = null
 
     constructor(maxForks = 10, slidingMethod = 1, minLog = 0, maxLog = 10) {
         this.maxForks = maxForks
@@ -52,8 +48,6 @@ export class TrendLines {
      * @returns - arrow of 6 lines points
      */
     nextValue(o: number, c: number, h: number, l: number) {
-        let result: number[];
-
         // Debug only
         let scale = {
             y: 1000,
@@ -73,7 +67,7 @@ export class TrendLines {
                     if (this.lines.id[d.lineIndex]) {
                         this.lines.id[d.lineIndex].forked = true
                         if (d.lineIndex != undefined && this.lines.id[d.lineIndex] != undefined && this.lines.id[d.lineIndex].k < 0)
-                            this.lines.add(null, l, this.i, d.lineIndex, this.prevPoint) // New extremum found
+                            this.lines.add(null, l, this.i, d.lineIndex) // New extremum found
                         else
                             this.lines.add(null, l, this.i)
                     }
@@ -86,7 +80,7 @@ export class TrendLines {
                     if (this.lines.id[d.lineIndex]) {
                         this.lines.id[d.lineIndex].forked = true
                         if (this.lines.id[d.lineIndex].k > 0)
-                            this.lines.add(h, null, this.i, d.lineIndex, this.prevPoint) // New extremum found
+                            this.lines.add(h, null, this.i, d.lineIndex) // New extremum found
                         else
                             this.lines.add(h, null, this.i)
                     }
@@ -138,40 +132,11 @@ export class TrendLines {
         })
 
         // Estimate trend
-        let trendData = this.trend.update(this.lines.list[0], this.lines.list[1])
-        // Return result
-        const ind = [0, 1, 2, 3, 4]
-        result = [...trendData]
-        if (this.slidingMethod == 1) {
-            this.lines.list.forEach((lineIDs, side) => {
-                const ll = this.lines.list[side].length
-                ind.forEach(i => {
-                    const closerLineID = this.lines.list[side][ll - i]
-                    const closerLine = this.lines[closerLineID]
-                    result.push(closerLine && ll > i - 1 && closerLine.thisPoint ? closerLine.thisPoint.y : undefined)
-                })
-            })
-        } else if (this.slidingMethod == 0) {
-            this.lines.list.forEach((lineIDs, side) => {
-                ind.forEach(i => {
-                    const thisLineID = this.lines.list[side][i]
-                    const thisLine = this.lines.id[thisLineID]
-                    result.push(thisLine && thisLine.thisPoint && thisLine.rollback == null ? thisLine.thisPoint.y : undefined)
-                })
-                /*                 ind.forEach(i => {
-                                    const thisLineID = this.lines.list[side][i]
-                                    const thisLine = this.lines.id[thisLineID]
-                                    result.push(thisLine && thisLine.k ? thisLine.k * scale.k + scale.y : undefined)
-                }) */
-            })
-        }
-        this.prevPoint = {
-            x: this.i,
-            h: h,
-            l: l
-        }
+        this.trend.update(this.lines.list[0], this.lines.list[1])
         this.i++
-        return result;
+
+        // Return result
+        return this.lines;
     }
 
 }
