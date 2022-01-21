@@ -17,12 +17,17 @@ export class Indicator {
     private i: number = 0
     // Settings
     private slidingMethod: number = 0   // Set draw method: 0 - not sliding TL, 1 -sliding TL, 2 - states
-    private maxForks = 10           // Forks of line
+    private maxForks = 10               // Forks of line
     // Debug values
     localCounter = 0
     consoleWindow: boolean
     minLog
     maxLog
+    prevPoint: {
+        x: number,
+        l: number,
+        h: number
+    } = null
 
     constructor(maxForks = 10, slidingMethod = 1, minLog = 0, maxLog = 10) {
         this.maxForks = maxForks
@@ -67,7 +72,7 @@ export class Indicator {
                     if (this.lines.id[d.lineIndex]) {
                         this.lines.id[d.lineIndex].forked = true
                         if (d.lineIndex != undefined && this.lines.id[d.lineIndex] != undefined && this.lines.id[d.lineIndex].k < 0)
-                            this.lines.add(null, l, this.i, d.lineIndex) // New extremum found
+                            this.lines.add(null, l, this.i, d.lineIndex, this.prevPoint) // New extremum found
                         else
                             this.lines.add(null, l, this.i)
                     }
@@ -80,7 +85,7 @@ export class Indicator {
                     if (this.lines.id[d.lineIndex]) {
                         this.lines.id[d.lineIndex].forked = true
                         if (this.lines.id[d.lineIndex].k > 0)
-                            this.lines.add(h, null, this.i, d.lineIndex) // New extremum found
+                            this.lines.add(h, null, this.i, d.lineIndex, this.prevPoint) // New extremum found
                         else
                             this.lines.add(h, null, this.i)
                     }
@@ -130,7 +135,11 @@ export class Indicator {
                 toDelete.forEach(lineID => this.lines.delete(lineID))
             }
         })
-
+        this.prevPoint = {
+            x: this.i,
+            h: h,
+            l: l
+        }
         // Estimate trend
         this.trend.update(this.lines.list[0], this.lines.list[1])
         this.i++
