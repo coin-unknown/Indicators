@@ -54,14 +54,14 @@ export class TrendStateModel {
     }
 
     /**
-     * Базовый алгоритм
-     * Головная линия не определена.
-     * 1. Появилась первая длительная линия.
-     * 2. Линия кончилась, есть противоположная линия то сломанную линию в was (точки начала и конца), меняем is на новую линию
-     * 3. Ждем конца этого тренда (встречное движение), если есть противоположная линия, то сломанная линия в was, меняем is,
-     * устанавливаем in в состояние по новой линии.
-     * Иначе пропускаем этот шаг, ждем восстановления линии и следующего пробития.
-     */
+          * Trend v 0.1.0
+          * Headline not defined.
+          * 1. The first long line appeared.
+          * 2. The line is over, there is an opposite line, then a broken line in was (start and end points), change is to a new line
+          * 3. We are waiting for the end of this trend (oncoming movement), if there is an opposite line, then the broken line in was, change is,
+          * set in to the state on the new line.
+          * Otherwise, we skip this step, wait for the line to be restored and the next break.
+          */
     hlMaxDuration: LineModel | null
     llMaxDuration: LineModel | null
 
@@ -90,26 +90,14 @@ export class TrendStateModel {
             }
         }
 
-        if (this.is.state && !this.was.state) {
-            // Wait from the break
-            if (this.lines.id[this.is.lineIndex].rollback) {
-                this.was.state = this.is.state
-                this.was.size = this.is.line.startPoint.y - this.is.line.thisPoint.y
-                if (this.is.state == "fall" ? this.llMaxDuration.length > 1 : this.hlMaxDuration.length > 1) {
-                    this.is.line = this.is.state == "fall" ? this.llMaxDuration : this.hlMaxDuration
-                    this.is.state = this.is.line.type == 'h' ? 'fall' : 'rise'
-                    this.is.lineIndex = this.is.line.index
-                }
-            }
-        }
-        if (this.is.state && this.was.state) {
+        if (this.is.state) {
             // Wait from the break
             if (this.lines.id[this.is.lineIndex].rollback) {
                 // Calculate and compare was and is
-                this.is.size =  this.is.line.startPoint.y - this.is.line.thisPoint.y
-                this.in.size = this.was.size = this.is.size
+                this.is.size = this.is.line.startPoint.y - this.is.line.thisPoint.y
+                this.in.size = this.was.size + this.is.size
                 // Copy is to was
-                this.was = this.is
+                this.was = { ...this.is }
                 // Update is
                 if (this.is.state == "fall" ? this.llMaxDuration.length > 1 : this.hlMaxDuration.length > 1) {
                     this.is.line = this.is.state == "fall" ? this.llMaxDuration : this.hlMaxDuration
