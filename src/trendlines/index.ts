@@ -3,7 +3,7 @@ import { LinesModel } from './lines.model'
 import { LineEvent, LineDirective, Point } from './types'
 import { TrendStateModel } from './trend.model'
 
-export type { LinesModel };
+export type { LinesModel, TrendStateModel };
 export class Indicator {
     public hLineDirectives: LineDirective[] = []
     public lLineDirectives: LineDirective[] = []
@@ -28,7 +28,13 @@ export class Indicator {
         l: number,
         h: number
     } = null
-
+    /**
+     *
+     * @param maxForks
+     * @param slidingMethod
+     * @param minLog
+     * @param maxLog
+     */
     constructor(maxForks = 10, slidingMethod = 1, minLog = 0, maxLog = 10) {
         this.maxForks = maxForks
         this.slidingMethod = slidingMethod

@@ -11,6 +11,9 @@ export class LinesModel {
         [id: string]: LineModel
     }
     lineIndex: number = 0
+    state: number = 0
+    public tradeLineID: number = null
+    public trendLineType: string = null
     private step: number        // Step of time in minutes
     constructor(step) {
         this.step = step
@@ -30,6 +33,16 @@ export class LinesModel {
         } else
             curIndex = lineID
         this.id[curIndex] = new LineModel(h, l, i, this.step, curIndex, lineID != null ? prevPoint : null)
+        if (curIndex > 1 && this.id[curIndex].type != this.trendLineType) {
+            // get prevues line
+            let id = this.list[this.id[curIndex].type == 'h' ? 0 : 1][this.list[this.id[curIndex].type == 'h' ? 0 : 1].indexOf(curIndex) - 1]
+            if ((this.id[curIndex].type == 'h' && this.tradeLineID == null && this.id[id] && this.id[curIndex].thisPoint.y + 1 < this.id[id].thisPoint.y)
+                || this.id[curIndex].type == 'l' && this.trendLineType == 'h') {
+                this.trendLineType = this.id[curIndex].type
+                this.state = this.id[curIndex].type == 'h' ? -1 : 1
+                this.tradeLineID = curIndex
+            }
+        }
         return curIndex
     }
 
@@ -43,6 +56,8 @@ export class LinesModel {
             this.list[0].splice(this.list[0].indexOf(lineID), 1)
         else
             this.list[1].splice(this.list[1].indexOf(lineID), 1)
+        /*         if (this.tradeLineID != null && lineID == this.tradeLineID && this.id[lineID].type != 'h')
+                    this.state = this.id[lineID].type == 'h' ? 1 : -1 */
         delete this.id[lineID]
     }
 }
