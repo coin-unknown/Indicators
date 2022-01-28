@@ -15,6 +15,8 @@ export class LineModel {
     public nextPoint: Point
     public candlePoint: Point   // Point on the current candle
     public forked: boolean = false      // Flag of bounced line
+    public forkedAt: number = 0
+    public lastForkY: number = null
     public k: number
     private b: number
     private step: number        // Step of time in minutes

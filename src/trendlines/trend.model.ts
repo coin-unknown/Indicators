@@ -1,5 +1,6 @@
 import { LineEvent, LineDirective, Point } from './types'
 import { LineModel } from './line.model'
+import { LinesModel } from './lines.model'
 
 /**
  * Trend state Model
@@ -30,8 +31,8 @@ export class TrendStateModel {
     duration: number                                        // duration of the trend
     kdiff: number[] = []
     projection: number
-    lines
-    constructor(lines) {
+    lines: LinesModel
+    constructor(lines: LinesModel) {
         this.lines = lines
         this.in = {
             state: null,
@@ -54,14 +55,12 @@ export class TrendStateModel {
     }
 
     /**
-          * Trend v 0.1.0
-          * Headline not defined.
-          * 1. The first long line appeared.
-          * 2. The line is over, there is an opposite line, then a broken line in was (start and end points), change is to a new line
-          * 3. We are waiting for the end of this trend (oncoming movement), if there is an opposite line, then the broken line in was, change is,
-          * set in to the state on the new line.
-          * Otherwise, we skip this step, wait for the line to be restored and the next break.
-          */
+        * Trend v 0.2.0
+        * when break (and line is forked && length > 5)
+        * if exists opposite line with length > ?5 && length < thisLine.length then createOrder
+        * Stop loss keep ?5 candles
+        * when thisLine breaks or other lines being (forked && length > 5) has broken - closeOrder
+      */
     hlMaxDuration: LineModel | null
     llMaxDuration: LineModel | null
 
@@ -80,7 +79,7 @@ export class TrendStateModel {
         else this.llMaxDuration = this.lines.id[lLinesIDs[0]]
 
         if (this.is.state == null && this.was.state == null) {
-            // Возьмем минимальную длительность тренда = 5 свечей
+            // Take the minimum trend duration = 5 candles
             let firstTimeFrame = 5
             this.is.line = (this.llMaxDuration && this.llMaxDuration.length > firstTimeFrame && this.hlMaxDuration.length < firstTimeFrame) ? this.llMaxDuration //hLines
                 : ((this.hlMaxDuration && this.hlMaxDuration.length > firstTimeFrame && this.llMaxDuration.length < firstTimeFrame) ? this.hlMaxDuration : null)
@@ -91,19 +90,31 @@ export class TrendStateModel {
         }
 
         if (this.is.state) {
-            // Wait from the break
-            if (this.lines.id[this.is.lineIndex].rollback) {
+            // Wait for any line good break
+            let selectedLine: LineModel = this.lines.id[this.is.lineIndex]
+            let foundBreak = null
+            if (selectedLine)
+                this.lines.list[selectedLine.type == 'h' ? 0 : 1].forEach(lineID => {
+                    if (lineID >= selectedLine.index) {
+                        //  when break (and line is forked(bounced) && length > 3
+                        if (this.lines.id[lineID].rollback != null         //  when break
+                            && this.lines.id[lineID].forked         // and line is forked(bounced)
+                            && this.lines.id[lineID].thisPoint.x - this.lines.id[lineID].forkedAt > 3
+                            && (this.is.state == "fall" ? this.llMaxDuration.length > 1 : this.hlMaxDuration.length > 1)
+                        ) foundBreak = lineID
+                    }
+                })
+            if (foundBreak) {
                 // Calculate and compare was and is
                 this.is.size = this.is.line.startPoint.y - this.is.line.thisPoint.y
                 this.in.size = this.was.size + this.is.size
                 // Copy is to was
                 this.was = { ...this.is }
                 // Update is
-                if (this.is.state == "fall" ? this.llMaxDuration.length > 1 : this.hlMaxDuration.length > 1) {
-                    this.is.line = this.is.state == "fall" ? this.llMaxDuration : this.hlMaxDuration
-                    this.is.state = this.is.line.type == 'h' ? 'fall' : 'rise'
-                    this.is.lineIndex = this.is.line.index
-                }
+                // if exists opposite line with length > ?5 && length < thisLine.length then createOrder
+                this.is.line = this.is.state == "fall" ? this.llMaxDuration : this.hlMaxDuration
+                this.is.state = this.is.line.type == 'h' ? 'fall' : 'rise'
+                this.is.lineIndex = this.is.line.index
             }
         }
 
