@@ -76,12 +76,13 @@ export class Indicator {
             this.lLineDirectives.forEach((d, i) => {
                 if (d.condition == 'gt' && l > d.value && d.action == 'fork') {
                     if (this.lines.id[d.lineIndex]) {
-                        this.lines.id[d.lineIndex].forked = true
-                        this.lines.id[d.lineIndex].forkedAt = this.lines.id[d.lineIndex].thisPoint.x
                         if (d.lineIndex != undefined && this.lines.id[d.lineIndex] != undefined && this.lines.id[d.lineIndex].k < 0)
-                            this.lines.add(null, l, this.i, this.prevPoint, d.lineIndex) // New extremum found
-                        else
+                            this.lines.add(null, l, this.i - 1, this.prevPoint, d.lineIndex) // New extremum found
+                        else {
+                            this.lines.id[d.lineIndex].forked = true
+                            this.lines.id[d.lineIndex].forkedAt = this.lines.id[d.lineIndex].thisPoint.x
                             this.lines.add(null, l, this.i - 1, this.prevPoint)
+                        }
                     }
                 }
             })
@@ -90,12 +91,14 @@ export class Indicator {
             this.hLineDirectives.forEach((d, i) => {
                 if (d.condition == 'lt' && h < d.value && d.action == 'fork') {
                     if (this.lines.id[d.lineIndex]) {
-                        this.lines.id[d.lineIndex].forked = true
-                        this.lines.id[d.lineIndex].forkedAt = this.lines.id[d.lineIndex].thisPoint.x
                         if (this.lines.id[d.lineIndex].k > 0)
-                            this.lines.add(h, null, this.i, this.prevPoint, d.lineIndex) // New extremum found
-                        else
+                            // New extremum found
+                            this.lines.add(h, null, this.i - 1, this.prevPoint, d.lineIndex)
+                        else {
+                            this.lines.id[d.lineIndex].forked = true
+                            this.lines.id[d.lineIndex].forkedAt = this.lines.id[d.lineIndex].thisPoint.x
                             this.lines.add(h, null, this.i - 1, this.prevPoint)
+                        }
                     }
                 }
             })

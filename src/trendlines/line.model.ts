@@ -7,19 +7,19 @@ import { LineEvent, LineDirective, Point } from './types'
 export class LineModel {
     public type: 'h' | 'l'
     public index: number
-    public length: number       //Line's living time
+    public length: number               //Line's living time
     //TODO Make points window in FIFO stack
     public startPoint: Point
     public prevPoint: Point
-    public thisPoint: Point     // Current Point on the line
+    public thisPoint: Point             // Current Point on the line
     public nextPoint: Point
-    public candlePoint: Point   // Point on the current candle
+    public candlePoint: Point           // Point on the current candle
     public forked: boolean = false      // Flag of bounced line
     public forkedAt: number = 0
-    public lastForkY: number = null
+    public lastForkY: number = null     // Last fork or extremum point
     public k: number
     private b: number
-    private step: number        // Step of time in minutes
+    private step: number                // Step of time in minutes
     // rollback of the line: the case when a price change direction is opposite the line direction
     public rollback: {
         k: number
@@ -104,13 +104,18 @@ export class LineModel {
             }
             let rollbackTime = this.rollback ? this.rollback.length : 0
             let rollbackIncline = this.candlePoint.y - this.prevPoint.y // Take only one candle
-            // TODO Compare not by y axis but by the line projection
-            if ((this.type == 'h' ? rollbackIncline > 0 : rollbackIncline < 0))
+            // Set rollback flag if moving away from the middle of price
+            if ((this.type == 'h' ? rollbackIncline > 0 : rollbackIncline < 0)){
                 this.rollback = {
                     k: rollbackIncline,
                     b: this.candlePoint.y - rollbackIncline * this.candlePoint.x,
                     length: rollbackTime + 1
                 }
+                // If rollback then the line lost the fork point
+                // TODO Use accuracy to reset the forked value
+                this.forked = false
+                this.forkedAt = null
+            }
             else this.rollback = null
             // Wait for bounce
             result = {
@@ -123,7 +128,6 @@ export class LineModel {
             // TODO keep rollback length over 1-2 steps going by the line
             this.rollback = null
         }
-
         return result
     }
 
