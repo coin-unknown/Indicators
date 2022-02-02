@@ -24,6 +24,7 @@ export class LinesModel {
     }
 
     add(h: number, l: number, i: number, prevPoint = null, lineID = null) {
+        // Если lineID определена - это экстремум
         let curIndex, holdLastForkY = null
         if (lineID == null) {
             curIndex = this.lineIndex
@@ -34,14 +35,22 @@ export class LinesModel {
                 this.list[1].push(curIndex)
         } else {
             curIndex = lineID
-            holdLastForkY = this.id[curIndex].lastForkY
+            // Сохраняем прежнюю точку ветвления или берем предыдущую
+            holdLastForkY = this.id[curIndex].lastForkY || ( h != null ? prevPoint.h : prevPoint.l)
         }
-        this.id[curIndex] = new LineModel(h, l, i, this.step, curIndex, lineID == null ? prevPoint : null)
+        this.id[curIndex] = new LineModel(h, l, i, this.step, curIndex, prevPoint)
         // Restore lastForkY from previous state
         if (holdLastForkY)
             this.id[curIndex].lastForkY = holdLastForkY
+
+        /**
+         * Метод 3. Ищем последовательность: fork, rollback, fork, trade, wait same on opposite side
+         */
+
+
         /**
          * Метод 2. Для линии в начале ее ветвления сохраняем y и сравниваем. Сигнализируем, когда разница больше или меньше нуля
+         * Метод дает слишком много сигналов из которых сложно выделить значимые. Стоит поискать более эффективный метод поиска разворота
          */
         let sourceLineID, preSourceLineID
         if (curIndex > 1 || (lineID != null && this.id[lineID] != null)) {
