@@ -40,8 +40,10 @@ export class LinesModel {
         }
         this.id[curIndex] = new LineModel(h, l, i, this.step, curIndex, prevPoint)
         // Restore lastForkY from previous state
-        if (holdLastForkY)
+        if (holdLastForkY){
             this.id[curIndex].lastForkY = holdLastForkY
+
+        }
 
         /**
          * Метод 3. Ищем последовательность: fork, rollback, fork, trade, wait same on opposite side
