@@ -25,6 +25,7 @@ export class LineModel {
         k: number
         b: number
         length: number
+        lastForkTime: number
     } | null
 
     constructor(h, l, i, step, index, prevPoint = null) {
@@ -109,7 +110,8 @@ export class LineModel {
                 this.rollback = {
                     k: rollbackIncline,
                     b: this.candlePoint.y - rollbackIncline * this.candlePoint.x,
-                    length: rollbackTime + 1
+                    length: rollbackTime + 1,
+                    lastForkTime: this.forkedAt || (this.rollback ? this.rollback.lastForkTime : 0)
                 }
                 // If rollback then the line lost the fork point
                 // TODO Use accuracy to reset the forked value
