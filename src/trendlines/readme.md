@@ -22,7 +22,7 @@ To display the slope data closer to the candlestick data on the chart, normaliza
 ```javascript
         let scale = {
             y: 1000,    // Shift
-            k: 20       // Multuplicator
+            k: 20       // Multiplication
         }
 ```
 
