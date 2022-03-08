@@ -59,15 +59,6 @@ export class Indicator {
      * @returns - arrow of 6 lines points
      */
     nextValue(o: number, c: number, h: number, l: number) {
-        // Debug only
-        let scale = {
-            y: 1000,
-            k: 20
-        }
-        let scaleState = {
-            y: 2780,
-            delta: 20
-        }
         this.localCounter++
 
         // Apply line directives got on prevues step
