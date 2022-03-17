@@ -17,7 +17,7 @@ export class Indicator {
     private i: number = 0
     // Settings
     private slidingMethod: number = 0   // Set draw method: 0 - not sliding TL, 1 -sliding TL, 2 - states
-    private maxForks = 10               // Forks of line
+    private maxForks = 100               // Forks of line
     // Debug values
     localCounter = 0
     consoleWindow: boolean
@@ -72,6 +72,7 @@ export class Indicator {
                         else {
                             this.lines.id[d.lineIndex].forked = true
                             this.lines.id[d.lineIndex].forkedAt = this.lines.id[d.lineIndex].thisPoint.x
+                            this.lines.id[d.lineIndex].forkedValue = this.lines.id[d.lineIndex].thisPoint.y
                             this.lines.add(null, l, this.i - 1, this.prevPoint)
                         }
                     }
@@ -88,6 +89,7 @@ export class Indicator {
                         else {
                             this.lines.id[d.lineIndex].forked = true
                             this.lines.id[d.lineIndex].forkedAt = this.lines.id[d.lineIndex].thisPoint.x
+                            this.lines.id[d.lineIndex].forkedValue = this.lines.id[d.lineIndex].thisPoint.y
                             this.lines.add(h, null, this.i - 1, this.prevPoint)
                         }
                     }
@@ -111,9 +113,6 @@ export class Indicator {
                         let type = this.lines.id[lineID].type
                         if (updated)
                             type == 'h' ? this.hLineDirectives.push(updated) : this.lLineDirectives.push(updated)
-                        // Deprecated
-                        if ((type == 'h' && this.lines.id[lineID].thisPoint.y > h * 1.2) || (type == 'l' && this.lines.id[lineID].thisPoint.y < l * 0.8))
-                            this.lines.delete(lineID)
                     }
                 })
             )

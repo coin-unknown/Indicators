@@ -57,7 +57,7 @@ export class TrendStateModel {
         this.speed = 0
         this.at = 0
         this.pars = {
-            minLength: 10,
+            minLength: 5,
             minLeftLeg: 3
         }
     }
@@ -99,15 +99,22 @@ export class TrendStateModel {
 
         if (this.is.state) {
             // Wait for any line good break
-            let selectedLine: LineModel = this.lines.id[this.is.lineIndex] || this.is.line
+            let selectedLine: LineModel = this.lines.id[this.is.lineIndex] || this.lines.id[this.is.line.type == 'h' ? 0 : 1]
             let foundBreak = null
+            let delta = null
             if (selectedLine)
-                this.lines.list[selectedLine.type == 'h' ? 0 : 1].forEach(lineID => {
+                this.lines.list[selectedLine.type == 'h' ? 0 : 1].forEach((lineID, index) => {
                     if (lineID >= selectedLine.index) {
-                        let a = this.lines.id[lineID].rollback ? this.lines.id[lineID].rollback.lastForkTime : 0
+                        if (this.lines.id[lineID].rollback != null)
+                            //if (this.lines.id[lineID > 0 ? lineID - 1 : 0])
+                            //    delta = this.lines.id[lineID > 1 ? this.lines.list[selectedLine.type == 'h' ? 0 : 1][index-1] : (selectedLine.type == 'h' ? 0 : 1)].lastForkY - this.lines.id[lineID].candlePoint.y;
+                            //else
+                                delta = this.lines.id[lineID].rollback.lastForkValue - this.lines.id[lineID].candlePoint.y;
                         //  when break (and line is forked(bounced) && length > 3
                         if (this.lines.id[lineID].rollback != null          // when break
-                            && (this.lines.id[lineID].rollback.lastForkTime > 3 || // and line is forked(bounced). TODO test difference
+                            // Allow break less then previous fork value
+                            && (this.lines.id[lineID].rollback.lastForkValue > 0 && ((selectedLine.type == 'h' ? delta < 0 : delta > 0) || this.lines.id[lineID].rollback.length > 4))
+                            && ((this.lines.id[lineID].candlePoint.x - this.lines.id[lineID].rollback.lastForkTime) > 3 || // and line is forked(bounced). TODO test difference
                                 // Or if intensive change in price
                                 (selectedLine.type == 'h'
                                     ? this.lines.id[lineID].candlePoint.y > this.lines.id[lineID].startPoint.y
