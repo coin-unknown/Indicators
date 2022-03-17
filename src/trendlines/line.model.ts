@@ -16,6 +16,7 @@ export class LineModel {
     public candlePoint: Point           // Point on the current candle
     public forked: boolean = false      // Flag of bounced line
     public forkedAt: number = 0
+    public forkedValue: number
     public lastForkY: number = null     // Last fork or extremum point
     public k: number
     private b: number
@@ -26,6 +27,7 @@ export class LineModel {
         b: number
         length: number
         lastForkTime: number
+        lastForkValue: number
     } | null
 
     constructor(h, l, i, step, index, prevPoint = null) {
@@ -106,17 +108,19 @@ export class LineModel {
             let rollbackTime = this.rollback ? this.rollback.length : 0
             let rollbackIncline = this.candlePoint.y - this.prevPoint.y // Take only one candle
             // Set rollback flag if moving away from the middle of price
-            if ((this.type == 'h' ? rollbackIncline > 0 : rollbackIncline < 0)){
+            if ((this.type == 'h' ? rollbackIncline > 0 : rollbackIncline < 0)) {
                 this.rollback = {
                     k: rollbackIncline,
                     b: this.candlePoint.y - rollbackIncline * this.candlePoint.x,
                     length: rollbackTime + 1,
-                    lastForkTime: this.forkedAt || (this.rollback ? this.rollback.lastForkTime : 0)
+                    lastForkTime: this.forkedAt || (this.rollback ? this.rollback.lastForkTime : 0),
+                    lastForkValue: this.forkedValue || (this.rollback ? this.rollback.lastForkValue : 0),
                 }
                 // If rollback then the line lost the fork point
                 // TODO Use accuracy to reset the forked value
                 this.forked = false
                 this.forkedAt = null
+                this.forkedValue = null
             }
             else this.rollback = null
             // Wait for bounce
@@ -127,8 +131,7 @@ export class LineModel {
                 lineIndex: this.index
             }
         } else {
-            // TODO keep rollback length over 1-2 steps going by the line
-            this.rollback = null
+                this.rollback = null
         }
         return result
     }
