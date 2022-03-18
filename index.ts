@@ -1,4 +1,7 @@
+import * as TrendLines from './src/trendlines';
+
 export { Extremums } from './src/providers/extremum';
+export { TrendLines };
 export { Level } from './src/providers/level';
 export { Correlation } from './src/providers/correlation';
 export { SMA } from './src/sma';

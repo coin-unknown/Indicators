@@ -41,5 +41,4 @@ console.log(aoValue); // Accelerator Oscillator calculated value for current tic
 
 // When candle closed call nextValue for candle data
 ao.nextValue(...);
-});
 ```
