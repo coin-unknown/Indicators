@@ -64,7 +64,6 @@ Report data is ready...
   candlesHandled: 9644
 }
 ```
-
 ## Authors
 
 -   [Dmitry Korotkov](https://github.com/inimatic)
