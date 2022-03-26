@@ -1,30 +1,64 @@
 # Trend Lines indicator
 
+## Description
 Trendlines are a key part of delving into technical analysis and trading off of charts. When used correctly, they're a helpful, clear, and relatively simple tool for traders.
+There are many approaches to construct [trending lines](https://ru.tradingview.com/script/eXUYLaGv-Trend-Lines-v2/). All of them based on building lines through maximums. There are some unavoidable issues of this method. First is uncertainty of any kind approximation. Second, large and expanding data array of maximums required to construct future lines.
+Here we propose new and much more effective method for the trading lines discovery. This method based on for actions: change incline, fork, break.
+
+## Method
+
+The search for support and resistance lines is carried out by squeezing to the center of the price movement. We search simultaneously support and resistance lines. Here and after we describe resistance line. The same and opposite procedure provided on the support lines.
+- We begin from historical data. First line drawn through the high point of the two candles.
+- If next h-value is higher the line then we Change incline of the line.
+- If incline become > 0 then next fork will replace current.
+- If next h-value is lover the line then we Fork the line: create new line from the point with the same behavior.
+- If current line is crossing upper line then it's been deleted.
+
+This method don't require to keep point data for future calculations (only 1 point back in the history).
 
 ## Sample result
 
-![Trend lines provided by the indicator](./sample.jpg)
-![Trend lines provided by the indicator - magnified](./sample2.jpg)
+![Trend lines provided by the indicator](./sample1.jpg)
+![Trend lines provided by the indicator](./sample2.jpg)
+![Equity on FTMUSDT during 200 days on 30min candles](./sample4.jpg)
+> @debut/strategies@1.0.0 testing
+> tester -- "--bot=ExpBot" "--ticker=FTMUSDT" "--days=200"
 
-## Description
+History loading from [binance] 07.09.2021:
 
-The search for support and resistance lines is carried out by squeezing to the center of the price movement.
-The indicator returns an array of values of five support lines, resistance lines and their slope coefficients. The slope coefficients data provided for demonstration purposes.
-The parameters are accepted:
-* maxForks = 10 - limit number of branches
-* slidingMethod - sliding method.
-  * 0 - non-sliding Trend Line (Zero element of the output array shows the outer support or resistance line),
-  * 1 - moving Trend Line (Zero element of the array is closer (inner line) to the current price)
-* minLog, maxLog - the range of candlestick log data output
+ [████████████████████████████████████████] 100% | 200 of 200 days
 
-To display the slope data closer to the candlestick data on the chart, normalization is used
-```javascript
-        let scale = {
-            y: 1000,    // Shift
-            k: 20       // Multiplication
-        }
-```
+---- [binance] [FTMUSDT] ----
+
+Tested in 9845 candles...
+Report data is ready...
+{
+  startBalance: 600,
+  balance: 3018.46,
+  maxBalance: 3227.26,
+  minBalance: 600,
+  maxMarginUsage: 600,
+  profit: 2418.46,
+  long: 148,
+  longRight: 65,
+  short: 148,
+  shortRight: 75,
+  absoluteDD: 6.68,
+  relativeDD: 14.38,
+  maxWin: 52.91,
+  maxLoose: -10.55,
+  profitProb: 0.47,
+  looseProb: 0.53,
+  avgProfit: 35.76,
+  avgLoose: 16.59,
+  expectation: 8.17,
+  failLine: 6,
+  rightLine: 7,
+  avgFailLine: 1.97,
+  avgRightLine: 1.76,
+  ticksHandled: 9845,
+  candlesHandled: 9644
+}
 
 ## Authors
 * [Dmitry Korotkov](https://github.com/inimatic)
