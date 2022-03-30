@@ -1,4 +1,4 @@
-import { LineEvent, LineDirective, Point } from './types'
+import { LineEvent, LineDirective, Point, Env } from './types'
 import { LineModel } from './line.model'
 import { LinesModel } from './lines.model'
 
@@ -7,6 +7,7 @@ import { LinesModel } from './lines.model'
  * The trendModel object use Lines and lineDirectives to estimate current trend state
  */
 export class TrendStateModel {
+    env: Env
     in: {                                                                         // longer state
         state: null | 'unknown' | 'flat' | 'rise' | 'fall' | 'squeeze',
         lineIndex: number | null,
@@ -32,11 +33,8 @@ export class TrendStateModel {
     kdiff: number[] = []
     projection: number
     lines: LinesModel
-    pars: {
-        minLength: number,
-        minLeftLeg: number
-    }
-    constructor(lines: LinesModel) {
+    constructor(lines: LinesModel, env: Env) {
+        this.env = env
         this.lines = lines
         this.in = {
             state: null,
@@ -56,24 +54,13 @@ export class TrendStateModel {
         this.width = 0
         this.speed = 0
         this.at = 0
-        this.pars = {
-            minLength: 5,
-            minLeftLeg: 3
-        }
     }
 
-    /**
-        * Trend v 0.2.0
-        * when break (and line is forked && length > 5)
-        * if exists opposite line with length > ?5 && length < thisLine.length then createOrder
-        * Stop loss keep ?5 candles
-        * when thisLine breaks or other lines being (forked && length > 5) has broken - closeOrder
-      */
     hlMaxDuration: LineModel | null // Current longest resistance
     llMaxDuration: LineModel | null // Current longest support
 
     update(hLinesIDs: number[], lLinesIDs: number[]) {
-        //Wait for the first tern
+        //Wait for the first turn
         //Init
         // Search of the longest line begun from this.is
         if (hLinesIDs.length > 1)
@@ -89,8 +76,8 @@ export class TrendStateModel {
 
         if (this.is.state == null && this.was.state == null) {
             // Take the minimum trend duration = 5 candles
-            this.is.line = (this.llMaxDuration && this.llMaxDuration.length > this.pars.minLength && this.hlMaxDuration.length < this.pars.minLength) ? this.llMaxDuration //hLines
-                : ((this.hlMaxDuration && this.hlMaxDuration.length > this.pars.minLength && this.llMaxDuration.length < this.pars.minLength) ? this.hlMaxDuration : null)
+            this.is.line = (this.llMaxDuration && this.llMaxDuration.length > this.env.minLength && this.hlMaxDuration.length < this.env.minLength) ? this.llMaxDuration //hLines
+                : ((this.hlMaxDuration && this.hlMaxDuration.length > this.env.minLength && this.llMaxDuration.length < this.env.minLength) ? this.hlMaxDuration : null)
             if (this.is.line) {
                 this.is.lineIndex = this.is.line.index
                 this.is.state = this.is.line.type == 'h' ? 'fall' : 'rise'
@@ -111,26 +98,25 @@ export class TrendStateModel {
                                 delta = this.lines.id[lineID > 1 ? this.lines.list[selectedLine.type == 'h' ? 0 : 1][index - 1] : (selectedLine.type == 'h' ? 0 : 1)].lastForkY - this.lines.id[lineID].candlePoint.y;
                             else
                                 delta = this.lines.id[lineID].rollback.lastForkValue - this.lines.id[lineID].candlePoint.y;
-                        //  when break (and line is forked(bounced) && length > 3
                         if (this.lines.id[lineID].rollback != null          // when break
                             // Allow break less then previous fork value
                             && this.lines.id[lineID].rollback.lastForkValue > 0
                             && (
                                 (selectedLine.type == 'h' ? delta < 0 : delta > 0)
-                                || this.lines.id[lineID].rollback.length > 3
+                                || this.lines.id[lineID].rollback.length > this.env.rollbackLength
                             )
                             // and line is forked(bounced). TODO test difference
                             && (
-                                ((this.lines.id[lineID].candlePoint.x - this.lines.id[lineID].rollback.lastForkTime) > 3
-                                && (this.lines.id[lineID].candlePoint.x - this.lines.id[lineID].rollback.lastForkTime) < 100)
+                                ((this.lines.id[lineID].candlePoint.x - this.lines.id[lineID].rollback.lastForkTime) > this.env.forkDurationMin
+                                && (this.lines.id[lineID].candlePoint.x - this.lines.id[lineID].rollback.lastForkTime) < this.env.forkDurationMax)
                                 // Or if intensive change in price
                                 || (selectedLine.type == 'h'
                                     ? this.lines.id[lineID].candlePoint.y > this.lines.id[lineID].startPoint.y
                                     : this.lines.id[lineID].candlePoint.y < this.lines.id[lineID].startPoint.y
                                 )
                             )
-                            // && this.lines.id[lineID].thisPoint.x - this.lines.id[lineID].forkedAt > 3
-                            // TODO May be we should choose shortest and bounced line instead longest
+                             && this.lines.id[lineID].thisPoint.x - this.lines.id[lineID].forkedAt > 3
+                            // TODO Maybe we should choose shortest and bounced line instead longest
                             && (this.is.state == "fall" ? this.llMaxDuration.length > 1 : this.hlMaxDuration.length > 1)
                         ) foundBreak = lineID + 1
                     }
