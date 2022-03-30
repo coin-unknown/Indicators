@@ -1,23 +1,18 @@
 import { LineModel } from './line.model'
 import { LinesModel } from './lines.model'
-import { LineEvent, LineDirective, Point } from './types'
+import { LineEvent, LineDirective, Point, Env } from './types'
 import { TrendStateModel } from './trend.model'
 
-export type { LinesModel, TrendStateModel };
+export type { LinesModel, TrendStateModel, Env };
 export class Indicator {
     public hLineDirectives: LineDirective[] = []
     public lLineDirectives: LineDirective[] = []
-    private hLineIndex: number = 1
-    private lLineIndex: number = 1
     public trend: TrendStateModel
-    private hLines: LineModel[]
-    private lLines: LineModel[]
     private lines: LinesModel
     private step: number = 1        // TODO operate in different time scale
     private i: number = 0
+    public env: Env
     // Settings
-    private slidingMethod: number = 0   // Set draw method: 0 - not sliding TL, 1 -sliding TL, 2 - states
-    private maxForks = 100               // Forks of line
     // Debug values
     localCounter = 0
     consoleWindow: boolean
@@ -30,22 +25,26 @@ export class Indicator {
     } = null
     /**
      *
-     * @param maxForks
-     * @param slidingMethod
-     * @param minLog
-     * @param maxLog
+     * @param pars type of Env
      */
-    constructor(maxForks = 10, slidingMethod = 1, minLog = 0, maxLog = 10) {
-        this.maxForks = maxForks
-        this.slidingMethod = slidingMethod
-        this.minLog = minLog
-        this.maxLog = maxLog
+    constructor(pars) {
+        // Assign defaults
+        this.env = Object.assign({
+            step: 1,               // time step in minutes
+            minLength: 5,
+            minLeftLeg: 3,
+            maxForks: 10,
+            minLog: 0,
+            maxLog: 0,
+            rollbackLength: 3,  // Устойчивый откат после пробоя линии тренда
+            forkDuration: 3    // Лимитное значение минимальной длительности волны
+        }, pars)
         this.lines = new LinesModel(this.step)
-        this.trend = new TrendStateModel(this.lines)
+        this.trend = new TrendStateModel(this.lines, this.env)
     }
 
     log(title, ...data) {
-        this.consoleWindow = this.minLog < this.localCounter && this.localCounter < this.maxLog
+        this.consoleWindow = this.env.minLog < this.localCounter && this.localCounter < this.env.maxLog
         if (this.consoleWindow)
             console.log(title, ...data)
     }
@@ -127,8 +126,8 @@ export class Indicator {
                     let thisLine = this.lines.id[ofLines[i]]
                     let prevLine = this.lines.id[ofLines[i - 1]]
                     if (
-                        (i > 0 && thisLine && prevLine && thisLine.type == 'h' && thisLine.thisPoint && prevLine.thisPoint.y <= thisLine.thisPoint.y || i > this.maxForks) ||
-                        (i > 0 && thisLine && prevLine && thisLine.type == 'l' && thisLine.thisPoint && prevLine.thisPoint.y >= thisLine.thisPoint.y || i > this.maxForks)
+                        (i > 0 && thisLine && prevLine && thisLine.type == 'h' && thisLine.thisPoint && prevLine.thisPoint.y <= thisLine.thisPoint.y || i > this.env.maxForks) ||
+                        (i > 0 && thisLine && prevLine && thisLine.type == 'l' && thisLine.thisPoint && prevLine.thisPoint.y >= thisLine.thisPoint.y || i > this.env.maxForks)
                     ) {
                         toDelete.push(lineID)
                     }
