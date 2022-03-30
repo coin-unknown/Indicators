@@ -17,3 +17,15 @@ export interface LineDirective {
     action: string
     lineIndex: number
 }
+
+export interface Env {
+    step: number               // time step in minutes
+    minLength: number
+    minLeftLeg: number
+    maxForks: number
+    minLog: number
+    maxLog: number
+    rollbackLength: number  // Устойчивый откат после пробоя линии тренда
+    forkDurationMin: number    // Лимитное значение минимальной длительности волны
+    forkDurationMax: number    // Лимитное значение минимальной длительности волны
+}
