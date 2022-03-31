@@ -89,33 +89,37 @@ export class TrendStateModel {
             let selectedLine: LineModel = this.lines.id[this.is.lineIndex] || this.lines.id[this.is.line.type == 'h' ? 0 : 1]
             let foundBreak = null
             let delta = null
+            let oppositeLines = this.lines.list[selectedLine.type == 'h' ? 1 : 0].filter(id => this.lines.id[id].forked)
+            let oppositeLineID = oppositeLines.length > 1 ? oppositeLines[1] : (oppositeLines.length > 0 ? oppositeLines[0] : null)
             if (selectedLine)
                 this.lines.list[selectedLine.type == 'h' ? 0 : 1].forEach((lineID, index) => {
+                    let theLine = this.lines.id[lineID]
+                    let condFastOpposite = this.lines.id[oppositeLineID] ? Math.abs(this.lines.id[oppositeLineID].k) > 0.0003 : true
                     if (lineID >= selectedLine.index) {
-                        if (this.lines.id[lineID].rollback != null)
+                        if (theLine.rollback != null)
                             // Get distance from the last fork on previous or current line
                             if (this.lines.id[lineID > 0 ? lineID - 1 : 0])
-                                delta = this.lines.id[lineID > 1 ? this.lines.list[selectedLine.type == 'h' ? 0 : 1][index - 1] : (selectedLine.type == 'h' ? 0 : 1)].lastForkY - this.lines.id[lineID].candlePoint.y;
+                                delta = this.lines.id[lineID > 1 ? this.lines.list[selectedLine.type == 'h' ? 0 : 1][index - 1] : (selectedLine.type == 'h' ? 0 : 1)].lastForkY - theLine.candlePoint.y;
                             else
-                                delta = this.lines.id[lineID].rollback.lastForkValue - this.lines.id[lineID].candlePoint.y;
-                        if (this.lines.id[lineID].rollback != null          // when break
+                                delta = theLine.rollback.lastForkValue - theLine.candlePoint.y;
+                        if (theLine.rollback != null          // when break
                             // Allow break less then previous fork value
-                            && this.lines.id[lineID].rollback.lastForkValue > 0
+                            && theLine.rollback.lastForkValue > 0
                             && (
                                 (selectedLine.type == 'h' ? delta < 0 : delta > 0)
-                                || this.lines.id[lineID].rollback.length > this.env.rollbackLength
+                                || theLine.rollback.length > this.env.rollbackLength
                             )
                             // and line is forked(bounced). TODO test difference
                             && (
-                                ((this.lines.id[lineID].candlePoint.x - this.lines.id[lineID].rollback.lastForkTime) > this.env.forkDurationMin
-                                && (this.lines.id[lineID].candlePoint.x - this.lines.id[lineID].rollback.lastForkTime) < this.env.forkDurationMax)
+                                ((theLine.candlePoint.x - theLine.rollback.lastForkTime) > this.env.forkDurationMin
+                                && (theLine.candlePoint.x - theLine.rollback.lastForkTime) < this.env.forkDurationMax)
                                 // Or if intensive change in price
                                 || (selectedLine.type == 'h'
-                                    ? this.lines.id[lineID].candlePoint.y > this.lines.id[lineID].startPoint.y
-                                    : this.lines.id[lineID].candlePoint.y < this.lines.id[lineID].startPoint.y
+                                    ? theLine.candlePoint.y > theLine.startPoint.y
+                                    : theLine.candlePoint.y < theLine.startPoint.y
                                 )
                             )
-                             && this.lines.id[lineID].thisPoint.x - this.lines.id[lineID].forkedAt > 3
+                             && theLine.thisPoint.x - theLine.forkedAt > 3
                             // TODO Maybe we should choose shortest and bounced line instead longest
                             && (this.is.state == "fall" ? this.llMaxDuration.length > 1 : this.hlMaxDuration.length > 1)
                         ) foundBreak = lineID + 1
