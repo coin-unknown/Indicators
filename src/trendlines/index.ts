@@ -37,7 +37,8 @@ export class Indicator {
             minLog: 0,
             maxLog: 0,
             rollbackLength: 3,  // Устойчивый откат после пробоя линии тренда
-            forkDuration: 3    // Лимитное значение минимальной длительности волны
+            forkDuration: 3,    // Лимитное значение минимальной длительности волны
+            deltaModel: 1
         }, pars)
         this.lines = new LinesModel(this.step)
         this.trend = new TrendStateModel(this.lines, this.env)
