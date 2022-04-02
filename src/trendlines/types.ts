@@ -19,13 +19,13 @@ export interface LineDirective {
 }
 
 export interface Env {
-    step: number               // time step in minutes
+    step?: number               // time step in minutes
     minLength: number
-    minLeftLeg: number
-    maxForks: number
-    minLog: number
-    maxLog: number
-    rollbackLength: number  // Устойчивый откат после пробоя линии тренда
+    minLeftLeg?: number
+    maxForks?: number
+    minLog?: number
+    maxLog?: number
+    rollbackLength: number      // Устойчивый откат после пробоя линии тренда
     forkDurationMin: number    // Лимитное значение минимальной длительности волны
     forkDurationMax: number    // Лимитное значение минимальной длительности волны
     deltaModel: 1 | 2          // Модели отсчета. 2 - FTM/USDT, 1 - другие
