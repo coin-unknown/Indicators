@@ -91,17 +91,23 @@ export class TrendStateModel {
             let delta = null
             let oppositeLines = this.lines.list[selectedLine.type == 'h' ? 1 : 0].filter(id => this.lines.id[id].forked)
             let oppositeLineID = oppositeLines.length > 1 ? oppositeLines[1] : (oppositeLines.length > 0 ? oppositeLines[0] : null)
+            let prevLineID
             if (selectedLine)
                 this.lines.list[selectedLine.type == 'h' ? 0 : 1].forEach((lineID, index) => {
                     let theLine = this.lines.id[lineID]
                     let condFastOpposite = this.lines.id[oppositeLineID] ? Math.abs(this.lines.id[oppositeLineID].k) > 0.0003 : true
                     if (lineID >= selectedLine.index) {
-                        if (theLine.rollback != null)
+                        if (theLine.rollback != null) {
                             // Get distance from the last fork on previous or current line
-                            if (this.lines.id[lineID > 0 ? lineID - 1 : 0])
-                                delta = this.lines.id[lineID > 1 ? this.lines.list[selectedLine.type == 'h' ? 0 : 1][index - 1] : (selectedLine.type == 'h' ? 0 : 1)].lastForkY - theLine.candlePoint.y;
-                            else
+                            prevLineID = this.lines.list[selectedLine.type == 'h' ? 0 : 1][index - 1]
+                            const cond = (this.env.deltaModel == 1 && index > 1 && prevLineID && this.lines.id[prevLineID]) ? (index > 1 && prevLineID && this.lines.id[prevLineID].lastForkY) : (this.lines.id[lineID > 0 ? lineID - 1 : 0])
+                            if (cond)
+                                delta = this.lines.id[lineID > 1 ? prevLineID : (selectedLine.type == 'h' ? 0 : 1)].lastForkY - theLine.candlePoint.y;
+                            else if (theLine.rollback)
                                 delta = theLine.rollback.lastForkValue - theLine.candlePoint.y;
+                            else
+                                delta = 0
+                        }
                         if (theLine.rollback != null          // when break
                             // Allow break less then previous fork value
                             && theLine.rollback.lastForkValue > 0
@@ -112,14 +118,14 @@ export class TrendStateModel {
                             // and line is forked(bounced). TODO test difference
                             && (
                                 ((theLine.candlePoint.x - theLine.rollback.lastForkTime) > this.env.forkDurationMin
-                                && (theLine.candlePoint.x - theLine.rollback.lastForkTime) < this.env.forkDurationMax)
+                                    && (theLine.candlePoint.x - theLine.rollback.lastForkTime) < this.env.forkDurationMax)
                                 // Or if intensive change in price
                                 || (selectedLine.type == 'h'
                                     ? theLine.candlePoint.y > theLine.startPoint.y
                                     : theLine.candlePoint.y < theLine.startPoint.y
                                 )
                             )
-                             && theLine.thisPoint.x - theLine.forkedAt > 3
+                            && theLine.thisPoint.x - theLine.forkedAt > 3
                             // TODO Maybe we should choose shortest and bounced line instead longest
                             && (this.is.state == "fall" ? this.llMaxDuration.length > 1 : this.hlMaxDuration.length > 1)
                         ) foundBreak = lineID + 1

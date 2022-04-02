@@ -122,7 +122,12 @@ export class LineModel {
                 this.forkedAt = null
                 this.forkedValue = null
             }
-            else this.rollback = null
+            else {
+                this.forkedAt = this.candlePoint.x
+                this.forkedValue = this.candlePoint.y
+                this.forked = true
+                this.rollback = null
+            }
             // Wait for bounce
             result = {
                 condition: this.type == 'h' ? 'lt' : 'gt',
@@ -131,7 +136,7 @@ export class LineModel {
                 lineIndex: this.index
             }
         } else {
-                this.rollback = null
+            this.rollback = null
         }
         return result
     }
