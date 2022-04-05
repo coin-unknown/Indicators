@@ -13,8 +13,8 @@
         "url": "git@github.com:debut-js/Indicators.git"
     },
     "scripts": {
-        "start": "ts-node --",
         "build": "rollup -c ./rollup.config.js",
+        "start": "ts-node --",
         "watch": "rollup -cw ./rollup.config.js",
         "test": "jest",
         "version": "npm run build",
