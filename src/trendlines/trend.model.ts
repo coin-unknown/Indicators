@@ -18,7 +18,11 @@ export class TrendStateModel {
         state: null | 'flat' | 'rise' | 'fall',
         lineIndex: number | null,
         line: LineModel | null,
-        size?: number
+        size?: number,
+        start: {
+            x: number,
+            y: number
+        }
     }
     was: {                                                                       // prevues state
         state: null | 'flat' | 'rise' | 'fall',
@@ -44,7 +48,8 @@ export class TrendStateModel {
         this.is = {
             state: null,
             lineIndex: null,
-            line: null
+            line: null,
+            start: null
         }
         this.was = {
             state: null,
@@ -81,6 +86,7 @@ export class TrendStateModel {
             if (this.is.line) {
                 this.is.lineIndex = this.is.line.index
                 this.is.state = this.is.line.type == 'h' ? 'fall' : 'rise'
+                this.is.start = this.is.line.candlePoint
             }
         }
 
@@ -91,6 +97,7 @@ export class TrendStateModel {
             let delta = null
             let oppositeLines = this.lines.list[selectedLine.type == 'h' ? 1 : 0].filter(id => this.lines.id[id].forked)
             let oppositeLineID = oppositeLines.length > 1 ? oppositeLines[1] : (oppositeLines.length > 0 ? oppositeLines[0] : null)
+            let oppositeLinesInsideTrend = oppositeLines.filter(id => this.lines.id[id].startPoint.x > this.is.start.x)
             let prevLineID
             if (selectedLine)
                 this.lines.list[selectedLine.type == 'h' ? 0 : 1].forEach((lineID, index) => {
@@ -111,9 +118,16 @@ export class TrendStateModel {
                         if (theLine.rollback != null          // when break
                             // Allow break less then previous fork value
                             && theLine.rollback.lastForkValue > 0
+                            && theLine.thisPoint.x - theLine.rollback.lastForkTime > this.env.minLeftLeg
+                            // TODO Maybe we should choose shortest and bounced line instead longest
+                            && (this.is.state == "fall" ? this.llMaxDuration.length > 1 : this.hlMaxDuration.length > 1)
                             && (
                                 (selectedLine.type == 'h' ? delta < 0 : delta > 0)
-                                || theLine.rollback.length > this.env.rollbackLength
+                                    || theLine.rollback.length > this.env.rollbackLength
+                                /* TODO Откат до половины между ценой начала тренда и ценой от начала обратной линии
+                                  || oppositeLinesInsideTrend.length > 0 && typeof this.lines.id[oppositeLinesInsideTrend[0]] != undefined && selectedLine
+                                        ? selectedLine.type == 'h' ? (this.is.line.candlePoint.y + this.lines.id[oppositeLinesInsideTrend[0]].startPoint.y) / 2 > theLine.candlePoint.y : (selectedLine.startPoint.y + this.lines.id[oppositeLinesInsideTrend[0]].startPoint.y) / 2 < theLine.candlePoint.y
+                                        : false */
                             )
                             // and line is forked(bounced). TODO test difference
                             && (
@@ -125,9 +139,6 @@ export class TrendStateModel {
                                     : theLine.candlePoint.y < theLine.startPoint.y
                                 )
                             )
-                            && theLine.thisPoint.x - theLine.forkedAt > 3
-                            // TODO Maybe we should choose shortest and bounced line instead longest
-                            && (this.is.state == "fall" ? this.llMaxDuration.length > 1 : this.hlMaxDuration.length > 1)
                         ) foundBreak = lineID + 1
                     }
                 })
@@ -143,6 +154,7 @@ export class TrendStateModel {
                 this.is.line = this.is.state == "fall" ? this.llMaxDuration : this.hlMaxDuration
                 this.is.state = this.is.line.type == 'h' ? 'fall' : 'rise'
                 this.is.lineIndex = this.is.line.index
+                this.is.start = this.is.line.candlePoint
             }
         }
 
