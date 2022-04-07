@@ -33,7 +33,7 @@ export class Indicator {
             step: 1,               // time step in minutes
             minLength: 5,
             minLeftLeg: 3,
-            maxForks: 10,
+            maxForks: 300,
             minLog: 0,
             maxLog: 0,
             rollbackLength: 3,  // Устойчивый откат после пробоя линии тренда
