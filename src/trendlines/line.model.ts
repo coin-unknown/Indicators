@@ -96,7 +96,7 @@ export class LineModel {
 
         }
         // Update incline
-        if ((this.type == 'h' && this.thisPoint.y < this.candlePoint.y) || (this.type == 'l' && this.thisPoint.y > this.candlePoint.y)) {
+        if ((this.type == 'h' && this.thisPoint.y <= this.candlePoint.y) || (this.type == 'l' && this.thisPoint.y >= this.candlePoint.y)) {
             this.k = (this.candlePoint.y - this.startPoint.y) / (this.candlePoint.x - this.startPoint.x)
             this.b = this.candlePoint.y - this.k * this.candlePoint.x
             this.thisPoint = this.candlePoint
