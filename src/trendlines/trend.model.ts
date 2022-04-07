@@ -123,7 +123,7 @@ export class TrendStateModel {
                             && (this.is.state == "fall" ? this.llMaxDuration.length > 1 : this.hlMaxDuration.length > 1)
                             && (
                                 (selectedLine.type == 'h' ? delta < 0 : delta > 0)
-                                    || theLine.rollback.length > this.env.rollbackLength
+                                || theLine.rollback.length > this.env.rollbackLength
                                 /* TODO Откат до половины между ценой начала тренда и ценой от начала обратной линии
                                   || oppositeLinesInsideTrend.length > 0 && typeof this.lines.id[oppositeLinesInsideTrend[0]] != undefined && selectedLine
                                         ? selectedLine.type == 'h' ? (this.is.line.candlePoint.y + this.lines.id[oppositeLinesInsideTrend[0]].startPoint.y) / 2 > theLine.candlePoint.y : (selectedLine.startPoint.y + this.lines.id[oppositeLinesInsideTrend[0]].startPoint.y) / 2 < theLine.candlePoint.y
