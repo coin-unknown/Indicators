@@ -49,12 +49,14 @@ export class TrendStateModel {
             state: null,
             lineIndex: null,
             line: null,
-            start: null
+            start: null,
+            size: 0
         }
         this.was = {
             state: null,
             lineIndex: null,
-            line: null
+            line: null,
+            size: null
         }
         this.width = 0
         this.speed = 0
@@ -92,6 +94,7 @@ export class TrendStateModel {
 
         if (this.is.state) {
             // Wait for any line good break
+            this.is.size = Math.max(this.is.size, Math.abs(this.is.start.y - this.is.line.candlePoint.y))
             let selectedLine: LineModel = this.lines.id[this.is.lineIndex] || this.lines.id[this.is.line.type == 'h' ? 0 : 1]
             let foundBreak = null
             let delta = null
@@ -124,10 +127,13 @@ export class TrendStateModel {
                             && (
                                 (selectedLine.type == 'h' ? delta < 0 : delta > 0)
                                 || theLine.rollback.length > this.env.rollbackLength
+                                || (this.is.size * 1 / 3 > Math.abs(this.is.start.y - this.is.line.candlePoint.y) && this.is.size > this.is.line.candlePoint.y * 0.005)
                                 /* TODO Откат до половины между ценой начала тренда и ценой от начала обратной линии
-                                  || oppositeLinesInsideTrend.length > 0 && typeof this.lines.id[oppositeLinesInsideTrend[0]] != undefined && selectedLine
-                                        ? selectedLine.type == 'h' ? (this.is.line.candlePoint.y + this.lines.id[oppositeLinesInsideTrend[0]].startPoint.y) / 2 > theLine.candlePoint.y : (selectedLine.startPoint.y + this.lines.id[oppositeLinesInsideTrend[0]].startPoint.y) / 2 < theLine.candlePoint.y
-                                        : false */
+                                || oppositeLinesInsideTrend.length > 0 && typeof this.lines.id[oppositeLinesInsideTrend[0]] != undefined && selectedLine
+                                ? selectedLine.type == 'h'
+                                    ? (this.is.line.candlePoint.y + this.lines.id[oppositeLinesInsideTrend[0]].startPoint.y) / 2 > theLine.candlePoint.y
+                                    : (selectedLine.startPoint.y + this.lines.id[oppositeLinesInsideTrend[0]].startPoint.y) / 2 < theLine.candlePoint.y
+                                : false*/
                             )
                             // and line is forked(bounced). TODO test difference
                             && (
@@ -144,8 +150,6 @@ export class TrendStateModel {
                 })
             if (foundBreak) {
                 // Calculate and compare was and is
-                // TODO Fix get point from line not the candle
-                this.is.size = this.is.line.startPoint.y - this.is.line.thisPoint.y
                 this.in.size = (this.was.size || 0) + this.is.size
                 // Copy is to was
                 this.was = { ...this.is }
@@ -154,7 +158,8 @@ export class TrendStateModel {
                 this.is.line = this.is.state == "fall" ? this.llMaxDuration : this.hlMaxDuration
                 this.is.state = this.is.line.type == 'h' ? 'fall' : 'rise'
                 this.is.lineIndex = this.is.line.index
-                this.is.start = this.is.line.candlePoint
+                this.is.start = this.lines.id[0].candlePoint
+                this.is.size = 0
             }
         }
 
