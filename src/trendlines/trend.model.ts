@@ -70,6 +70,7 @@ export class TrendStateModel {
         //Wait for the first turn
         //Init
         // Search of the longest line begun from this.is
+        // TODO longest is just the first in array of forked lines
         if (hLinesIDs.length > 1)
             this.hlMaxDuration = hLinesIDs.map(lineID => this.lines.id[lineID]).filter(line => (this.is.line ? (line.forkedAt ? line.forkedAt > this.is.line.startPoint.x : (line.rollback ? line.rollback.lastForkTime > this.is.line.startPoint.x : false)) : true)).reduce((prev, current) => {
                 return (prev.length > current.length) ? prev : current
@@ -98,48 +99,38 @@ export class TrendStateModel {
             let selectedLine: LineModel = this.lines.id[this.is.lineIndex] || this.lines.id[this.is.line.type == 'h' ? 0 : 1]
             let foundBreak = null
             let delta = null
-            let oppositeLines = this.lines.list[selectedLine.type == 'h' ? 1 : 0].filter(id => this.lines.id[id].forked)
-            let oppositeLineID = oppositeLines.length > 1 ? oppositeLines[1] : (oppositeLines.length > 0 ? oppositeLines[0] : null)
-            let oppositeLinesInsideTrend = oppositeLines.filter(id => this.lines.id[id].startPoint.x > this.is.start.x)
-            let prevLineID
+            let prevLineID: number
             if (selectedLine)
                 this.lines.list[selectedLine.type == 'h' ? 0 : 1].forEach((lineID, index) => {
                     let theLine = this.lines.id[lineID]
-                    let condFastOpposite = this.lines.id[oppositeLineID] ? Math.abs(this.lines.id[oppositeLineID].k) > 0.0003 : true
-                    if (lineID >= selectedLine.index) {
-                        if (theLine.rollback != null) {
-                            // Get distance from the last fork on previous or current line
-                            prevLineID = this.lines.list[selectedLine.type == 'h' ? 0 : 1][index - 1]
-                            const cond = (this.env.deltaModel == 1 && index > 1 && prevLineID && this.lines.id[prevLineID]) ? (index > 1 && prevLineID && this.lines.id[prevLineID].lastForkY) : (this.lines.id[lineID > 0 ? lineID - 1 : 0])
-                            if (cond)
-                                delta = this.lines.id[lineID > 1 ? prevLineID : (selectedLine.type == 'h' ? 0 : 1)].lastForkY - theLine.candlePoint.y;
-                            else if (theLine.rollback)
-                                delta = theLine.rollback.lastForkValue - theLine.candlePoint.y;
-                            else
-                                delta = 0
-                        }
-                        if (theLine.rollback != null          // when break
-                            // Allow break less then previous fork value
-                            && theLine.rollback.lastForkValue > 0
-                            && theLine.thisPoint.x - theLine.rollback.lastForkTime > this.env.minLeftLeg
+                    // Trend change conditions
+                    if (lineID >= selectedLine.index && theLine.rollback != null) { // when break on inner lines
+                        // Get distance from the last fork on previous or current line
+                        prevLineID = this.lines.list[selectedLine.type == 'h' ? 0 : 1][index - 1]
+                        const cond = (this.env.deltaModel == 1 && index > 1 && prevLineID && this.lines.id[prevLineID]) ? (index > 1 && prevLineID && this.lines.id[prevLineID].lastForkY) : (this.lines.id[lineID > 0 ? lineID - 1 : 0])
+                        if (cond)
+                            delta = this.lines.id[lineID > 1 ? prevLineID : (selectedLine.type == 'h' ? 0 : 1)].lastForkY - theLine.candlePoint.y;
+                        else if (theLine.rollback)
+                            delta = theLine.rollback.lastForkValue - theLine.candlePoint.y;
+                        else
+                            delta = 0
+                        if (theLine.rollback.lastForkValue > 0 // Only if break of forked line
+                            // The line lasts more then this.env.minRightLeg
+                            && theLine.thisPoint.x - theLine.rollback.lastForkTime > this.env.minRightLeg
                             // TODO Maybe we should choose shortest and bounced line instead longest
                             && (this.is.state == "fall" ? this.llMaxDuration.length > 1 : this.hlMaxDuration.length > 1)
-                            && (
+                            && ( // Превышены граничные параметры
+                                // - По предыдущему экстремуму. Пробита величина прошлого экстремума
                                 (selectedLine.type == 'h' ? delta < 0 : delta > 0)
+                                // - По времени. текущая лития столкнулась с длительным пробоем
                                 || theLine.rollback.length > this.env.rollbackLength
+                                //  - По амплитуде. Откат до установленной доли между ценой начала тренда и ценой от начала обратной линии
                                 || (this.is.size * 1 / 3 > Math.abs(this.is.start.y - this.is.line.candlePoint.y) && this.is.size > this.is.line.candlePoint.y * 0.005)
-                                /* TODO Откат до половины между ценой начала тренда и ценой от начала обратной линии
-                                || oppositeLinesInsideTrend.length > 0 && typeof this.lines.id[oppositeLinesInsideTrend[0]] != undefined && selectedLine
-                                ? selectedLine.type == 'h'
-                                    ? (this.is.line.candlePoint.y + this.lines.id[oppositeLinesInsideTrend[0]].startPoint.y) / 2 > theLine.candlePoint.y
-                                    : (selectedLine.startPoint.y + this.lines.id[oppositeLinesInsideTrend[0]].startPoint.y) / 2 < theLine.candlePoint.y
-                                : false*/
                             )
-                            // and line is forked(bounced). TODO test difference
-                            && (
-                                ((theLine.candlePoint.x - theLine.rollback.lastForkTime) > this.env.forkDurationMin
-                                    && (theLine.candlePoint.x - theLine.rollback.lastForkTime) < this.env.forkDurationMax)
-                                // Or if intensive change in price
+                            && ( // сохраняются разрешенные диапазоны
+                                // - предыдущее ветвление (экстремум) был в заданном диапазоне
+                                ((theLine.candlePoint.x - theLine.rollback.lastForkTime) > this.env.forkDurationMin && (theLine.candlePoint.x - theLine.rollback.lastForkTime) < this.env.forkDurationMax)
+                                // - текущая цена вышла из тренда
                                 || (selectedLine.type == 'h'
                                     ? theLine.candlePoint.y > theLine.startPoint.y
                                     : theLine.candlePoint.y < theLine.startPoint.y

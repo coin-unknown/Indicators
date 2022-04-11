@@ -21,7 +21,7 @@ export interface LineDirective {
 export interface Env {
     step?: number               // time step in minutes
     minLength: number
-    minLeftLeg?: number
+    minRightLeg?: number
     maxForks?: number
     minLog?: number
     maxLog?: number

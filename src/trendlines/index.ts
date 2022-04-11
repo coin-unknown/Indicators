@@ -32,7 +32,7 @@ export class Indicator {
         this.env = Object.assign({
             step: 1,               // time step in minutes
             minLength: 5,
-            minLeftLeg: 3,
+            minRightLeg: 3,
             maxForks: 300,
             minLog: 0,
             maxLog: 0,
@@ -65,14 +65,15 @@ export class Indicator {
         if (this.lLineDirectives.length > 0) {
             // TODO Fork only last line in Array
             this.lLineDirectives.forEach((d, i) => {
+                let theLine = this.lines.id[d.lineIndex]
                 if (d.condition == 'gt' && l > d.value && d.action == 'fork') {
-                    if (this.lines.id[d.lineIndex]) {
-                        if (d.lineIndex != undefined && this.lines.id[d.lineIndex] != undefined && this.lines.id[d.lineIndex].k < 0)
+                    if (theLine) {
+                        if (d.lineIndex != undefined && theLine != undefined && theLine.k < 0)
                             this.lines.add(null, l, this.i - 1, this.prevPoint, d.lineIndex) // New extremum found
                         else {
-                            this.lines.id[d.lineIndex].forked = true
-                            this.lines.id[d.lineIndex].forkedAt = this.lines.id[d.lineIndex].thisPoint.x
-                            this.lines.id[d.lineIndex].forkedValue = this.lines.id[d.lineIndex].thisPoint.y
+                            theLine.forked = true
+                            theLine.forkedAt = theLine.thisPoint.x
+                            theLine.forkedValue = theLine.thisPoint.y
                             this.lines.add(null, l, this.i - 1, this.prevPoint)
                         }
                     }
@@ -81,15 +82,16 @@ export class Indicator {
         }
         if (this.hLineDirectives.length > 0) {
             this.hLineDirectives.forEach((d, i) => {
+                let theLine = this.lines.id[d.lineIndex]
                 if (d.condition == 'lt' && h < d.value && d.action == 'fork') {
-                    if (this.lines.id[d.lineIndex]) {
-                        if (this.lines.id[d.lineIndex].k > 0)
+                    if (theLine) {
+                        if (theLine.k > 0)
                             // New extremum found
                             this.lines.add(h, null, this.i - 1, this.prevPoint, d.lineIndex)
                         else {
-                            this.lines.id[d.lineIndex].forked = true
-                            this.lines.id[d.lineIndex].forkedAt = this.lines.id[d.lineIndex].thisPoint.x
-                            this.lines.id[d.lineIndex].forkedValue = this.lines.id[d.lineIndex].thisPoint.y
+                            theLine.forked = true
+                            theLine.forkedAt = theLine.thisPoint.x
+                            theLine.forkedValue = theLine.thisPoint.y
                             this.lines.add(h, null, this.i - 1, this.prevPoint)
                         }
                     }
@@ -106,11 +108,12 @@ export class Indicator {
             let updated
             this.lines.list.forEach(ofLines =>
                 ofLines.forEach(lineID => {
-                    if (this.lines.id[lineID] && this.lines.id[lineID].type) {
+                    let theLine = this.lines.id[lineID]
+                    if (theLine && theLine.type) {
                         updated = null
-                        if (this.lines.id[lineID] && this.lines.id[lineID].startPoint.x < this.i) // Skip the case if line was just created. TODO make it gracefully
+                        if (theLine && theLine.startPoint.x < this.i) // Skip the case if line was just created. TODO make it gracefully
                             updated = this.lines.update(lineID, h, l, this.i)
-                        let type = this.lines.id[lineID].type
+                        let type = theLine.type
                         if (updated)
                             type == 'h' ? this.hLineDirectives.push(updated) : this.lLineDirectives.push(updated)
                     }
