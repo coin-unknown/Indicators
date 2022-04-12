@@ -35,7 +35,6 @@ export class TrendStateModel {
     at: number                                              // time ago of the prevues state
     duration: number                                        // duration of the trend
     kdiff: number[] = []
-    projection: number
     lines: LinesModel
     constructor(lines: LinesModel, env: Env) {
         this.env = env

@@ -33,13 +33,17 @@ export class Indicator {
             step: 1,               // time step in minutes
             minLength: 5,
             minRightLeg: 3,
-            maxForks: 300,
+            maxForks: 500,
             minLog: 0,
             maxLog: 0,
             rollbackLength: 3,  // Устойчивый откат после пробоя линии тренда
-            forkDuration: 3,    // Лимитное значение минимальной длительности волны
             deltaModel: 1
         }, pars)
+        this.env.minLength = Math.round(this.env.minLength / this.env.step) || 1
+        this.env.minRightLeg = Math.round(this.env.minRightLeg / this.env.step) || 1
+        this.env.rollbackLength = Math.round(this.env.rollbackLength / this.env.step) || 1
+        this.env.forkDurationMin = Math.round(this.env.forkDurationMin / this.env.step) || 1
+        this.env.forkDurationMax = Math.round(this.env.forkDurationMax / this.env.step) || 1
         this.lines = new LinesModel(this.step)
         this.trend = new TrendStateModel(this.lines, this.env)
     }
