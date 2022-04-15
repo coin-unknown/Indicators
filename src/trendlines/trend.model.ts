@@ -124,7 +124,7 @@ export class TrendStateModel {
                                 // - По времени. текущая лития столкнулась с длительным пробоем
                                 || theLine.rollback.length > this.env.rollbackLength
                                 //  - По амплитуде. Откат до установленной доли между ценой начала тренда и ценой от начала обратной линии
-                                || (this.is.size * 1 / 3 > Math.abs(this.is.start.y - this.is.line.candlePoint.y) && this.is.size > this.is.line.candlePoint.y * 0.005)
+                                || (this.is.size * 1 / 3 > Math.abs(this.is.start.y - this.is.line.candlePoint.y) && this.is.size > this.is.line.candlePoint.y * this.env.minIsSizeOnRollback)
                             )
                             && ( // сохраняются разрешенные диапазоны
                                 // - предыдущее ветвление (экстремум) был в заданном диапазоне
@@ -141,6 +141,8 @@ export class TrendStateModel {
             if (foundBreak) {
                 // Calculate and compare was and is
                 this.in.size = (this.was.size || 0) + this.is.size
+                if (this.was.size)
+                    this.in.state = this.was.size > this.is.size ? this.was.state : this.is.state
                 // Copy is to was
                 this.was = { ...this.is }
                 // Update is
@@ -151,6 +153,7 @@ export class TrendStateModel {
                 this.is.start = this.lines.id[0].candlePoint
                 this.is.size = 0
             }
+            //
         }
 
         return

@@ -37,7 +37,8 @@ export class Indicator {
             minLog: 0,
             maxLog: 0,
             rollbackLength: 3,  // Устойчивый откат после пробоя линии тренда
-            deltaModel: 1
+            deltaModel: 1,
+            minIsSizeOnRollback: 0.05
         }, pars)
         this.env.minLength = Math.round(this.env.minLength / this.env.step) || 1
         this.env.minRightLeg = Math.round(this.env.minRightLeg / this.env.step) || 1
