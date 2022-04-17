@@ -11,9 +11,6 @@ export class LinesModel {
         [id: string]: LineModel
     }
     lineIndex: number = 0
-    state: number = 0
-    public tradeLineID: number = null
-    public trendLineType: string = null
     private step: number        // Step of time in minutes
     public forkDiffH: number = null
     public forkDiffL: number = null
@@ -42,7 +39,6 @@ export class LinesModel {
         // Restore lastForkY from previous state
         if (holdLastForkY){
             this.id[curIndex].lastForkY = holdLastForkY
-
         }
 
         /**
@@ -71,23 +67,7 @@ export class LinesModel {
             }
             this.id[sourceLineID].lastForkY = prevForkValue
         }
-        /**
-         * Пробуем развороты по ветвлению линии.
-         * tradeLineID, trendLineType - текущая линия тренда
-         * state -1 ... 1
-         */
-        if (curIndex > 1 && this.id[curIndex].type != this.trendLineType) {
-            // get prevues line
-            // начнем пока с линии h и расстоянием до первой точки линии ветвления > 1.0
-            if (this.id[curIndex].type == 'h'
-                ? this.id[curIndex].thisPoint.y + 7 < this.id[sourceLineID].thisPoint.y
-                : this.id[sourceLineID].thisPoint.y + 7 < this.id[curIndex].thisPoint.y
-            ) {
-                this.trendLineType = this.id[curIndex].type
-                this.state = this.id[curIndex].type == 'h' ? -1 : 1
-                this.tradeLineID = curIndex
-            }
-        }
+
         return curIndex
     }
 
@@ -101,8 +81,6 @@ export class LinesModel {
             this.list[0].splice(this.list[0].indexOf(lineID), 1)
         else
             this.list[1].splice(this.list[1].indexOf(lineID), 1)
-        /*         if (this.tradeLineID != null && lineID == this.tradeLineID && this.id[lineID].type != 'h')
-                    this.state = this.id[lineID].type == 'h' ? 1 : -1 */
         delete this.id[lineID]
     }
 }

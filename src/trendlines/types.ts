@@ -21,10 +21,11 @@ export interface LineDirective {
 export interface Env {
     step?: number               // time step in minutes
     minLength: number
-    minLeftLeg?: number
+    minRightLeg?: number
     maxForks?: number
     minLog?: number
     maxLog?: number
+    minIsSizeOnRollback?: number    // Минимальный размер тренда при котором вводится максимальный откат
     rollbackLength: number      // Устойчивый откат после пробоя линии тренда
     forkDurationMin: number    // Лимитное значение минимальной длительности волны
     forkDurationMax: number    // Лимитное значение минимальной длительности волны
