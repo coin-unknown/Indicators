@@ -29,6 +29,7 @@ export class TrendStateModel {
         lineIndex: number,
         line: LineModel | null,
         size?: number
+        success?: boolean
     }
     width: number                                           // longer state trend width
     speed: number                                           // longer state trend speed
@@ -99,6 +100,9 @@ export class TrendStateModel {
             let foundBreak = null
             let delta = null
             let prevLineID: number
+            let oppositeLines = this.lines.list[selectedLine.type == 'h' ? 1 : 0].filter(id => this.lines.id[id].forked && (this.lines.id[id].thisPoint.x - this.lines.id[id].forkedAt) > 12)
+            let oppositeLineID = oppositeLines.length > 1 ? oppositeLines[1] : (oppositeLines.length > 0 ? oppositeLines[0] : null)
+            let oppositeLinesInsideTrend = oppositeLines.filter(id => this.lines.id[id].forkedAt > this.is.start.x)
             if (selectedLine)
                 this.lines.list[selectedLine.type == 'h' ? 0 : 1].forEach((lineID, index) => {
                     let theLine = this.lines.id[lineID]
@@ -124,7 +128,11 @@ export class TrendStateModel {
                                 // - По времени. текущая лития столкнулась с длительным пробоем
                                 || theLine.rollback.length > this.env.rollbackLength
                                 //  - По амплитуде. Откат до установленной доли между ценой начала тренда и ценой от начала обратной линии
-                                || (this.is.size * 1 / 3 > Math.abs(this.is.start.y - this.is.line.candlePoint.y) && this.is.size > this.is.line.candlePoint.y * this.env.minIsSizeOnRollback)
+                                 || (this.is.size * 2 / 3 > Math.abs(this.is.start.y - this.is.line.candlePoint.y) && this.is.size > this.is.line.candlePoint.y * this.env.minIsSizeOnRollback)
+                                && oppositeLinesInsideTrend.length > 1
+                                || (selectedLine.type == 'h'
+                                    ? theLine.candlePoint.y > this.is.start.y && this.lines.list[0].length == 1
+                                    : theLine.candlePoint.y < this.is.start.y && this.lines.list[1].length == 1)
                             )
                             && ( // сохраняются разрешенные диапазоны
                                 // - предыдущее ветвление (экстремум) был в заданном диапазоне
@@ -134,17 +142,24 @@ export class TrendStateModel {
                                     ? theLine.candlePoint.y > theLine.startPoint.y
                                     : theLine.candlePoint.y < theLine.startPoint.y
                                 )
+                                || (selectedLine.type == 'h'
+                                    ? theLine.candlePoint.y > this.is.start.y && this.lines.list[0].length == 1
+                                    : theLine.candlePoint.y < this.is.start.y && this.lines.list[1].length == 1)
                             )
                         ) foundBreak = lineID + 1
                     }
                 })
             if (foundBreak) {
                 // Calculate and compare was and is
-                this.in.size = (this.was.size || 0) + this.is.size
+                this.in.size = (this.was.size || 0) + this.is.size;
+                // Estimate in state
+                const dif = this.lines.id[0].candlePoint.y - this.is.start.y;
+                const isSuccess = this.is.state == "rise" ? dif >= 0 : dif < 0;
                 if (this.was.size)
-                    this.in.state = this.was.size > this.is.size ? this.was.state : this.is.state
+                    this.in.state = this.was.size > this.is.size ? this.was.state : this.is.state;
                 // Copy is to was
                 this.was = { ...this.is }
+                this.was.success = isSuccess
                 // Update is
                 // if exists opposite line with length > ?5 && length < thisLine.length then createOrder
                 this.is.line = this.is.state == "fall" ? this.llMaxDuration : this.hlMaxDuration
