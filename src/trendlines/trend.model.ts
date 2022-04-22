@@ -103,6 +103,12 @@ export class TrendStateModel {
             let oppositeLines = this.lines.list[selectedLine.type == 'h' ? 1 : 0].filter(id => this.lines.id[id].forked && (this.lines.id[id].thisPoint.x - this.lines.id[id].forkedAt) > 12)
             let oppositeLineID = oppositeLines.length > 1 ? oppositeLines[1] : (oppositeLines.length > 0 ? oppositeLines[0] : null)
             let oppositeLinesInsideTrend = oppositeLines.filter(id => this.lines.id[id].forkedAt > this.is.start.x)
+            let onBreak: {
+                [id: string]: {
+                    cond: boolean,
+                    desc: string
+                }[]
+            }
             if (selectedLine)
                 this.lines.list[selectedLine.type == 'h' ? 0 : 1].forEach((lineID, index) => {
                     let theLine = this.lines.id[lineID]
@@ -117,36 +123,52 @@ export class TrendStateModel {
                             delta = theLine.rollback.lastForkValue - theLine.candlePoint.y;
                         else
                             delta = 0
-                        if (theLine.rollback.lastForkValue > 0 // Only if break of forked line
-                            // The line lasts more then this.env.minRightLeg
-                            && theLine.thisPoint.x - theLine.rollback.lastForkTime > this.env.minRightLeg
-                            // TODO Maybe we should choose shortest and bounced line instead longest
-                            && (this.is.state == "fall" ? this.llMaxDuration.length > 1 : this.hlMaxDuration.length > 1)
-                            && ( // Превышены граничные параметры
-                                // - По предыдущему экстремуму. Пробита величина прошлого экстремума
-                                (selectedLine.type == 'h' ? delta < 0 : delta > 0)
-                                // - По времени. текущая лития столкнулась с длительным пробоем
-                                || theLine.rollback.length > this.env.rollbackLength
-                                //  - По амплитуде. Откат до установленной доли между ценой начала тренда и ценой от начала обратной линии
-                                 || (this.is.size * 2 / 3 > Math.abs(this.is.start.y - this.is.line.candlePoint.y) && this.is.size > this.is.line.candlePoint.y * this.env.minIsSizeOnRollback)
-                                && oppositeLinesInsideTrend.length > 1
-                                || (selectedLine.type == 'h'
-                                    ? theLine.candlePoint.y > this.is.start.y && this.lines.list[0].length == 1
-                                    : theLine.candlePoint.y < this.is.start.y && this.lines.list[1].length == 1)
-                            )
-                            && ( // сохраняются разрешенные диапазоны
-                                // - предыдущее ветвление (экстремум) был в заданном диапазоне
-                                ((theLine.candlePoint.x - theLine.rollback.lastForkTime) > this.env.forkDurationMin && (theLine.candlePoint.x - theLine.rollback.lastForkTime) < this.env.forkDurationMax)
-                                // - текущая цена вышла из тренда
-                                || (selectedLine.type == 'h'
+                        onBreak = {
+                            '1': [{
+                                cond: theLine.thisPoint.x - theLine.rollback.lastForkTime > this.env.minRightLeg,
+                                desc: 'Правое плечо больше заданного'
+                            }],
+                            '2': [{
+                                cond: (this.is.state == "fall" ? this.llMaxDuration.length > 1 : this.hlMaxDuration.length > 1),
+                                desc: 'Есть противоположная линия тренда'
+                            }],
+                            '3': [{
+                                cond: (selectedLine.type == 'h' ? delta < 0 : delta > 0),
+                                desc: 'Предыдущий экстремум не пробит'
+                            },
+                            {
+                                cond: theLine.rollback.length > this.env.rollbackLength,
+                                desc: 'Пробой длится дольше заданного'
+                            },
+                            {
+                                cond: (this.is.size * 1 / 3 > Math.abs(this.is.start.y - this.is.line.candlePoint.y) && this.is.size > this.is.line.candlePoint.y * this.env.minIsSizeOnRollback)
+                                    && oppositeLinesInsideTrend.length > 1,
+                                desc: 'По амплитуде. Откат до установленной доли между ценой начала тренда и ценой от начала обратной линии'
+                            },
+                            {
+                                cond: (selectedLine.type == 'h' ? theLine.candlePoint.y > this.is.start.y && this.lines.list[0].length == 1 : theLine.candlePoint.y < this.is.start.y && this.lines.list[1].length == 1),
+                                desc: ''
+                            }],
+                            '4': [{
+                                cond: ((theLine.candlePoint.x - theLine.rollback.lastForkTime) > this.env.forkDurationMin && (theLine.candlePoint.x - theLine.rollback.lastForkTime) < this.env.forkDurationMax),
+                                desc: 'предыдущее ветвление (экстремум) был в заданном диапазоне'
+                            },
+                            {
+                                cond: selectedLine.type == 'h'
                                     ? theLine.candlePoint.y > theLine.startPoint.y
-                                    : theLine.candlePoint.y < theLine.startPoint.y
-                                )
-                                || (selectedLine.type == 'h'
+                                    : theLine.candlePoint.y < theLine.startPoint.y,
+                                desc: 'текущая цена вышла из тренда'
+                            },
+                            {
+                                cond: (selectedLine.type == 'h'
                                     ? theLine.candlePoint.y > this.is.start.y && this.lines.list[0].length == 1
-                                    : theLine.candlePoint.y < this.is.start.y && this.lines.list[1].length == 1)
-                            )
-                        ) foundBreak = lineID + 1
+                                    : theLine.candlePoint.y < this.is.start.y && this.lines.list[1].length == 1),
+                                desc: ''
+                            }]
+                        }
+                        let breakCondition = Object.keys(onBreak).map(key => onBreak[key]).every(onB => onB.some(el => el.cond))
+                        if (theLine.rollback.lastForkValue > 0 && breakCondition)
+                            foundBreak = lineID + 1
                     }
                 })
             if (foundBreak) {
