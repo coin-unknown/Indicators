@@ -91,7 +91,8 @@ export class TrendStateModel {
                 this.is.state = this.is.line.type == 'h' ? 'fall' : 'rise'
                 this.is.start = {
                     x: this.is.line.startPoint.x,
-                    y: this.is.line.startPoint.y}
+                    y: this.is.line.startPoint.y
+                }
             }
         }
 
@@ -133,37 +134,38 @@ export class TrendStateModel {
                             '2': [{
                                 cond: (this.is.state == "fall" ? this.llMaxDuration.length > 1 : this.hlMaxDuration.length > 1),
                                 desc: 'Есть противоположная линия тренда'
-                            }] /* ,
-                            '21': [{
-                                cond: oppositeLinesInsideTrend.length > 1,
-                                desc: 'Активное ветвление с противоположной стороны'
-                            }] */ ,
+                            }],
                             '3': [{
                                 cond: (selectedLine.type == 'h' ? delta < 0 : delta > 0),
                                 desc: 'Пробит предыдущий экстремум'
                             },
                             {
                                 cond: theLine.rollback.length > this.env.rollbackLength,
-                                desc: 'Пробой длится дольше заданного'
-                            },
-                            {
-                                cond: (this.is.size * 1 / 3 > Math.abs(this.is.start.y - this.is.line.candlePoint.y) && this.is.size > this.is.line.candlePoint.y * this.env.minIsSizeOnRollback)
-                                    && oppositeLinesInsideTrend.length > 1,
-                                desc: 'Цена откатилась больше заданной внутри тренда, превысившего заданный размер'
+                                desc: 'Пробой длится дольше ' + this.env.rollbackLength
                             },
                             {
                                 cond: (selectedLine.type == 'h'
-                                    ? theLine.candlePoint.y > this.is.start.y && this.lines.list[0].length == 1
-                                    : theLine.candlePoint.y < this.is.start.y && this.lines.list[1].length == 1),
+                                    ? theLine.candlePoint.y > this.is.start.y && this.lines.list[0].length == 1 && theLine.rollback.length > 1
+                                    : theLine.candlePoint.y < this.is.start.y && this.lines.list[1].length == 1) && theLine.rollback.length > 1,
                                 desc: 'Пробита стартовая позиция крайней линии'
-                            }/* ,
-                            {
-                                cond: oppositeLinesInsideTrend.length > 1,
-                                desc: 'Активное ветвление с противоположной стороны'
-                            } */],
+                            }
+                                /* ,
+                                {
+                                    cond: oppositeLinesInsideTrend.length > 1,
+                                    desc: 'Активное ветвление с противоположной стороны'
+                                },
+                                {
+                                    cond: (this.is.size * 1 / 3 > Math.abs(this.is.start.y - this.is.line.candlePoint.y) && this.is.size > this.is.line.candlePoint.y * this.env.minIsSizeOnRollback)
+                                        && oppositeLinesInsideTrend.length > 1,
+                                    desc: 'Цена откатилась больше заданной внутри тренда, превысившего заданный размер'
+                                } */
+                            ],
                             '4': [{
-                                cond: ((theLine.candlePoint.x - theLine.rollback.lastForkTime) > this.env.forkDurationMin && (theLine.candlePoint.x - theLine.rollback.lastForkTime) < this.env.forkDurationMax),
-                                desc: 'Предыдущее ветвление в заданном диапазоне'
+                                cond: (
+                                    (theLine.candlePoint.x - theLine.rollback.lastForkTime) > this.env.forkDurationMin
+                                    && (theLine.candlePoint.x - theLine.rollback.lastForkTime) < this.env.forkDurationMax
+                                ),
+                                desc: 'Предыдущее ветвление произошло в заданный период'
                             },
                             {
                                 cond: selectedLine.type == 'h'
@@ -180,6 +182,12 @@ export class TrendStateModel {
                         }
                         let breakCondition = Object.keys(onBreak).map(key => onBreak[key]).every(onB => onB.some(el => el.cond))
                         // log
+                        /*  if (onBreak['3'][2].cond
+                            && this.env.minLog > 0
+                            && this.lines.id[0].candlePoint.x > this.env.minLog
+                            && this.lines.id[0].candlePoint.x < this.env.maxLog) {
+                            console.log(lineID, this.lines.id[0].candlePoint.x, this.is.size * 1 / 3, Math.abs(this.is.start.y - this.is.line.candlePoint.y), this.is, onBreak)
+                        } */
                         if (this.env.minLog > 0
                             && breakCondition
                             && this.lines.id[0].candlePoint.x > this.env.minLog
