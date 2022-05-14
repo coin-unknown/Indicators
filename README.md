@@ -46,6 +46,10 @@ The main feature of these indicators is their continuous operation, which means 
 ## Utils
 - Standard Deviation (SD).
 - Correlation.
+- Circullar buffer. This is simple streaming array for pop and push (performance optimized).
+- Sampler. This is sample creator, for indicators like `SMA`, for easy getting SMA(SMA(SMA(SMA())) some sampled x-times values.
+
+
 ## Next value (indicator.nextValue)
 This method allows you to get the current value of the indicator, usually performed according to the data of a closed candle. The method call affects all subsequent calculations of the indicator readings.
 
