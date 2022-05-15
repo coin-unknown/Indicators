@@ -1,4 +1,4 @@
-# UniLevel (AO).
+# UniLevel (Universal Level).
 
 Utility for universal construction of levels. It is used, for example, to plot the levels of the SCI, RSI, and other oscillators balanced relative to the zero point (from -N to +N).
 
