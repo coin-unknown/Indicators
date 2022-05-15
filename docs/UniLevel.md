@@ -1,4 +1,6 @@
-# UniLevel (Universal Level).
+# UniLevel (Universal Level)
+
+![universal level indicator](https://github.com/debut-js/Indicators/blob/master/docs/.github/unilevel.png)
 
 Utility for universal construction of levels. It is used, for example, to plot the levels of the SCI, RSI, and other oscillators balanced relative to the zero point (from -N to +N).
 
