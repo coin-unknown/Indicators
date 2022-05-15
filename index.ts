@@ -2,7 +2,7 @@ import * as TrendLines from './src/trendlines';
 
 export { Extremums } from './src/providers/extremum';
 export { TrendLines };
-export { Level } from './src/providers/level';
+export { Level, UniLevel } from './src/providers/levels';
 export { Correlation } from './src/providers/correlation';
 export { SMA } from './src/sma';
 export { WEMA } from './src/wema';
@@ -30,3 +30,5 @@ export { PSAR } from './src/psar';
 export { ADX } from './src/adx';
 export { WWS } from './src/wws';
 export { SuperTrend } from './src/supertrend';
+export { CircularBuffer } from './src/providers/circular-buffer';
+export { Sampler } from './src/providers/sampler';
