@@ -48,6 +48,7 @@ The main feature of these indicators is their continuous operation, which means 
 - Correlation.
 - Circullar buffer. This is simple streaming array for pop and push (performance optimized).
 - Sampler. This is sample creator, for indicators like `SMA`, for easy getting SMA(SMA(SMA(SMA())) some sampled x-times values.
+- [UniLevel](./docs/UniLevel.md). Dynamic levels for single number value 0 balanced (values between -N and +N).
 
 
 ## Next value (indicator.nextValue)
