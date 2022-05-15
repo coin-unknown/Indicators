@@ -128,6 +128,8 @@ export class LineModel {
                 this.forked = true
                 this.rollback = null
             }
+            /* if (Math.abs(this.candlePoint.y - this.prevPoint.y) < 0.0005
+            && this.candlePoint.x - this.forkedAt > 4 */
             // Wait for bounce
             result = {
                 condition: this.type == 'h' ? 'lt' : 'gt',

@@ -63,9 +63,10 @@ export class Indicator {
      * @param l
      * @returns - arrow of 6 lines points
      */
-    nextValue(o: number, c: number, h: number, l: number) {
+    nextValue(o: number, c: number, h: number, l: number, v: number) {
         this.localCounter++
-
+        this.trend.values.unshift(v)
+        if (this.trend.values.length > 2) this.trend.values.pop()
         // Apply line directives got on prevues step
         if (this.lLineDirectives.length > 0) {
             // TODO Fork only last line in Array

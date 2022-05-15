@@ -37,6 +37,7 @@ export class TrendStateModel {
     duration: number                                        // duration of the trend
     kdiff: number[] = []
     lines: LinesModel
+    values: number[]
     constructor(lines: LinesModel, env: Env) {
         this.env = env
         this.lines = lines
@@ -61,6 +62,7 @@ export class TrendStateModel {
         this.width = 0
         this.speed = 0
         this.at = 0
+        this.values = []
     }
 
     hlMaxDuration: LineModel | null // Current longest resistance
@@ -149,7 +151,13 @@ export class TrendStateModel {
                                     : theLine.candlePoint.y < this.is.start.y && this.lines.list[1].length == 1) && theLine.rollback.length > 1,
                                 desc: 'Пробита стартовая позиция крайней линии'
                             }
-                                /* ,
+                                /*,
+                                {
+                                    cond: Math.abs(theLine.k) > 0.005
+                                    && theLine.thisPoint.x - theLine.rollback.lastForkTime > 30
+                                    && theLine.thisPoint.x - theLine.rollback.lastForkTime < 50,
+                                    desc: 'Super fast'
+                                },
                                 {
                                     cond: oppositeLinesInsideTrend.length > 1,
                                     desc: 'Активное ветвление с противоположной стороны'
@@ -182,11 +190,11 @@ export class TrendStateModel {
                         }
                         let breakCondition = Object.keys(onBreak).map(key => onBreak[key]).every(onB => onB.some(el => el.cond))
                         // log
-                        /*  if (onBreak['3'][2].cond
+/*                           if (theLine.rollback.length == 1
                             && this.env.minLog > 0
                             && this.lines.id[0].candlePoint.x > this.env.minLog
                             && this.lines.id[0].candlePoint.x < this.env.maxLog) {
-                            console.log(lineID, this.lines.id[0].candlePoint.x, this.is.size * 1 / 3, Math.abs(this.is.start.y - this.is.line.candlePoint.y), this.is, onBreak)
+                            console.log(lineID, this.lines.id[0].candlePoint.x, this.is.size * 1 / 3, Math.abs(this.is.start.y - this.is.line.candlePoint.y), oppositeLines, onBreak)
                         } */
                         if (this.env.minLog > 0
                             && breakCondition
