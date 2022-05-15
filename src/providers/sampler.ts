@@ -1,9 +1,9 @@
-interface IndicatorInstance {
+export interface IndicatorInstance {
     nextValue: (value: number) => number;
     momentValue: (value: number) => number;
 }
 
-interface IndicatorConstructor {
+export interface IndicatorConstructor {
     new (...args: any[]): IndicatorInstance;
 }
 
