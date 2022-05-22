@@ -64,7 +64,7 @@ export class ADX {
         this.prevLow = l;
         this.prevClose = c;
 
-        if (!avgPDI || !avgNDI) {
+        if (avgPDI === undefined || avgNDI === undefined) {
             return;
         }
 
