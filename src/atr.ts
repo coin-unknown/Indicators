@@ -43,7 +43,7 @@ export class ATR {
 
         this.prevClose = close;
 
-        if (!trueRange) {
+        if (trueRange === undefined) {
             return;
         }
 
@@ -53,7 +53,7 @@ export class ATR {
     momentValue(high: number, low: number) {
         const trueRange = getTrueRange(high, low, this.prevClose);
 
-        if (!trueRange) {
+        if (trueRange === undefined) {
             return;
         }
 
