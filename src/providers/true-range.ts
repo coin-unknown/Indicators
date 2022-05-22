@@ -20,5 +20,5 @@ export function getTrueRange(high: number, low: number, prevClose: number) {
         return lc;
     }
 
-    return null;
+    return;
 }
