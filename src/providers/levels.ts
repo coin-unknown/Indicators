@@ -41,7 +41,7 @@ export class UniLevel<T extends IndicatorConstructor> {
 
         return [
             this.samplerUp.nextValue(up) + this.offset,
-            this.samplerLow.nextValue(low) + this.offset
+            this.samplerLow.nextValue(low) - this.offset
         ];
     }
 }
