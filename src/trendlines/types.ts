@@ -30,4 +30,7 @@ export interface Env {
     forkDurationMin: number    // Лимитное значение минимальной длительности волны
     forkDurationMax: number    // Лимитное значение минимальной длительности волны
     deltaModel: 1 | 2          // Модели отсчета. 2 - FTM/USDT, 1 - другие
+    checkAfter?: number
+    checkBefore?: number  // interval in minutes
+    checkDelta?: number      // Stop loss percent
 }

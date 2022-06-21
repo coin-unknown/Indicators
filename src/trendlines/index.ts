@@ -38,13 +38,19 @@ export class Indicator {
             maxLog: 0,
             rollbackLength: 3,  // Устойчивый откат после пробоя линии тренда
             deltaModel: 1,
-            minIsSizeOnRollback: 0.05
+            minIsSizeOnRollback: 0.05,
+            checkAfter: null,
+            checkBefore: null,  // interval in minutes
+            checkDelta: 20      // Stop loss percent
         }, pars)
         this.env.minLength = Math.round(this.env.minLength / this.env.step) || 1
         this.env.minRightLeg = Math.round(this.env.minRightLeg / this.env.step) || 1
         this.env.rollbackLength = Math.round(this.env.rollbackLength / this.env.step) || 1
         this.env.forkDurationMin = Math.round(this.env.forkDurationMin / this.env.step) || 1
-        this.env.forkDurationMax = Math.round(this.env.forkDurationMax / this.env.step) || 1
+        if (this.env.checkAfter != null) {
+            this.env.checkAfter = Math.round(this.env.checkAfter / this.env.step) || 1
+            this.env.checkBefore = Math.round(this.env.checkBefore / this.env.step) || 1
+        }
         this.lines = new LinesModel(this.step)
         this.trend = new TrendStateModel(this.lines, this.env)
     }
