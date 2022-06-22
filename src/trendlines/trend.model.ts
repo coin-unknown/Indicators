@@ -190,12 +190,12 @@ export class TrendStateModel {
                         }
                         let breakCondition = Object.keys(onBreak).map(key => onBreak[key]).every(onB => onB.some(el => el.cond))
                         // log
-/*                           if (theLine.rollback.length == 1
-                            && this.env.minLog > 0
-                            && this.lines.id[0].candlePoint.x > this.env.minLog
-                            && this.lines.id[0].candlePoint.x < this.env.maxLog) {
-                            console.log(lineID, this.lines.id[0].candlePoint.x, this.is.size * 1 / 3, Math.abs(this.is.start.y - this.is.line.candlePoint.y), oppositeLines, onBreak)
-                        } */
+                        /*                           if (theLine.rollback.length == 1
+                                                    && this.env.minLog > 0
+                                                    && this.lines.id[0].candlePoint.x > this.env.minLog
+                                                    && this.lines.id[0].candlePoint.x < this.env.maxLog) {
+                                                    console.log(lineID, this.lines.id[0].candlePoint.x, this.is.size * 1 / 3, Math.abs(this.is.start.y - this.is.line.candlePoint.y), oppositeLines, onBreak)
+                                                } */
                         if (this.env.minLog > 0
                             && breakCondition
                             && this.lines.id[0].candlePoint.x > this.env.minLog
@@ -206,6 +206,12 @@ export class TrendStateModel {
                             foundBreak = lineID + 1
                     }
                 })
+            // Через время после установки новой позиции следим за тем, чтобы тренд вышел в плюс, иначе разворачиваемся.
+            if (this.env.checkBefore) {
+                const minusDelta = selectedLine.type == 'h' ? this.lines.id[0].candlePoint.y - this.is.start.y : this.is.start.y - this.lines.id[0].candlePoint.y
+                if ((this.lines.id[0].candlePoint.x - this.is.start.x < 660) && (this.lines.id[0].candlePoint.x - this.is.start.x > 20) && minusDelta > this.lines.id[0].candlePoint.y / 40 && oppositeLines.length > 0)
+                    foundBreak = oppositeLines[0];
+            }
             if (foundBreak) {
                 // Calculate and compare was and is
                 this.in.size = (this.was.size || 0) + this.is.size;
