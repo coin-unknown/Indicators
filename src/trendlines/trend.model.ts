@@ -24,7 +24,7 @@ export class TrendStateModel {
             y: number
         }
     }
-    was: {                                                                       // prevues state
+    was: {                                                                       // previous state
         state: null | 'flat' | 'rise' | 'fall',
         lineIndex: number,
         line: LineModel | null,
