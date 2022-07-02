@@ -11,6 +11,7 @@ export class LWMA {
     private arr: number[] = [];
     private filled = false;
     private devider = 0;
+    private lastSum = 0;
 
     constructor(private period: number) {
         this.devider = sum(Array.from(Array(this.period).keys()).map((i) => i + 1));
@@ -28,7 +29,10 @@ export class LWMA {
 
     momentValue(value: number) {
         if (this.filled) {
-            return this.arr.reduce((sum, value, idx) => sum + value * (idx + 1), 0) / this.devider;
+            const arr = this.arr.slice(1);
+
+            arr.push(value);
+            return arr.reduce((sum, value, idx) => sum + value * (idx + 1), 0) / this.devider;
         }
     }
 }
