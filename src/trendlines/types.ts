@@ -33,4 +33,5 @@ export interface Env {
     checkAfter?: number
     checkBefore?: number  // interval in minutes
     checkDelta?: number      // Stop loss percent
+    bounceAccuracy?: number     // Bounce proximity accuracy
 }

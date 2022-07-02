@@ -1,10 +1,11 @@
-import { LineEvent, LineDirective, Point } from './types'
+import { LineEvent, LineDirective, Point, Env } from './types'
 
 /**
  * Line Model class.
  * this.index - index in lineDirectives array
  */
 export class LineModel {
+    private env: Env
     public type: 'h' | 'l'
     public index: number
     public length: number               //Line's living time
@@ -30,7 +31,8 @@ export class LineModel {
         lastForkValue: number
     } | null
 
-    constructor(h, l, i, step, index, prevPoint = null) {
+    constructor(h, l, i, step, index, prevPoint = null, env) {
+        this.env = env
         this.step = step
         this.index = index
         this.length = 0
@@ -128,8 +130,13 @@ export class LineModel {
                 this.forked = true
                 this.rollback = null
             }
-            /* if (Math.abs(this.candlePoint.y - this.prevPoint.y) < 0.0005
-            && this.candlePoint.x - this.forkedAt > 4 */
+            // Add bounce accuracy
+              if (this.env.bounceAccuracy != null && Math.abs(this.candlePoint.y - this.prevPoint.y) < this.env.bounceAccuracy //0.004
+                && this.candlePoint.x - this.forkedAt > 4) {
+                this.forkedAt = this.candlePoint.x;
+                this.forkedValue = this.candlePoint.y;
+                this.forked = true;
+            }
             // Wait for bounce
             result = {
                 condition: this.type == 'h' ? 'lt' : 'gt',

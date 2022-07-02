@@ -1,4 +1,4 @@
-import { LineEvent, LineDirective, Point } from './types'
+import { LineEvent, LineDirective, Point, Env } from './types'
 import { LineModel } from './line.model'
 
 /**
@@ -10,11 +10,13 @@ export class LinesModel {
     id: {
         [id: string]: LineModel
     }
+    env: Env
     lineIndex: number = 0
     private step: number        // Step of time in minutes
     public forkDiffH: number = null
     public forkDiffL: number = null
-    constructor(step) {
+    constructor(step, env) {
+        this.env = env
         this.step = step
         this.list = [[], []]
         this.id = {}
@@ -35,7 +37,7 @@ export class LinesModel {
             // Сохраняем прежнюю точку ветвления или берем предыдущую
             holdLastForkY = this.id[curIndex].lastForkY || ( h != null ? prevPoint.h : prevPoint.l)
         }
-        this.id[curIndex] = new LineModel(h, l, i, this.step, curIndex, prevPoint)
+        this.id[curIndex] = new LineModel(h, l, i, this.step, curIndex, prevPoint, this.env)
         // Restore lastForkY from previous state
         if (holdLastForkY){
             this.id[curIndex].lastForkY = holdLastForkY

@@ -209,7 +209,7 @@ export class TrendStateModel {
             // Через время после установки новой позиции следим за тем, чтобы тренд вышел в плюс, иначе разворачиваемся.
             if (this.env.checkBefore) {
                 const minusDelta = selectedLine.type == 'h' ? this.lines.id[0].candlePoint.y - this.is.start.y : this.is.start.y - this.lines.id[0].candlePoint.y
-                if ((this.lines.id[0].candlePoint.x - this.is.start.x < 660) && (this.lines.id[0].candlePoint.x - this.is.start.x > 20) && minusDelta > this.lines.id[0].candlePoint.y / 40 && oppositeLines.length > 0)
+                if ((this.lines.id[0].candlePoint.x - this.is.start.x < this.env.checkBefore) && (this.lines.id[0].candlePoint.x - this.is.start.x > this.env.checkAfter) && minusDelta > this.lines.id[0].candlePoint.y / this.env.checkDelta && oppositeLines.length > 0)
                     foundBreak = oppositeLines[0];
             }
             if (foundBreak) {
