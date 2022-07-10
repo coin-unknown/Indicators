@@ -22,3 +22,4 @@ export { HeikenAshi } from './src/heiken-ashi';
 export { Pivot } from './src/pivot';
 export { LWMA } from './src/lwma';
 export { PSAR } from './src/psar';
+export {VolumeProfile, VolumeTypes, PriceSource} from './src/volume-profile'

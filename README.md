@@ -35,6 +35,7 @@ The main feature of these indicators is their continuous operation, which means 
 - Stochastic Oscillator (KD)
 - Wilder's Smoothed Moving Average (WEMA)
 - Parabolic Stop And Reverse (PSAR)
+- Volume Profile
 
 ## Candles
 - Heiken Ashi.
