@@ -5,7 +5,7 @@
         "access": "public"
     },
     "description": "Implementation of most popular technical stock indicators for debut environment",
-    "version": "1.2.1",
+    "version": "1.3.9",
     "license": "GPL-3.0",
     "homepage": "https://github.com/debut-js/Indicators",
     "repository": {
@@ -13,13 +13,13 @@
         "url": "git@github.com:debut-js/Indicators.git"
     },
     "scripts": {
-        "start": "ts-node --",
         "build": "rollup -c ./rollup.config.js",
+        "start": "ts-node --",
+        "watch": "rollup -cw ./rollup.config.js",
         "test": "jest",
         "version": "npm run build",
         "postversion": "git push && git push --tags",
-        "prettier": "prettier --config './.prettierrc.js' --write 'src/**/*.ts'",
-        "prebuild": "npm run test"
+        "prettier": "prettier --config './.prettierrc.js' --write 'src/**/*.ts'"
     },
     "bugs": {
         "url": "https://github.com/debut-js/Indicators/issues"
@@ -30,7 +30,7 @@
     "types": "lib/index.d.ts",
     "devDependencies": {
         "@debut/types": "^3.2.1-beta.4",
-        "@types/jest": "^26.0.24",
+        "@types/jest": "^27.0.6",
         "@typescript-eslint/eslint-plugin": "^3.7.0",
         "@typescript-eslint/parser": "^3.7.0",
         "acorn": "^7.3.1",

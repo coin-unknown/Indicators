@@ -51,7 +51,7 @@ export class cRSI {
         const updownPeriod = this.getUpdownPeriod(value);
         const updownValue = this.updownRsi.momentValue(updownPeriod);
 
-        if (!updownValue) {
+        if (updownValue === undefined) {
             return;
         }
 

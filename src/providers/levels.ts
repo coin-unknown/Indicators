@@ -1,7 +1,55 @@
 import { WEMA } from '../wema';
 import { EMA } from '../ema';
 import { SMA } from '../sma';
+import { Sampler, IndicatorConstructor } from './sampler';
 
+/**
+ * Level creation for dynamic data, upper and lower (configurated)
+ */
+export class UniLevel<T extends IndicatorConstructor> {
+    private prevValue = 0;
+    private lastUpperValue = 0;
+    private lastLowerValue = 0;
+    private samplerUp: Sampler<T>;
+    private samplerLow: Sampler<T>;
+
+    constructor(public redunant = 0.85, indicator: T, samples: number, private multiplier = 1, private offset = 1) {
+        this.samplerUp = new Sampler<T>(indicator, samples);
+        this.samplerLow = new Sampler<T>(indicator, samples);
+    }
+
+    public create(...args: ConstructorParameters<T>) {
+        this.samplerUp.create(...args);
+        this.samplerLow.create(...args);
+    }
+
+    public nextValue(value: number) {
+        if (value > 0) {
+            this.lastUpperValue = Math.max(value, this.prevValue);
+        } else {
+            this.lastUpperValue = Math.max(0, this.lastUpperValue) * this.redunant;
+        }
+
+        if (value <= 0)
+            this.lastLowerValue = Math.min(value, this.prevValue);
+        else {
+            this.lastLowerValue = Math.min(0, this.lastLowerValue) * this.redunant;
+        }
+
+        const low = (value <= 0 ? value : this.lastLowerValue) * this.multiplier;
+        const up = (value >= 0 ? value : this.lastUpperValue) * this.multiplier;
+
+        return [
+            this.samplerUp.nextValue(up) + this.offset,
+            this.samplerLow.nextValue(low) - this.offset
+        ];
+    }
+}
+
+/**
+ * Smoothed level creation for dynamic data
+ * @deprecated
+ */
 export class Level {
     private sample1Up: WEMA | SMA | EMA;
     private sample2Up: WEMA | SMA | EMA;

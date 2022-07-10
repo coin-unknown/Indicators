@@ -16,9 +16,10 @@ The main feature of these indicators is their continuous operation, which means 
 - Unit Tested / Cross SDK Validated
 
 ## Available Indicators
-- Accelerator Oscillator (AO).
+- [Accelerator Oscillator (AO)](./docs/AcceleratorOscillator.md).
 - Average True Range (ATR)
 - Awesome Oscillator (AC).
+- Average Directional Index  (ADX).
 - Bollinger Bands (BB).
 - Commodity Channel Index (CCI).
 - Connor's RSI (CRSI)
@@ -32,8 +33,11 @@ The main feature of these indicators is their continuous operation, which means 
 - Relative Strength Index (RSI).
 - Simple Moving Average (SMA).
 - Smoothed Moving Average (SMMA).
+- SuperTrend MTF (ST MTF).
 - Stochastic Oscillator (KD)
 - Wilder's Smoothed Moving Average (WEMA)
+- Welles Wilder's Smoothing Average (WWS)
+- Weighted moving average (WMA)
 - Parabolic Stop And Reverse (PSAR)
 - Volume Profile
 
@@ -43,6 +47,11 @@ The main feature of these indicators is their continuous operation, which means 
 ## Utils
 - Standard Deviation (SD).
 - Correlation.
+- Circullar buffer. This is simple streaming array for pop and push (performance optimized).
+- Sampler. This is sample creator, for indicators like `SMA`, for easy getting SMA(SMA(SMA(SMA())) some sampled x-times values.
+- [UniLevel](./docs/UniLevel.md). Dynamic levels for single number value 0 balanced (values between -N and +N).
+
+
 ## Next value (indicator.nextValue)
 This method allows you to get the current value of the indicator, usually performed according to the data of a closed candle. The method call affects all subsequent calculations of the indicator readings.
 
@@ -102,3 +111,6 @@ sma.nextValue(9); // 7.50
 |       SMA       	|            2,034,006            	|             45,479             	|            1,506            	|       1,670       	|
 |    Stochastic   	|             189,514            	|             20,914             	|             197             	|         x    	        |
 |      WEMA     	|             937,491            	|            296,787             	|             x             	|         x    	        |
+|      PSAR     	|             1,084,123            	|            166,158             	|             x             	|         x
+|       ADX      	|              356,637             	|              26,581           	|             x             	|         x
+|       WMA     	|             97,807            	|            22,617             	|             x             	|         x

@@ -23,11 +23,7 @@ export class WEMA {
             return (this.wema = this.sma.nextValue(value));
         }
 
-        if (this.wema) {
-            this.wema = (value - this.wema) * this.smooth + this.wema;
-        }
-
-        return this.wema;
+        return (this.wema = (value - this.wema) * this.smooth + this.wema);
     }
 
     /**

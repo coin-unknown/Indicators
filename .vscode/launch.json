@@ -5,8 +5,14 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "command": "npm start ./src/reverse-meter.ts",
+            "command": "npm start ./tests/trendlines/index.ts",
             "name": "Run npm start",
+            "request": "launch",
+            "type": "node-terminal"
+        },
+        {
+            "command": "npm run test",
+            "name": "Run npm test",
             "request": "launch",
             "type": "node-terminal"
         }

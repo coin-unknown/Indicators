@@ -1,9 +1,15 @@
-export { Level } from './src/providers/level';
+import * as TrendLines from './src/trendlines';
+
+export { Extremums } from './src/providers/extremum';
+export { TrendLines };
+export { Level, UniLevel } from './src/providers/levels';
 export { Correlation } from './src/providers/correlation';
 export { SMA } from './src/sma';
 export { WEMA } from './src/wema';
+export { WMA } from './src/wma';
 export { EMA } from './src/ema';
 export { EWMA } from './src/ewma';
+export { RMA } from './src/rma';
 export { AO } from './src/ao';
 export { AC } from './src/ac';
 export { Move } from './src/move';
@@ -22,4 +28,9 @@ export { HeikenAshi } from './src/heiken-ashi';
 export { Pivot } from './src/pivot';
 export { LWMA } from './src/lwma';
 export { PSAR } from './src/psar';
+export { ADX } from './src/adx';
+export { WWS } from './src/wws';
+export { SuperTrend } from './src/supertrend';
+export { CircularBuffer } from './src/providers/circular-buffer';
+export { Sampler } from './src/providers/sampler';
 export {VolumeProfile, VolumeTypes, PriceSource} from './src/volume-profile'

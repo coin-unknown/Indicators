@@ -4,6 +4,7 @@ import { WEMA } from './wema';
 import { LWMA } from './lwma';
 import { SMA } from './sma';
 import { EWMA } from './ewma';
+import { getTrueRange } from './providers/true-range';
 export class ATR {
     private prevClose: number;
     private avg: EMA | SMMA | WEMA | LWMA | SMA | EWMA;
@@ -38,11 +39,11 @@ export class ATR {
     }
 
     nextValue(high: number, low: number, close: number) {
-        const trueRange = this.getTrueRange(high, low);
+        const trueRange = getTrueRange(high, low, this.prevClose);
 
         this.prevClose = close;
 
-        if(!trueRange) {
+        if (trueRange === undefined) {
             return;
         }
 
@@ -50,26 +51,12 @@ export class ATR {
     }
 
     momentValue(high: number, low: number) {
-        const trueRange = this.getTrueRange(high, low);
+        const trueRange = getTrueRange(high, low, this.prevClose);
 
-        if(!trueRange) {
+        if (trueRange === undefined) {
             return;
         }
 
         return this.avg.momentValue(trueRange);
     }
-
-    private getTrueRange(high: number, low: number) {
-        if (this.prevClose) {
-            return Math.max(high - low, Math.abs(high - this.prevClose), Math.abs(low - this.prevClose));
-        }
-
-        return null;
-    }
 }
-
-/**
- * fast abs
- * mask = input >> 31;
- * abs = ( input + mast ) ^ mask
- */
