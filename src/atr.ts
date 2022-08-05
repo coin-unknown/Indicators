@@ -5,15 +5,17 @@ import { LWMA } from './lwma';
 import { SMA } from './sma';
 import { EWMA } from './ewma';
 import { getTrueRange } from './providers/true-range';
+import { RMA } from './rma';
+
 export class ATR {
     private prevClose: number;
-    private avg: EMA | SMMA | WEMA | LWMA | SMA | EWMA;
+    private avg: EMA | SMMA | WEMA | LWMA | SMA | EWMA | RMA;
 
     /**
      * Конструктор
      * @param period - период по умолчанию 14
      */
-    constructor(period = 14, smoothing: 'SMA' | 'EMA' | 'SMMA' | 'WEMA' | 'LWMA' | 'EWMA' = 'WEMA') {
+    constructor(period = 14, smoothing: 'SMA' | 'EMA' | 'SMMA' | 'WEMA' | 'LWMA' | 'EWMA' | 'RMA' = 'WEMA') {
         switch (smoothing) {
             case 'SMA':
                 this.avg = new SMA(period);
@@ -32,6 +34,9 @@ export class ATR {
                 break;
             case 'EWMA':
                 this.avg = new EWMA(0.2);
+                break;
+            case 'RMA':
+                this.avg = new RMA(period);
                 break;
         }
 
