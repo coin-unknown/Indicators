@@ -25,7 +25,7 @@ export class SuperTrend {
 
             if (this.prevLower) {
                 lower = lower > this.prevLower || this.prevClose < this.prevLower ? lower : this.prevLower;
-                upper = upper < this.prevSuper || this.prevClose > this.prevUpper ? upper : this.prevUpper;
+                upper = upper < this.prevUpper || this.prevClose > this.prevUpper ? upper : this.prevUpper;
             }
 
             let superTrend = upper;
