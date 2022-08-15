@@ -125,9 +125,9 @@ export class LineModel {
                 this.forkedValue = null
             }
             else {
-                this.forkedAt = this.candlePoint.x
+/*                 this.forkedAt = this.candlePoint.x
                 this.forkedValue = this.candlePoint.y
-                this.forked = true
+                this.forked = true */
                 this.rollback = null
             }
             // Add bounce accuracy

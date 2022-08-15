@@ -73,6 +73,11 @@ export class Indicator {
      * @returns - arrow of 6 lines points
      */
     nextValue(o: number, c: number, h: number, l: number, v: number) {
+/*         if (o > c) {
+            let hOn = h
+            h = o
+            o = hOn
+        } */
         this.localCounter++
         this.trend.values.unshift(v)
         if (this.trend.values.length > 2) this.trend.values.pop()

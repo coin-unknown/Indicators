@@ -31,6 +31,7 @@ export class TrendStateModel {
         size?: number
         success?: boolean
     }
+    testCheck: number
     width: number                                           // longer state trend width
     speed: number                                           // longer state trend speed
     at: number                                              // time ago of the prevues state
