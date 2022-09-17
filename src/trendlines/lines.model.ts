@@ -44,11 +44,6 @@ export class LinesModel {
         }
 
         /**
-         * Метод 3. Ищем последовательность: fork, rollback, fork, trade, wait same on opposite side
-         */
-
-
-        /**
          * Метод 2. Для линии в начале ее ветвления сохраняем y и сравниваем. Сигнализируем, когда разница больше или меньше нуля
          * Метод дает слишком много сигналов из которых сложно выделить значимые. Стоит поискать более эффективный метод поиска разворота
          */
@@ -63,13 +58,12 @@ export class LinesModel {
             let prevForkValue = h != null ? prevPoint.h : prevPoint.l
             if (lastForkVal) {
                 if (h)
-                    this.forkDiffH = lastForkVal >= prevForkValue ? -sourceLineID - 1 : sourceLineID + 1
+                    this.forkDiffH = lastForkVal //>= prevForkValue ? -sourceLineID - 1 : sourceLineID + 1
                 else
-                    this.forkDiffL = lastForkVal >= prevForkValue ? -sourceLineID - 1 : sourceLineID + 1
+                    this.forkDiffL = lastForkVal //>= prevForkValue ? -sourceLineID - 1 : sourceLineID + 1
             }
             this.id[sourceLineID].lastForkY = prevForkValue
         }
-
         return curIndex
     }
 
