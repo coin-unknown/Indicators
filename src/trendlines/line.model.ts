@@ -9,20 +9,20 @@ export class LineModel {
     public type: 'h' | 'l'
     public index: number
     public length: number               //Line's living time
-    //TODO Make points window in FIFO stack
     public startPoint: Point
     public prevPoint: Point
     public thisPoint: Point             // Current Point on the line
     public nextPoint: Point
     public candlePoint: Point           // Point on the current candle
-    public forked: boolean = false      // Flag of bounced line
-    public forkedAt: number = 0
-    public forkedValue: number
+    public forked: boolean = false      // Flag of bounced line. At least 3-rd point
+    public forkedAt: number = 0         // Time of the last fork
+    public forkedValue: number          // Price of the last fork
+    // TODO Deprecated
     public lastForkY: number = null     // Last fork or extremum point
     public k: number
     private b: number
     private step: number                // Step of time in minutes
-    // rollback of the line: the case when a price change direction is opposite the line direction
+    // rollback of the line: the case when a price change direction to opposite direction
     public rollback: {
         k: number
         b: number
@@ -36,7 +36,8 @@ export class LineModel {
         this.step = step
         this.index = index
         this.length = 0
-        // TODO On fork startPoint is the fork point not the candle point
+        // TODO On fork startPoint is the fork point but the candle point
+        // TODO Test
         this.startPoint = prevPoint ?
             {
                 y: h ? prevPoint.h : prevPoint.l,
@@ -74,6 +75,7 @@ export class LineModel {
      * @param h
      * @param l
      * @param i
+     * @return параметры для ветвления линии
      */
     update(h, l, i): LineDirective {
         let result = null
@@ -81,6 +83,7 @@ export class LineModel {
         this.init(h, l, i)
         // Init К b
         if (!this.k || isNaN(this.k)) {
+            // TODO проверить, есть ли ситуация, при которой this.candlePoint.y = this.startPoint.y кроме первой точки?
             this.k = (this.candlePoint.y - this.startPoint.y) / (this.candlePoint.x - this.startPoint.x)
             this.b = this.candlePoint.y - this.k * this.candlePoint.x
             this.prevPoint = this.startPoint
@@ -95,13 +98,14 @@ export class LineModel {
                 action: 'fork',
                 lineIndex: this.index
             }
-
         }
         // Update incline
         if ((this.type == 'h' && this.thisPoint.y <= this.candlePoint.y) || (this.type == 'l' && this.thisPoint.y >= this.candlePoint.y)) {
             this.k = (this.candlePoint.y - this.startPoint.y) / (this.candlePoint.x - this.startPoint.x)
             this.b = this.candlePoint.y - this.k * this.candlePoint.x
             this.thisPoint = this.candlePoint
+            // TODO Получается, что если линия корректируется, то она начинается с начала. Это по идее не верно. Может не стоит сбрасывать длину линии. Проверить.
+            // Иначе это получается длина с последнего fork. По идее длина линия не должна обнуляться
             this.length = 0
             this.nextPoint = {
                 y: this.k * (this.candlePoint.x + this.step) + this.b,
@@ -109,12 +113,17 @@ export class LineModel {
             }
             let rollbackTime = this.rollback ? this.rollback.length : 0
             let rollbackIncline = this.candlePoint.y - this.prevPoint.y // Take only one candle
-            // Set rollback flag if moving away from the middle of price
+            // Set rollback flag if moving away from the prevPoint (not the nextPoint!)
             if ((this.type == 'h' ? rollbackIncline > 0 : rollbackIncline < 0)) {
                 this.rollback = {
                     k: rollbackIncline,
                     b: this.candlePoint.y - rollbackIncline * this.candlePoint.x,
                     length: rollbackTime + 1,
+            // TODO Нужно улучшить хранение информации об истории ветвления. Вопрос в том, что может потребоваться в дальнейшем.
+            /**
+             * Если линия корректируется, то она приближается к родительской линии до уничтожения. Тут стоит улучшить.
+             * Если линия не ветвилась, значит - конечная линия. Но Это можно и по размеру массива выяснить.
+             */
                     lastForkTime: this.forkedAt || (this.rollback ? this.rollback.lastForkTime : 0),
                     lastForkValue: this.forkedValue || (this.rollback ? this.rollback.lastForkValue : 0),
                 }
@@ -131,6 +140,9 @@ export class LineModel {
                 this.rollback = null
             }
             // Add bounce accuracy
+            /**
+             * TODO. Тут тоже слишком буквальная интерпретация отскока. Он все-таки должен возникать в результате форка. Думаю, этот фрагмент удалить.
+             */
               if (this.env.bounceAccuracy != null && Math.abs(this.candlePoint.y - this.prevPoint.y) < this.env.bounceAccuracy //0.004
                 && this.candlePoint.x - this.forkedAt > 4) {
                 this.forkedAt = this.candlePoint.x;
