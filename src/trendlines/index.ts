@@ -1,6 +1,5 @@
-import { LineModel } from './line.model'
 import { LinesModel } from './lines.model'
-import { LineEvent, LineDirective, Point, Env } from './types'
+import { LineDirective, Env } from './types'
 import { TrendStateModel } from './trend.model'
 
 export type { LinesModel, TrendStateModel, Env };
@@ -9,7 +8,7 @@ export class Indicator {
     public lLineDirectives: LineDirective[] = []
     public trend: TrendStateModel
     private lines: LinesModel
-    private step: number = 1        // TODO operate in different time scale
+    private step: number = 1
     private i: number = 0
     public env: Env
     // Settings
@@ -36,12 +35,12 @@ export class Indicator {
             maxForks: 500,
             minLog: 0,
             maxLog: 0,
-            rollbackLength: 3,  // Устойчивый откат после пробоя линии тренда
+            rollbackLength: 3,      // Устойчивый откат после пробоя линии тренда
             deltaModel: 1,
             minIsSizeOnRollback: 0.05,
             checkAfter: null,
-            checkBefore: null,  // interval in minutes
-            checkDelta: 20,      // Stop loss percent
+            checkBefore: null,      // interval in minutes
+            checkDelta: 20,         // Stop loss percent
             bounceAccuracy: null
         }, pars)
         this.env.minLength = Math.round(this.env.minLength / this.env.step) || 1
@@ -52,12 +51,16 @@ export class Indicator {
             this.env.checkAfter = Math.round(this.env.checkAfter / this.env.step) || 1
             this.env.checkBefore = Math.round(this.env.checkBefore / this.env.step) || 1
         }
-        this.lines = new LinesModel(this.step, this.env)
         this.env.forkDurationMax = Math.round(this.env.forkDurationMax / this.env.step) || 1
         this.lines = new LinesModel(this.step, this.env)
         this.trend = new TrendStateModel(this.lines, this.env)
     }
 
+    /**
+    * Log the data parameter during this.env.minLog and this.env.maxLog
+    * @param Title - custom title of the data
+    * @param data - data hash to log to terminal
+    */
     log(title, ...data) {
         this.consoleWindow = this.env.minLog < this.localCounter && this.localCounter < this.env.maxLog
         if (this.consoleWindow)
@@ -73,14 +76,9 @@ export class Indicator {
      * @returns - arrow of 6 lines points
      */
     nextValue(o: number, c: number, h: number, l: number, v: number) {
-/*         if (o > c) {
-            let hOn = h
-            h = o
-            o = hOn
-        } */
+        // TODO Rise sensitivity
+        // if (o > c) [o, h] = [h,o]
         this.localCounter++
-        this.trend.values.unshift(v)
-        if (this.trend.values.length > 2) this.trend.values.pop()
         // Apply line directives got on prevues step
         if (this.lLineDirectives.length > 0) {
             // TODO Fork only last line in Array
@@ -141,11 +139,10 @@ export class Indicator {
             )
         }
 
-        //Delete passed lines
-        let toDelete = []
+        // Delete passed lines
         this.lines.list.forEach(ofLines => {
+            let toDelete = []
             if (ofLines) {
-                toDelete = []
                 ofLines.forEach((lineID, i) => {
                     let thisLine = this.lines.id[ofLines[i]]
                     let prevLine = this.lines.id[ofLines[i - 1]]

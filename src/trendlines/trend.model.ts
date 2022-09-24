@@ -6,6 +6,7 @@ import { LinesModel } from './lines.model'
  * Trend state Model
  * The trendModel object use Lines and lineDirectives to estimate current trend state
  */
+
 export class TrendStateModel {
     env: Env
     in: {                                                                         // longer state
@@ -232,9 +233,7 @@ export class TrendStateModel {
                 this.is.start = this.lines.id[0].candlePoint
                 this.is.size = 0
             }
-            //
         }
-
         return
     }
 }
