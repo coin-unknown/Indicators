@@ -5,17 +5,20 @@ import { LinesModel } from './lines.model'
 /**
  * Trend state Model
  * The trendModel object use Lines and lineDirectives to estimate current trend state
+ * @property hlMaxDuration - Current longest resistance
  */
 
 export class TrendStateModel {
     env: Env
-    in: {                                                                         // longer state
+    /** Trend longer state (was+is) */
+    in: {
         state: null | 'unknown' | 'flat' | 'rise' | 'fall' | 'squeeze',
         lineIndex: number | null,
         line: LineModel | null
         size?: number
     }
-    is: {                                                                         // current state
+    /** Trend current state */
+    is: {
         state: null | 'flat' | 'rise' | 'fall',
         lineIndex: number | null,
         line: LineModel | null,
@@ -25,21 +28,20 @@ export class TrendStateModel {
             y: number
         }
     }
-    was: {                                                                       // prevues state
+    /** Trend  previous state*/
+    was: {
         state: null | 'flat' | 'rise' | 'fall',
         lineIndex: number,
         line: LineModel | null,
         size?: number
         success?: boolean
     }
-    testCheck: number
-    width: number                                           // longer state trend width
-    speed: number                                           // longer state trend speed
-    at: number                                              // time ago of the prevues state
-    duration: number                                        // duration of the trend
-    kdiff: number[] = []
+    /**  Current longest resistance */
+    hlMaxDuration: LineModel | null
+    /** Current longest support */
+    llMaxDuration: LineModel | null
+    /** link to all lines */
     lines: LinesModel
-    values: number[]
     constructor(lines: LinesModel, env: Env) {
         this.env = env
         this.lines = lines
@@ -61,20 +63,12 @@ export class TrendStateModel {
             line: null,
             size: null
         }
-        this.width = 0
-        this.speed = 0
-        this.at = 0
-        this.values = []
+        this.hlMaxDuration = null
+        this.llMaxDuration = null
     }
 
-    hlMaxDuration: LineModel | null // Current longest resistance
-    llMaxDuration: LineModel | null // Current longest support
-
     update(hLinesIDs: number[], lLinesIDs: number[]) {
-        //Wait for the first turn
-        //Init
-        // Search of the longest line begun from this.is
-        // TODO longest is just the first in array of forked lines
+        // Get lines hlMaxDuration and llMaxDuration with longest length
         if (hLinesIDs.length > 1)
             this.hlMaxDuration = hLinesIDs.map(lineID => this.lines.id[lineID]).filter(line => (this.is.line ? (line.forkedAt ? line.forkedAt > this.is.line.startPoint.x : (line.rollback ? line.rollback.lastForkTime > this.is.line.startPoint.x : false)) : true)).reduce((prev, current) => {
                 return (prev.length > current.length) ? prev : current
@@ -86,8 +80,8 @@ export class TrendStateModel {
             }, this.lines.id[lLinesIDs[0]])
         else this.llMaxDuration = this.lines.id[lLinesIDs[0]]
 
+        // Init first state after reaching the minimum initial line length this.env.minLength
         if (this.is.state == null && this.was.state == null) {
-            // Take the minimum trend duration = 5 candles
             this.is.line = (this.llMaxDuration && this.llMaxDuration.length > this.env.minLength && this.hlMaxDuration.length < this.env.minLength) ? this.llMaxDuration //hLines
                 : ((this.hlMaxDuration && this.hlMaxDuration.length > this.env.minLength && this.llMaxDuration.length < this.env.minLength) ? this.hlMaxDuration : null)
             if (this.is.line) {
