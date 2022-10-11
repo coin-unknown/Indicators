@@ -70,12 +70,12 @@ export class TrendStateModel {
     update(hLinesIDs: number[], lLinesIDs: number[]) {
         // Get lines hlMaxDuration and llMaxDuration with longest length
         if (hLinesIDs.length > 1)
-            this.hlMaxDuration = hLinesIDs.map(lineID => this.lines.id[lineID]).filter(line => (this.is.line ? (line.forkedAt ? line.forkedAt > this.is.line.startPoint.x : (line.rollback ? line.rollback.lastForkTime > this.is.line.startPoint.x : false)) : true)).reduce((prev, current) => {
+            this.hlMaxDuration = hLinesIDs.map(lineID => this.lines.id[lineID]).filter(line => (this.is.line ? (line.forks.last().t ? line.forks.last().t > this.is.line.startPoint.x : false) : true)).reduce((prev, current) => {
                 return (prev.length > current.length) ? prev : current
             }, this.lines.id[hLinesIDs[0]])
         else this.hlMaxDuration = this.lines.id[hLinesIDs[0]]
         if (lLinesIDs.length > 1)
-            this.llMaxDuration = lLinesIDs.map(lineID => this.lines.id[lineID]).filter(line => (this.is.line ? (line.forkedAt ? line.forkedAt > this.is.line.startPoint.x : (line.rollback ? line.rollback.lastForkTime > this.is.line.startPoint.x : false)) : true)).reduce((prev, current) => {
+            this.llMaxDuration = lLinesIDs.map(lineID => this.lines.id[lineID]).filter(line => (this.is.line ? (line.forks.last().t ? line.forks.last().t > this.is.line.startPoint.x : false) : true)).reduce((prev, current) => {
                 return (prev.length > current.length) ? prev : current
             }, this.lines.id[lLinesIDs[0]])
         else this.llMaxDuration = this.lines.id[lLinesIDs[0]]
@@ -101,9 +101,9 @@ export class TrendStateModel {
             let foundBreak = null
             let delta = null
             let prevLineID: number
-            let oppositeLines = this.lines.list[selectedLine.type == 'h' ? 1 : 0].filter(id => this.lines.id[id].forked && (this.lines.id[id].thisPoint.x - this.lines.id[id].forkedAt) > 1)
+            let oppositeLines = this.lines.list[selectedLine.type == 'h' ? 1 : 0].filter(id => this.lines.id[id].forks.isForked && (this.lines.id[id].thisPoint.x - this.lines.id[id].forks.last().t) > 1)
             let oppositeLineID = oppositeLines.length > 1 ? oppositeLines[1] : (oppositeLines.length > 0 ? oppositeLines[0] : null)
-            let oppositeLinesInsideTrend = oppositeLines.filter(id => this.lines.id[id].forkedAt > this.is.start.x)
+            let oppositeLinesInsideTrend = oppositeLines.filter(id => this.lines.id[id].forks.last().t > this.is.start.x)
             let onBreak: {
                 [id: string]: {
                     cond: boolean,
@@ -121,12 +121,12 @@ export class TrendStateModel {
                         if (cond)
                             delta = this.lines.id[lineID > 1 ? prevLineID : (selectedLine.type == 'h' ? 0 : 1)].lastForkY - theLine.candlePoint.y;
                         else if (theLine.rollback)
-                            delta = theLine.rollback.lastForkValue - theLine.candlePoint.y;
+                            delta = theLine.forks.last().t - theLine.candlePoint.y;
                         else
                             delta = 0
                         onBreak = {
                             '1': [{
-                                cond: theLine.thisPoint.x - theLine.rollback.lastForkTime > this.env.minRightLeg,
+                                cond: theLine.thisPoint.x - theLine.forks.last().t > this.env.minRightLeg,
                                 desc: 'Правое плечо больше заданного'
                             }],
                             '2': [{
@@ -150,8 +150,8 @@ export class TrendStateModel {
                                 /*,
                                 {
                                     cond: Math.abs(theLine.k) > 0.005
-                                    && theLine.thisPoint.x - theLine.rollback.lastForkTime > 30
-                                    && theLine.thisPoint.x - theLine.rollback.lastForkTime < 50,
+                                    && theLine.thisPoint.x - theLine.forks.last().t > 30
+                                    && theLine.thisPoint.x - theLine.forks.last().t < 50,
                                     desc: 'Super fast'
                                 },
                                 {
@@ -166,8 +166,8 @@ export class TrendStateModel {
                             ],
                             '4': [{
                                 cond: (
-                                    (theLine.candlePoint.x - theLine.rollback.lastForkTime) > this.env.forkDurationMin
-                                    && (theLine.candlePoint.x - theLine.rollback.lastForkTime) < this.env.forkDurationMax
+                                    (theLine.candlePoint.x - theLine.forks.last().t) > this.env.forkDurationMin
+                                    && (theLine.candlePoint.x - theLine.forks.last().t) < this.env.forkDurationMax
                                 ),
                                 desc: 'Предыдущее ветвление произошло в заданный период'
                             },
@@ -198,7 +198,7 @@ export class TrendStateModel {
                             && this.lines.id[0].candlePoint.x < this.env.maxLog
                         )
                             console.log(lineID, this.lines.id[0].candlePoint.x, oppositeLinesInsideTrend, onBreak)
-                        if (theLine.rollback.lastForkValue > 0 && breakCondition)
+                        if (theLine.forks.last().t > 0 && breakCondition)
                             foundBreak = lineID + 1
                     }
                 })

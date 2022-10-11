@@ -13,7 +13,7 @@ export class Indicator {
     public env: Env
     // Settings
     // Debug values
-    localCounter = 0
+    timeCounter = 0
     consoleWindow: boolean
     minLog
     maxLog
@@ -29,7 +29,7 @@ export class Indicator {
     constructor(pars) {
         // Assign defaults
         this.env = Object.assign({
-            step: 1,               // time step in minutes
+            step: 1,                // time step in minutes
             minLength: 5,
             minRightLeg: 3,
             maxForks: 500,
@@ -62,7 +62,7 @@ export class Indicator {
     * @param data - data hash to log to terminal
     */
     log(title, ...data) {
-        this.consoleWindow = this.env.minLog < this.localCounter && this.localCounter < this.env.maxLog
+        this.consoleWindow = this.env.minLog < this.timeCounter && this.timeCounter < this.env.maxLog
         if (this.consoleWindow)
             console.log(title, ...data)
     }
@@ -78,7 +78,7 @@ export class Indicator {
     nextValue(o: number, c: number, h: number, l: number, v: number) {
         // TODO Rise sensitivity
         // if (o > c) [o, h] = [h,o]
-        this.localCounter++
+        this.timeCounter++
         // Apply line directives got on prevues step
         if (this.lLineDirectives.length > 0) {
             // TODO Fork only last line in Array
@@ -89,9 +89,7 @@ export class Indicator {
                         if (d.lineIndex != undefined && theLine != undefined && theLine.k < 0)
                             this.lines.add(null, l, this.i - 1, this.prevPoint, d.lineIndex) // New extremum found
                         else {
-                            theLine.forked = true
-                            theLine.forkedAt = theLine.thisPoint.x
-                            theLine.forkedValue = theLine.thisPoint.y
+                            theLine.forks.add(theLine.thisPoint.x, theLine.thisPoint.y)
                             this.lines.add(null, l, this.i - 1, this.prevPoint)
                         }
                     }
@@ -107,9 +105,7 @@ export class Indicator {
                             // New extremum found
                             this.lines.add(h, null, this.i - 1, this.prevPoint, d.lineIndex)
                         else {
-                            theLine.forked = true
-                            theLine.forkedAt = theLine.thisPoint.x
-                            theLine.forkedValue = theLine.thisPoint.y
+                            theLine.forks.add(theLine.thisPoint.x, theLine.thisPoint.y)
                             this.lines.add(h, null, this.i - 1, this.prevPoint)
                         }
                     }
@@ -165,7 +161,6 @@ export class Indicator {
         this.trend.update(this.lines.list[0], this.lines.list[1])
         this.i++
 
-        // Return result
         return this.lines;
     }
 

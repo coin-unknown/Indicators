@@ -1,5 +1,29 @@
 import { LineEvent, LineDirective, Point, Env } from './types'
 
+export type Fork = {
+    t: number
+    v: number
+}
+
+export class Forks {
+    private forks: Fork[]
+    public isForked: boolean
+    constructor() {
+        this.forks = []
+        this.isForked = false
+    }
+    add(t: number, v: number) {
+        this.forks.push({ t, v })
+        this.isForked = true
+        return this.forks
+    }
+    lost() {
+        this.isForked = false
+    }
+    last() {
+        return this.forks[this.forks.length - 1] || { t: null, v: null }
+    }
+}
 /**
  * Line Model class.
  * this.index - index in lineDirectives array
@@ -14,9 +38,7 @@ export class LineModel {
     public thisPoint: Point             // Current Point on the line
     public nextPoint: Point
     public candlePoint: Point           // Point on the current candle
-    public forked: boolean = false      // Flag of bounced line. At least 3-rd point
-    public forkedAt: number = 0         // Time of the last fork
-    public forkedValue: number          // Price of the last fork
+    public forks: Forks                // Forks data
     // TODO Deprecated
     public lastForkY: number = null     // Last fork or extremum point
     public k: number
@@ -27,8 +49,6 @@ export class LineModel {
         k: number
         b: number
         length: number
-        lastForkTime: number
-        lastForkValue: number
     } | null
 
     constructor(h, l, i, step, index, prevPoint = null, env) {
@@ -49,6 +69,7 @@ export class LineModel {
             }
         this.init(h, l, i);
         this.thisPoint = this.startPoint
+        this.forks = new Forks()
     }
 
     init(h, l, i) {
@@ -119,35 +140,29 @@ export class LineModel {
                     k: rollbackIncline,
                     b: this.candlePoint.y - rollbackIncline * this.candlePoint.x,
                     length: rollbackTime + 1,
-            // TODO Нужно улучшить хранение информации об истории ветвления. Вопрос в том, что может потребоваться в дальнейшем.
-            /**
-             * Если линия корректируется, то она приближается к родительской линии до уничтожения. Тут стоит улучшить.
-             * Если линия не ветвилась, значит - конечная линия. Но Это можно и по размеру массива выяснить.
-             */
-                    lastForkTime: this.forkedAt || (this.rollback ? this.rollback.lastForkTime : 0),
-                    lastForkValue: this.forkedValue || (this.rollback ? this.rollback.lastForkValue : 0),
+                    // TODO Нужно улучшить хранение информации об истории ветвления. Вопрос в том, что может потребоваться в дальнейшем.
+                    /**
+                     * Если линия корректируется, то она приближается к родительской линии до уничтожения. Тут стоит улучшить.
+                     * Если линия не ветвилась, значит - конечная линия. Но Это можно и по размеру массива выяснить.
+                     */
                 }
                 // If rollback then the line lost the fork point
                 // TODO Use accuracy to reset the forked value
-                this.forked = false
-                this.forkedAt = null
-                this.forkedValue = null
+                this.forks.lost()
             }
             else {
-/*                 this.forkedAt = this.candlePoint.x
-                this.forkedValue = this.candlePoint.y
-                this.forked = true */
+                /*                 this.forkedAt = this.candlePoint.x
+                                this.forkedValue = this.candlePoint.y
+                                this.forked = true */
                 this.rollback = null
             }
             // Add bounce accuracy
             /**
              * TODO. Тут тоже слишком буквальная интерпретация отскока. Он все-таки должен возникать в результате форка. Думаю, этот фрагмент удалить.
              */
-              if (this.env.bounceAccuracy != null && Math.abs(this.candlePoint.y - this.prevPoint.y) < this.env.bounceAccuracy //0.004
-                && this.candlePoint.x - this.forkedAt > 4) {
-                this.forkedAt = this.candlePoint.x;
-                this.forkedValue = this.candlePoint.y;
-                this.forked = true;
+            if (this.env.bounceAccuracy != null && Math.abs(this.candlePoint.y - this.prevPoint.y) < this.env.bounceAccuracy //0.004
+                && this.candlePoint.x - this.forks.last().t > 4) {
+                this.forks.add(this.candlePoint.x, this.candlePoint.y)
             }
             // Wait for bounce
             result = {
