@@ -19,10 +19,10 @@ export class RMA {
         if (!this.prevValue) {
             this.prevValue = this.sma.nextValue(value);
         } else {
-            this.prevValue = this.alpha * value + (1 - this.alpha) * (this.prevValue || 1);
+            this.prevValue = this.alpha * value + (1 - this.alpha) * this.prevValue;
 
             this.nextValue = (value: number) => {
-                this.prevValue = this.alpha * value + (1 - this.alpha) * (this.prevValue || 1);
+                this.prevValue = this.alpha * value + (1 - this.alpha) * this.prevValue;
 
                 return this.prevValue;
             }
@@ -33,7 +33,7 @@ export class RMA {
 
     momentValue(value: number) {
         if (this.prevValue) {
-            return this.alpha * value + (1 - this.alpha) * (this.prevValue || 1);
+            return this.alpha * value + (1 - this.alpha) * this.prevValue;
         }
     }
 }

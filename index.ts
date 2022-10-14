@@ -9,6 +9,7 @@ export { WEMA } from './src/wema';
 export { WMA } from './src/wma';
 export { EMA } from './src/ema';
 export { EWMA } from './src/ewma';
+export { SMMA } from './src/smma';
 export { RMA } from './src/rma';
 export { AO } from './src/ao';
 export { AC } from './src/ac';
