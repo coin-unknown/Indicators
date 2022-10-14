@@ -78,9 +78,9 @@ const sma = new SMA(4); // Create SMA with 4 period
 //=>   │       └─(2+3+4+5)/4
 //=>   └─(1+2+3+4)/4
 
-sma.nextValue(1); // undefiend
-sma.nextValue(2); // undefiend
-sma.nextValue(3); // undefiend
+sma.nextValue(1); // undefined
+sma.nextValue(2); // undefined
+sma.nextValue(3); // undefined
 sma.nextValue(4); // 2.50
 sma.nextValue(5); // 3.50
 sma.nextValue(6); // 4.50
