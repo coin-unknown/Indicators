@@ -1,6 +1,7 @@
 import { LineEvent, LineDirective, Point, Env } from './types'
 import { LineModel } from './line.model'
 import { LinesModel } from './lines.model'
+import { Zigzag } from './zigzag'
 
 /**
  * Trend state Model
@@ -9,6 +10,7 @@ import { LinesModel } from './lines.model'
  */
 
 export class TrendStateModel {
+    public zigZag: Zigzag
     env: Env
     /** Trend longer state (was+is) */
     in: {
@@ -68,6 +70,12 @@ export class TrendStateModel {
     }
 
     update(hLinesIDs: number[], lLinesIDs: number[]) {
+        // Zigzag
+        if (! this.zigZag){
+            this.zigZag = new Zigzag(this.lines.id[0].candlePoint.x, this.lines.id[0].candlePoint.y)
+        } else{
+            this.zigZag.update(this.lines.id[0].candlePoint.x, this.lines.id[0].candlePoint.y)
+        }
         // Get lines hlMaxDuration and llMaxDuration with longest length
         if (hLinesIDs.length > 1)
             this.hlMaxDuration = hLinesIDs.map(lineID => this.lines.id[lineID]).filter(line => (this.is.line ? (line.forks.last().t ? line.forks.last().t > this.is.line.startPoint.x : false) : true)).reduce((prev, current) => {
