@@ -1,7 +1,7 @@
 import { LineEvent, LineDirective, Point, Env } from './types'
 import { LineModel } from './line.model'
 import { LinesModel } from './lines.model'
-import { Zigzag } from './zigzag'
+import { ZigZagI } from './zigzag'
 
 /**
  * Trend state Model
@@ -10,7 +10,7 @@ import { Zigzag } from './zigzag'
  */
 
 export class TrendStateModel {
-    public zigZag: Zigzag
+    public zigZag: ZigZagI
     env: Env
     /** Trend longer state (was+is) */
     in: {
@@ -72,7 +72,7 @@ export class TrendStateModel {
     update(hLinesIDs: number[], lLinesIDs: number[]) {
         // Zigzag
         if (! this.zigZag){
-            this.zigZag = new Zigzag(this.lines.id[0].candlePoint.x, this.lines.id[0].candlePoint.y)
+            this.zigZag = new ZigZagI(this.lines.id[0].candlePoint.x, this.lines.id[0].candlePoint.y)
         } else{
             this.zigZag.update(this.lines.id[0].candlePoint.x, this.lines.id[0].candlePoint.y)
         }
