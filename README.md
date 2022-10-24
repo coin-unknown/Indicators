@@ -39,6 +39,7 @@ The main feature of these indicators is their continuous operation, which means 
 - Welles Wilder's Smoothing Average (WWS)
 - Weighted moving average (WMA)
 - Parabolic Stop And Reverse (PSAR)
+- Volume Profile
 
 ## Candles
 - Heiken Ashi.
