@@ -34,4 +34,4 @@ export { WWS } from './src/wws';
 export { SuperTrend } from './src/supertrend';
 export { CircularBuffer } from './src/providers/circular-buffer';
 export { Sampler } from './src/providers/sampler';
-export { VolumeProfile, VolumeTypes, PriceSource } from './src/volume-profile';
+export { VolumeProfile } from './src/volume-profile';
