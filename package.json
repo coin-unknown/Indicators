@@ -29,7 +29,6 @@
     "browser": "lib/indicators.umd.js",
     "types": "lib/index.d.ts",
     "devDependencies": {
-        "@debut/types": "^3.2.1-beta.4",
         "@types/jest": "^27.0.6",
         "@typescript-eslint/eslint-plugin": "^3.7.0",
         "@typescript-eslint/parser": "^3.7.0",

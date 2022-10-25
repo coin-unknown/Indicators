@@ -1,129 +1,98 @@
-import { Candle } from '@debut/types';
+type Candle = { o: number, h: number, l: number, c: number, v: number, time: number };
 
-type VolumeProfileData = {
-    [key: string]: VolumeItem;
+
+const getPriceBySourceDefault = (candle: Candle) => {
+    return (candle.h + candle.l) / 2;
 };
 
-type VolumeItem = {
-    bearish: number;
-    bullish: number;
-    total: number;
-    price: number;
-};
-
-const DEFAULT_VOLUME_ITEM: VolumeItem = {
-    bearish: 0,
-    bullish: 0,
-    price: 0,
-    total: 0,
-};
-
-export enum VolumeTypes {
-    TOTAL = 'total',
-    BULLISH = 'bullish',
-    BEARISH = 'bearish',
-}
-
-export enum PriceSource {
-    OPEN = 0,
-    CLOSE = 1,
-    LOW = 2,
-    HIGH = 3,
-    HL = 4,
-    OHLC = 5,
-}
-
-const getPriceBySource = (source: PriceSource, candle: Candle) => {
-    switch (source) {
-        case PriceSource.OPEN:
-            return candle.o;
-        case PriceSource.CLOSE:
-            return candle.c;
-        case PriceSource.LOW:
-            return candle.h;
-        case PriceSource.HIGH:
-            return candle.h;
-        case PriceSource.HL:
-            return (candle.h + candle.l) / 2;
-        case PriceSource.OHLC:
-            return (candle.o + candle.h + candle.l + candle.c) / 4;
-    }
-};
-
+/**
+ * Is an indicator that gives a data representation of how much volume occurs
+ * at each individual price over a certain period of time (session)
+ */
 export class VolumeProfile {
     private precision: number;
-    private result: VolumeProfileData;
     private valueToRoundWith: number;
-    private source: PriceSource;
+    private source: (candle: Candle) => number;
+    private sum = 0;
+    private sessionPricesLookup = new Set<number>();
+    private sessionVolumes: Record<number, number> = {};
 
-    constructor(precision: number, source = PriceSource.HL) {
+    constructor(precision: number, source = getPriceBySourceDefault) {
         this.source = source;
         this.precision = precision;
         this.valueToRoundWith = 10 ** this.precision;
-        this.result = {};
     }
 
-    private roundValue(number: number): number {
-        return Math.round((number + Number.EPSILON) * this.valueToRoundWith) / this.valueToRoundWith;
+    /**
+     * Reset volume profile session
+     */
+    public resetSession() {
+        this.sessionVolumes = {};
+        this.sessionPricesLookup.clear();
     }
 
-    reset = () => {
-        this.result = {};
-    };
+    /**
+     * Get volume profile for current session, with ordered prices keys by ASC
+     *
+     * Use inject function for prepare custom data for indicator usage. For example
+     * If you need to calculate average (SMA) volume or gets extremums, use that function for this
+     * That's way saving all calculations in one for loop cycle.
+     */
+    public getSession() {
+        const prices = Array.from(this.sessionPricesLookup).sort();
+        const session = new Map();
 
-    getBestBy(type: VolumeTypes = VolumeTypes.TOTAL): null | VolumeItem {
-        return Object.keys(this.result).reduce<VolumeItem>((acc, key) => {
-            if (acc === null || this.result[key][type] > acc[type]) {
-                acc = this.result[key];
-            }
+        for (const price of prices) {
+            const volume = this.sessionVolumes[price];
 
-            return acc;
-        }, null);
+            session.set(price, volume);
+        }
+
+        return session;
     }
 
-    nextValue(candle: Candle): VolumeProfileData {
-        const middlePrice = getPriceBySource(this.source, candle);
-        const middleRoundedPrice = this.roundValue(middlePrice);
-
-        const isBullishCandle = candle.c >= candle.o;
-
-        if (!this.result[middleRoundedPrice]) {
-            this.result[middleRoundedPrice] = DEFAULT_VOLUME_ITEM;
-            this.result[middleRoundedPrice].price = middleRoundedPrice;
-        }
-
-        this.result[middleRoundedPrice].total += candle.v;
-
-        if (isBullishCandle) {
-            this.result[middleRoundedPrice].bullish += candle.v;
-        } else {
-            this.result[middleRoundedPrice].bearish += candle.v;
-        }
-
-        return this.result;
+    /**
+     * Get session avg volume
+     */
+    public getSessionAvg() {
+        return this.sum / this.sessionPricesLookup.size;
     }
 
-    momentValue(candle: Candle): VolumeProfileData {
-        const middlePrice = getPriceBySource(this.source, candle);
-        const middleRoundedPrice = this.roundValue(middlePrice);
+    /**
+     * Get unformatted (raw) data for session
+     */
+    public getRawSession() {
+        return this.sessionVolumes;
+    }
 
-        const resultCopy = { ...this.result };
+    /**
+     * Add value to session
+     */
+    nextValue(candle: Candle) {
+        const priceSource = this.roundPrice(this.source(candle));
 
-        const isBullishCandle = candle.c >= candle.o;
+        this.addToSession(priceSource, candle.v);
+        this.sum += candle.v;
+    }
 
-        if (!resultCopy[middleRoundedPrice]) {
-            resultCopy[middleRoundedPrice] = DEFAULT_VOLUME_ITEM;
-            resultCopy[middleRoundedPrice].price = middleRoundedPrice;
+    /**
+     * Round price value
+     */
+    private roundPrice(price: number): number {
+        return Math.round((price + Number.EPSILON) * this.valueToRoundWith) / this.valueToRoundWith;
+    }
+
+    /**
+     * Add volume to current session
+     */
+    private addToSession(price: number, volume: number) {
+        const hasPrice = this.sessionPricesLookup.has(price);
+
+        if (!hasPrice) {
+            this.sessionPricesLookup.add(price);
+            this.sessionVolumes[price] = volume;
         }
 
-        resultCopy[middleRoundedPrice].total += candle.v;
-
-        if (isBullishCandle) {
-            resultCopy[middleRoundedPrice].bullish += candle.v;
-        } else {
-            resultCopy[middleRoundedPrice].bearish += candle.v;
-        }
-
-        return resultCopy;
+        this.sessionVolumes[price] += volume;
     }
 }
