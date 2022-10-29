@@ -12,6 +12,7 @@ export type ZLine = {
 }
 /**
  * ZigZag interactive don't use pre-chosen percentage for detection process.
+ * https://www.investopedia.com/terms/z/zig_zag_indicator.asp
  * (The classical Zag indicator plots points on a chart whenever prices reverse by a percentage greater than a pre-chosen variable. Straight lines are then drawn, connecting these points.)
  */
 export class ZigZagI {
