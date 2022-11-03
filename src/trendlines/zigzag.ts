@@ -55,7 +55,6 @@ export class ZigZagI {
                     if (delEl == 0) delEl = 1
                 }
             }
-            console.log(delEl);
             if (delEl) {
                 this.points[delEl] = this.points[this.points.length - 1]
                 this.points = this.points.filter((el, index) => index <= delEl)
