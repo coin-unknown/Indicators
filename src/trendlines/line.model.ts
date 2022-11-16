@@ -125,9 +125,6 @@ export class LineModel {
             this.k = (this.candlePoint.y - this.startPoint.y) / (this.candlePoint.x - this.startPoint.x)
             this.b = this.candlePoint.y - this.k * this.candlePoint.x
             this.thisPoint = this.candlePoint
-            // TODO Получается, что если линия корректируется, то она начинается с начала. Это по идее не верно. Может не стоит сбрасывать длину линии. Проверить.
-            // Иначе это получается длина с последнего fork. По идее длина линия не должна обнуляться
-            this.length = 0
             this.nextPoint = {
                 y: this.k * (this.candlePoint.x + this.step) + this.b,
                 x: this.candlePoint.x + this.step
