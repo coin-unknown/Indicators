@@ -16,6 +16,7 @@ export class VolumeProfile {
     private sum = 0;
     private sessionPricesLookup = new Set<number>();
     private sessionVolumes: Record<number, number> = {};
+    private lastPrice: number;
 
     constructor(precision: number, source = getPriceBySourceDefault) {
         this.source = source;
@@ -29,6 +30,7 @@ export class VolumeProfile {
     public resetSession() {
         this.sessionVolumes = {};
         this.sessionPricesLookup.clear();
+        this.sum = 0;
     }
 
     /**
@@ -43,8 +45,18 @@ export class VolumeProfile {
         const session = new Map();
 
         for (const price of prices) {
+            const delta = this.diffPercent(price, this.lastPrice);
             const volume = this.sessionVolumes[price];
 
+            if (delta > 10) {
+                this.sessionPricesLookup.delete(price);
+                delete this.sessionVolumes[price];
+                this.sum -= volume;
+
+                continue;
+            }
+
+            // Остановился на том, что собирался выдавать на вход важные уровни по 3 вверх и 3 вниз от текущей цены
             session.set(price, volume);
         }
 
@@ -73,6 +85,7 @@ export class VolumeProfile {
 
         this.addToSession(priceSource, candle.v);
         this.sum += candle.v;
+        this.lastPrice = priceSource;
     }
 
     /**
@@ -94,5 +107,12 @@ export class VolumeProfile {
         }
 
         this.sessionVolumes[price] += volume;
+    }
+
+    /**
+     * Percent change
+     */
+    private diffPercent(a: number, b: number): number {
+        return  a < b ? ((b - a) * 100) / a : ((a - b) * 100) / b;
     }
 }
