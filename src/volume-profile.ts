@@ -40,24 +40,57 @@ export class VolumeProfile {
      * If you need to calculate average (SMA) volume or gets extremums, use that function for this
      * That's way saving all calculations in one for loop cycle.
      */
-    public getSession() {
+    public getSession(middlePrice: number, precision = 0.001, targetMultiplier = 2) {
         const prices = Array.from(this.sessionPricesLookup).sort();
         const session = new Map();
+        const importantLevel = this.getSessionAvg() * targetMultiplier;
+        const collectedPrices = [];
+        let accVolume = 0;
+        let accPrices = 0;
+        let pricesCount = 0;
+        let limitPrice = prices[0] + prices[0] * precision;
+        let isPrevImportant = false;
 
         for (const price of prices) {
-            const delta = this.diffPercent(price, this.lastPrice);
-            const volume = this.sessionVolumes[price];
+            const change = this.diffPercent(price, middlePrice);
 
-            if (delta > 10) {
-                this.sessionPricesLookup.delete(price);
-                delete this.sessionVolumes[price];
-                this.sum -= volume;
-
+            if (change > 8) {
                 continue;
             }
 
-            // Остановился на том, что собирался выдавать на вход важные уровни по 3 вверх и 3 вниз от текущей цены
-            session.set(price, volume);
+            if (price > limitPrice) {
+                const avgVolume = accVolume / pricesCount;
+                const avgPrice = accPrices / pricesCount;
+                const isCurrentImportant = avgVolume > importantLevel;
+
+                if (isCurrentImportant && isPrevImportant) {
+                    const prevPrice = collectedPrices.pop();
+                    const prevVolume = session.get(prevPrice);
+                    const commonAvgPrice = (avgPrice + prevPrice) / 2;
+                    const commonAvgVolume = (avgVolume + prevVolume) / 2;
+
+                    session.delete(prevPrice);
+                    session.set(commonAvgPrice, commonAvgVolume);
+                    collectedPrices.push(commonAvgPrice);
+                } else if (isCurrentImportant) {
+
+                    session.set(avgPrice, avgVolume);
+                    limitPrice = price + price * precision;
+                    collectedPrices.push(avgPrice)
+                }
+
+                isPrevImportant = isCurrentImportant;
+                pricesCount = accVolume = accPrices = 0;
+            }
+
+            pricesCount++;
+            accVolume += this.sessionVolumes[price];
+            accPrices += price;
+        }
+
+
+        if (accVolume !== 0) {
+            session.set(accPrices / pricesCount, accVolume / pricesCount);
         }
 
         return session;
