@@ -34,11 +34,7 @@ export class VolumeProfile {
     }
 
     /**
-     * Get volume profile for current session, with ordered prices keys by ASC
-     *
-     * Use inject function for prepare custom data for indicator usage. For example
-     * If you need to calculate average (SMA) volume or gets extremums, use that function for this
-     * That's way saving all calculations in one for loop cycle.
+     * Get volume profile for current session
      */
     public getSession(middlePrice: number, precision = 0.001, targetMultiplier = 2) {
         const prices = Array.from(this.sessionPricesLookup).sort();
