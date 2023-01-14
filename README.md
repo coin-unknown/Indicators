@@ -21,6 +21,7 @@ The main feature of these indicators is their continuous operation, which means 
 - Awesome Oscillator (AC).
 - Average Directional Index  (ADX).
 - Bollinger Bands (BB).
+- Chaikin Oscillator
 - Commodity Channel Index (CCI).
 - Connor's RSI (CRSI)
 - Donchian channels (DC).
