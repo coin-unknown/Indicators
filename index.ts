@@ -35,3 +35,4 @@ export { SuperTrend } from './src/supertrend';
 export { CircularBuffer } from './src/providers/circular-buffer';
 export { Sampler } from './src/providers/sampler';
 export { VolumeProfile } from './src/volume-profile';
+export { ChaikinOscillator } from './src/chaikin';
