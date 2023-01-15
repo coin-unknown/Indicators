@@ -132,7 +132,7 @@ export class LineModel {
             let rollbackTime = this.rollback ? this.rollback.length : 0
             let rollbackIncline = this.candlePoint.y - this.prevPoint.y // Take only one candle
             // Set rollback flag if moving away from the prevPoint (not the nextPoint!)
-            if ((this.type == 'h' ? rollbackIncline > 0 : rollbackIncline < 0)) {
+            if ((this.type == 'h' ? rollbackIncline >= 0 : rollbackIncline <= 0)) {
                 this.rollback = {
                     k: rollbackIncline,
                     b: this.candlePoint.y - rollbackIncline * this.candlePoint.x,
