@@ -23,13 +23,25 @@ export class Forks {
     last() {
         return this.forks[this.forks.length - 1] || { t: null, v: null }
     }
+    /* Get price change since the last 2 forks */
+    getChange() {
+        let rez = []
+        if (this.forks.length > 2){
+            rez = [
+                this.forks[this.forks.length - 3].v - this.forks[this.forks.length - 2].v,
+                this.forks[this.forks.length - 2].v - this.forks[this.forks.length - 1].v,
+            ]
+        }
+        return rez
+    }
+
 }
 /**
  * Line Model class.
  * this.index - index in lineDirectives array
  */
 export class LineModel {
-    private env: Env
+    protected env: Env
     public type: 'h' | 'l'
     public index: number
     public length: number               //Line's living time

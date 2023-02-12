@@ -43,6 +43,7 @@ export class Indicator {
             checkDelta: 20,         // Stop loss percent
             bounceAccuracy: null
         }, pars)
+        this.env.zigZagMinTime = this.env.zigZagMinTime || 20
         this.env.minLength = Math.round(this.env.minLength / this.env.step) || 1
         this.env.minRightLeg = Math.round(this.env.minRightLeg / this.env.step) || 1
         this.env.rollbackLength = Math.round(this.env.rollbackLength / this.env.step) || 1

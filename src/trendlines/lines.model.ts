@@ -10,7 +10,7 @@ export class LinesModel {
     id: {
         [id: string]: LineModel
     }
-    env: Env
+    protected env: Env
     lineIndex: number = 0
     private step: number        // Step of time in minutes
     public forkDiffH: number = null

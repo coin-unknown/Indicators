@@ -25,13 +25,15 @@ export interface Env {
     maxForks?: number
     minLog?: number
     maxLog?: number
-    minIsSizeOnRollback?: number    // Минимальный размер тренда при котором вводится максимальный откат
+    minIsSizeOnRollback?: number // Минимальный размер тренда при котором вводится максимальный откат
     rollbackLength: number      // Устойчивый откат после пробоя линии тренда
-    forkDurationMin: number    // Лимитное значение минимальной длительности волны
-    forkDurationMax: number    // Лимитное значение минимальной длительности волны
-    deltaModel: 1 | 2          // Модели отсчета. 2 - FTM/USDT, 1 - другие
+    forkDurationMin: number     // Лимитное значение минимальной длительности волны
+    forkDurationMax: number     // Лимитное значение минимальной длительности волны
+    deltaModel: 1 | 2           // Модели отсчета. 2 - FTM/USDT, 1 - другие
     checkAfter?: number
-    checkBefore?: number  // interval in minutes
-    checkDelta?: number      // Stop loss percent
+    checkBefore?: number        // interval in minutes
+    checkDelta?: number         // Stop loss percent
     bounceAccuracy?: number     // Bounce proximity accuracy
+    zigZagMinTime?: number      // Minimum time between zigZag points
+    zigZagMinPer?: number       // Minimum percentage of price change between zigZag points
 }

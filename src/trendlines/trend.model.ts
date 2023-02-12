@@ -11,7 +11,7 @@ import { ZigZagI } from './zigzag'
 
 export class TrendStateModel {
     public zigZag: ZigZagI
-    env: Env
+    public env: Env
     /** Trend longer state (was+is) */
     in: {
         state: null | 'unknown' | 'flat' | 'rise' | 'fall' | 'squeeze',
@@ -72,7 +72,7 @@ export class TrendStateModel {
     update(hLinesIDs: number[], lLinesIDs: number[]) {
         // Zigzag
         if (! this.zigZag){
-            this.zigZag = new ZigZagI(this.lines.id[0].candlePoint.x, this.lines.id[0].candlePoint.y)
+            this.zigZag = new ZigZagI(this.lines.id[0].candlePoint.x, this.lines.id[0].candlePoint.y, this.env)
         } else{
             this.zigZag.update(this.lines.id[0].candlePoint.x, this.lines.id[0].candlePoint.y)
         }

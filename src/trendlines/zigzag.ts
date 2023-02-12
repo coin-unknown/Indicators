@@ -1,3 +1,5 @@
+import { Env } from "./types"
+
 export type ZPoint = {
     y: number
     x: number
@@ -11,7 +13,7 @@ export type ZLine = {
     c: number   // Updates counter
 }
 /**
- * ZigZag interactive don't use pre-chosen percentage for detection process.
+ * ZigZag interactive
  * https://www.investopedia.com/terms/z/zig_zag_indicator.asp
  * (The classical Zag indicator plots points on a chart whenever prices reverse by a percentage greater than a pre-chosen variable. Straight lines are then drawn, connecting these points.)
  */
@@ -20,8 +22,10 @@ export class ZigZagI {
     public lines: ZLine[]
     private counter: number
     public accuracy: number
-    constructor(x: number, y: number) {
+    protected env: Env
+    constructor(x: number, y: number, env: Env) {
         let i = 0
+        this.env = env
         this.points = [{ x, y, i }]
         this.counter = 0
         this.accuracy = 10000
@@ -47,12 +51,14 @@ export class ZigZagI {
             let delEl = null;
             if (this.points.length > 2) {
                 for (var ind = this.points.length - 3; ind >= 0; ind -= 2) {
-                    let diff = this.points[this.points.length - 1].y - this.points[ind].y;
-                    let cond = diff > 0
-                    if (diff != 0 && (direction == "f" ? !cond : cond)) {
-                        delEl = ind;
+                    if (this.points[this.points.length - 1].x - this.points[ind].x < this.env.zigZagMinTime) {
+                        let diff = this.points[this.points.length - 1].y - this.points[ind].y;
+                        let cond = diff > 0
+                        if (diff != 0 && (direction == "f" ? !cond : cond)) {
+                            delEl = ind;
+                        }
+                        if (delEl == 0) delEl = 1
                     }
-                    if (delEl == 0) delEl = 1
                 }
             }
             if (delEl) {
