@@ -50,5 +50,11 @@
         "ts-node": "^8.10.2",
         "typescript": "^3.9.5"
     },
-    "optionalDependencies": {}
+    "dependencies": {
+        "ml-dataset-iris": "^1.2.1",
+        "ml-random-forest": "^2.1.0",
+        "pandas": "^0.0.3",
+        "scikit-learn": "^0.1.0",
+        "train-test-split": "^1.0.0"
+    }
 }
