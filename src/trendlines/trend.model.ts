@@ -2,7 +2,6 @@ import { LineEvent, LineDirective, Point, Env } from './types'
 import { LineModel } from './line.model'
 import { LinesModel } from './lines.model'
 import { ZigZagI } from './zigzag'
-import { TlPredictor } from './ai'
 
 /**
  * Trend state Model
@@ -12,7 +11,6 @@ import { TlPredictor } from './ai'
 
 export class TrendStateModel {
     public zigZag: ZigZagI
-    public tlPredictor: TlPredictor
     public env: Env
     /** Trend longer state (was+is) */
     in: {
