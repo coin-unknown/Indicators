@@ -74,4 +74,50 @@ export class ADX {
 
         return { adx: this.wema.nextValue(100 * (diAbs / (pDI + nDI))), pdi: pDI, mdi: nDI };
     }
+
+    momentValue(h: number, l: number, c: number) {
+        if (!this.prevClose) {
+            this.prevHigh = h;
+            this.prevLow = l;
+            this.prevClose = c;
+
+            return;
+        }
+
+        let pDM = 0;
+        let nDM = 0;
+
+        const hDiff = h - this.prevHigh;
+        const lDiff = this.prevLow - l;
+
+        if (hDiff > lDiff && hDiff > 0) {
+            pDM = hDiff;
+        }
+
+        if (lDiff > hDiff && lDiff > 0) {
+            nDM = lDiff;
+        }
+
+        if (pDM > nDM || nDM < 0) {
+            nDM = 0;
+        }
+
+        const atr = this.wma1.momentValue(getTrueRange(h, l, this.prevClose));
+        const avgPDI = this.wma2.momentValue(pDM);
+        const avgNDI = this.wma3.momentValue(nDM);
+
+        this.prevHigh = h;
+        this.prevLow = l;
+        this.prevClose = c;
+
+        if (avgPDI === undefined || avgNDI === undefined) {
+            return;
+        }
+
+        const pDI = (avgPDI * 100) / atr;
+        const nDI = (avgNDI * 100) / atr;
+        const diAbs = pDI > nDI ? pDI - nDI : nDI - pDI;
+
+        return { adx: this.wema.momentValue(100 * (diAbs / (pDI + nDI))), pdi: pDI, mdi: nDI };
+    }
 }
