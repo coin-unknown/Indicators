@@ -40,6 +40,20 @@ export class WMA {
      * does not affect any next calculations
      */
     momentValue(value: number) {
-        // return this.prevValue + (value - this.prevValue) / this.period;
+        if (!this.buffer.filled) {
+            return
+        }
+
+        const buffer = [...this.buffer.toArray()]
+        buffer.shift()
+        buffer.push(value)
+
+        let result = 0
+
+        buffer.forEach((v, idx) => {
+            result += (v * (Number(idx) + 1)) / this.denominator
+        })
+
+        return result
     }
 }
