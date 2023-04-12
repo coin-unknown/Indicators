@@ -40,13 +40,18 @@ export class WMA {
      * does not affect any next calculations
      */
     momentValue(value: number) {
-        if (!this.buffer.filled) {
+        const buffer = new CircularBuffer(this.buffer.length);
+
+        this.buffer.forEach((v) => {
+            if (typeof v === 'number') {
+                buffer.push(v);
+            }
+        });
+        buffer.push(value);
+
+        if (!buffer.filled) {
             return
         }
-
-        const buffer = [...this.buffer.toArray()]
-        buffer.shift()
-        buffer.push(value)
 
         let result = 0
 

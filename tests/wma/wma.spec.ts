@@ -8,11 +8,13 @@ describe("Wilder's Moving Average", () => {
         const local = new WMA2(6);
 
         ohlc.forEach((tick) => {
-            const calcValue = cross.nextValue(tick.c);
-            const crossValue = local.nextValue(tick.c);
+            const crossValue = cross.nextValue(tick.c);
+            const localMoment = local.momentValue(tick.c);
+            const localValue = local.nextValue(tick.c);
 
             // console.log(calcValue, crossValue);
-            expect(calcValue).toEqual(crossValue);
+            expect(crossValue).toEqual(localValue);
+            expect(localMoment).toEqual(localValue);
         });
     });
 });
