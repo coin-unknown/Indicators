@@ -77,10 +77,6 @@ export class ADX {
 
     momentValue(h: number, l: number, c: number) {
         if (!this.prevClose) {
-            this.prevHigh = h;
-            this.prevLow = l;
-            this.prevClose = c;
-
             return;
         }
 
