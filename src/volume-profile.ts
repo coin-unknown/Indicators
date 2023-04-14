@@ -2,7 +2,7 @@ type Candle = { o: number, h: number, l: number, c: number, v: number, time: num
 
 
 const getPriceBySourceDefault = (candle: Candle) => {
-    return (candle.h + candle.l) / 2;
+    return (candle.o + candle.h + candle.l + candle.c) / 4;
 };
 
 /**
@@ -17,76 +17,74 @@ export class VolumeProfile {
     private sessionPricesLookup = new Set<number>();
     private sessionVolumes: Record<number, number> = {};
     private lastPrice: number;
+    private prevCandle: Candle | null = null;
 
-    constructor(precision: number, source = getPriceBySourceDefault) {
+    constructor(precision: number = 4, source = getPriceBySourceDefault) {
         this.source = source;
         this.precision = precision;
         this.valueToRoundWith = 10 ** this.precision;
     }
 
     /**
-     * Reset volume profile session
-     */
-    public resetSession() {
-        this.sessionVolumes = {};
-        this.sessionPricesLookup.clear();
-        this.sum = 0;
-    }
-
-    /**
      * Get volume profile for current session
      */
-    public getSession(middlePrice: number, precision = 0.001, targetMultiplier = 2) {
+    // Все еще не могу понять как считать важные уровни и группировать их
+    getSession(candle: Candle, cleanOffset: number = 15) {
+        const source = this.source(candle);
+        let minDiff = Infinity;
+        let middlePrice = source;
+
+        this.sessionPricesLookup.forEach(price => {
+            const diff = this.diffPercent(price, source);
+
+            if (diff > cleanOffset) {
+                this.sessionPricesLookup.delete(price);
+                delete this.sessionVolumes[price];
+            } else if (diff < minDiff) {
+                minDiff = diff;
+                middlePrice = price;
+            }
+        });
+
         const prices = Array.from(this.sessionPricesLookup).sort();
+        const middlePriceIndex = prices.indexOf(middlePrice);
         const session = new Map();
-        const importantLevel = this.getSessionAvg() * targetMultiplier;
-        const collectedPrices = [];
-        let accVolume = 0;
-        let accPrices = 0;
-        let pricesCount = 0;
-        let limitPrice = prices[0] + prices[0] * precision;
-        let isPrevImportant = false;
 
-        for (const price of prices) {
-            const change = this.diffPercent(price, middlePrice);
-
-            if (change > 8) {
-                continue;
-            }
-
-            if (price > limitPrice) {
-                const avgVolume = accVolume / pricesCount;
-                const avgPrice = accPrices / pricesCount;
-                const isCurrentImportant = avgVolume > importantLevel;
-
-                if (isCurrentImportant && isPrevImportant) {
-                    const prevPrice = collectedPrices.pop();
-                    const prevVolume = session.get(prevPrice);
-                    const commonAvgPrice = (avgPrice + prevPrice) / 2;
-                    const commonAvgVolume = (avgVolume + prevVolume) / 2;
-
-                    session.delete(prevPrice);
-                    session.set(commonAvgPrice, commonAvgVolume);
-                    collectedPrices.push(commonAvgPrice);
-                } else if (isCurrentImportant) {
-
-                    session.set(avgPrice, avgVolume);
-                    limitPrice = price + price * precision;
-                    collectedPrices.push(avgPrice)
-                }
-
-                isPrevImportant = isCurrentImportant;
-                pricesCount = accVolume = accPrices = 0;
-            }
-
-            pricesCount++;
-            accVolume += this.sessionVolumes[price];
-            accPrices += price;
+        if (middlePriceIndex === -1) {
+            return session;
         }
 
+        const segmentCount = 4;
+        const segmentSize = Math.round(prices.length / segmentCount);
+        let prevSegmentPrice = 0;
 
-        if (accVolume !== 0) {
-            session.set(accPrices / pricesCount, accVolume / pricesCount);
+        for (let segment = 0; segment < segmentCount; segment++) {
+            const start = segment * segmentSize;
+            const end = start + segmentSize;
+
+            let segmentVolume = 0;
+            let segmentPrice = 0;
+
+
+            for (let i = start; i < end; i++) {
+                const currentPrice = prices[start];
+                const currentVolume = this.sessionVolumes[currentPrice];
+
+                if (segmentVolume < currentVolume) {
+                    segmentVolume = currentVolume;
+                    segmentPrice = currentPrice;
+                }
+            }
+
+            if (this.diffPercent(prevSegmentPrice, segmentPrice) < 1) {
+                segmentVolume = session.get(prevSegmentPrice) + segmentVolume;
+                segmentPrice = this.roundPrice((segmentPrice + prevSegmentPrice) / 2);
+
+                session.delete(prevSegmentPrice);
+            }
+
+            session.set(segmentPrice, segmentVolume);
+            prevSegmentPrice = segmentPrice;
         }
 
         return session;
@@ -111,10 +109,14 @@ export class VolumeProfile {
      */
     nextValue(candle: Candle) {
         const priceSource = this.roundPrice(this.source(candle));
+        // Source volume calculated like diff between two candles or new candle volume
+        // Next value might me used for each ticks or only once per candle
+        const volume = this.prevCandle?.time === candle.time ? candle.v - this.prevCandle.v : candle.v;
 
-        this.addToSession(priceSource, candle.v);
-        this.sum += candle.v;
+        this.addToSession(priceSource, volume);
+        this.sum += volume;
         this.lastPrice = priceSource;
+        this.prevCandle = candle;
     }
 
     /**
@@ -133,9 +135,9 @@ export class VolumeProfile {
         if (!hasPrice) {
             this.sessionPricesLookup.add(price);
             this.sessionVolumes[price] = volume;
+        } else {
+            this.sessionVolumes[price] += volume;
         }
-
-        this.sessionVolumes[price] += volume;
     }
 
     /**
