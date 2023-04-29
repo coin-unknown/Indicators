@@ -40,6 +40,25 @@ export class WMA {
      * does not affect any next calculations
      */
     momentValue(value: number) {
-        // return this.prevValue + (value - this.prevValue) / this.period;
+        const buffer = new CircularBuffer(this.buffer.length);
+
+        this.buffer.forEach((v) => {
+            if (typeof v === 'number') {
+                buffer.push(v);
+            }
+        });
+        buffer.push(value);
+
+        if (!buffer.filled) {
+            return
+        }
+
+        let result = 0
+
+        buffer.forEach((v, idx) => {
+            result += (v * (Number(idx) + 1)) / this.denominator
+        })
+
+        return result
     }
 }
