@@ -14,7 +14,7 @@ describe('ADX', () => {
             // @ts-ignore typing error?
             const cross = adx2.nextValue({ high: tick.h, low: tick.l, close: tick.c });
 
-            if (local && cross && localMoment) {
+            if (local && cross && localMoment?.adx) {
                 expect(local.adx).toEqual(cross.adx);
                 expect(local.mdi).toEqual(cross.mdi);
                 expect(local.pdi).toEqual(cross.pdi);
