@@ -36,6 +36,10 @@ export class WWS {
      * does not affect any next calculations
      */
     momentValue(value: number) {
-        return this.prevValue + (value - this.prevValue) / this.period;
+        if (this.sumCount < this.period) {
+            return;
+        }
+
+        return this.prevValue - this.prevValue / this.period + value;
     }
 }

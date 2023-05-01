@@ -102,10 +102,6 @@ export class ADX {
         const avgPDI = this.wma2.momentValue(pDM);
         const avgNDI = this.wma3.momentValue(nDM);
 
-        this.prevHigh = h;
-        this.prevLow = l;
-        this.prevClose = c;
-
         if (avgPDI === undefined || avgNDI === undefined) {
             return;
         }

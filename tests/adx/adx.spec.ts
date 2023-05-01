@@ -14,13 +14,13 @@ describe('ADX', () => {
             // @ts-ignore typing error?
             const cross = adx2.nextValue({ high: tick.h, low: tick.l, close: tick.c });
 
-            if (local && cross) {
+            if (local && cross && localMoment) {
                 expect(local.adx).toEqual(cross.adx);
                 expect(local.mdi).toEqual(cross.mdi);
                 expect(local.pdi).toEqual(cross.pdi);
-                expect(localMoment?.adx).toEqual(local.adx);
-                expect(localMoment?.mdi).toEqual(local.mdi);
-                expect(localMoment?.pdi).toEqual(local.pdi);
+                expect(localMoment.adx).toEqual(local.adx);
+                expect(localMoment.mdi).toEqual(local.mdi);
+                expect(localMoment.pdi).toEqual(local.pdi);
             }
         });
     });
