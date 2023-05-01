@@ -32,7 +32,7 @@ export class WEMA {
      */
     momentValue(value: number) {
         if (!this.wema) {
-            return;
+            return this.sma.momentValue(value);
         }
 
         return (value - this.wema) * this.smooth + this.wema;
