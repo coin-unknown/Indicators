@@ -39,21 +39,21 @@ export class Stochastic {
         }
 
         if (filled && !this.higestH && !this.lowestL) {
-            this.higestH = getMax(this.highs.toArray()).max;
-            this.lowestL = getMin(this.lows.toArray()).min;
+            this.higestH = getMax(this.highs.toArray());
+            this.lowestL = getMin(this.lows.toArray());
 
             this.nextValue = (high: number, low: number, close: number) => {
                 const rmHigh = this.highs.push(high);
                 const rmLow = this.lows.push(low);
 
                 if (this.higestH === rmHigh) {
-                    this.higestH = getMax(this.highs.toArray()).max;
+                    this.higestH = getMax(this.highs.toArray());
                 } else if (this.higestH < high) {
                     this.higestH = high;
                 }
 
                 if (this.lowestL === rmLow) {
-                    this.lowestL = getMin(this.lows.toArray()).min;
+                    this.lowestL = getMin(this.lows.toArray());
                 } else if (this.lowestL > low) {
                     this.lowestL = low;
                 }
@@ -71,13 +71,13 @@ export class Stochastic {
                 let lowestL = this.lowestL;
 
                 if (higestH === rmHigh) {
-                    higestH = getMax(this.highs.toArray()).max;
+                    higestH = getMax(this.highs.toArray());
                 } else if (higestH < high) {
                     higestH = high;
                 }
 
                 if (lowestL === rmLow) {
-                    lowestL = getMin(this.lows.toArray()).min;
+                    lowestL = getMin(this.lows.toArray());
                 } else if (lowestL > low) {
                     lowestL = low;
                 }
