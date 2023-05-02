@@ -3,7 +3,7 @@ import { dcValues, ohlc } from './excel-data';
 
 describe.only('Donchian Channels', () => {
     it('Excel Validate', () => {
-        const dc = new DC(20);
+        const dc = new DC(21);
         const EPSILON = 0.001;
 
         ohlc.forEach((tick, idx) => {

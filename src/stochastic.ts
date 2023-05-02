@@ -1,6 +1,6 @@
-import { getMin, getMax } from './utils';
 import { SMA } from './sma';
-import { CircularBuffer } from './providers/circular-buffer';
+import { MaxProvider } from './providers/max-value';
+import { MinProvider } from './providers/min-value';
 
 /**
  * A stochastic oscillator is a momentum indicator comparing a particular closing price
@@ -11,17 +11,14 @@ import { CircularBuffer } from './providers/circular-buffer';
  * utilizing a 0-100 bounded range of values.
  */
 export class Stochastic {
-    private highs: CircularBuffer;
-    private lows: CircularBuffer;
-    private higestH: number | null = null;
-    private lowestL: number | null = null;
+    private max: MaxProvider;
+    private min: MinProvider;
     private sma: SMA;
-    private fill = 0;
 
     constructor(private period: number = 14, private smaPeriod: number = 3) {
         this.sma = new SMA(this.smaPeriod);
-        this.highs = new CircularBuffer(this.period);
-        this.lows = new CircularBuffer(this.period);
+        this.max = new MaxProvider(period);
+        this.min = new MinProvider(period);
     }
 
     /**
@@ -29,70 +26,44 @@ export class Stochastic {
      * affect all next calculations
      */
     nextValue(high: number, low: number, close: number) {
-        this.fill++;
+        const max = this.max.nextValue(high);
+        const min = this.min.nextValue(low);
 
-        const filled = this.fill === this.period;
-
-        if (!filled) {
-            this.highs.push(high);
-            this.lows.push(low);
+        if (!this.max.filled) {
+            return;
         }
 
-        if (filled && !this.higestH && !this.lowestL) {
-            this.higestH = getMax(this.highs.toArray());
-            this.lowestL = getMin(this.lows.toArray());
+        const k: number = ((close - min) / (max - min)) * 100;
+        const d: number = this.sma.nextValue(k);
 
-            this.nextValue = (high: number, low: number, close: number) => {
-                const rmHigh = this.highs.push(high);
-                const rmLow = this.lows.push(low);
+        return { k, d };
 
-                if (this.higestH === rmHigh) {
-                    this.higestH = getMax(this.highs.toArray());
-                } else if (this.higestH < high) {
-                    this.higestH = high;
-                }
+            // this.momentValue = (high: number, low: number, close: number) => {
+            //     const rmHigh = this.highs.push(high);
+            //     const rmLow = this.lows.push(low);
+            //     let higestH = this.higestH;
+            //     let lowestL = this.lowestL;
 
-                if (this.lowestL === rmLow) {
-                    this.lowestL = getMin(this.lows.toArray());
-                } else if (this.lowestL > low) {
-                    this.lowestL = low;
-                }
+            //     if (higestH === rmHigh) {
+            //         higestH = getMax(this.highs.toArray());
+            //     } else if (higestH < high) {
+            //         higestH = high;
+            //     }
 
-                const k: number = ((close - this.lowestL) / (this.higestH - this.lowestL)) * 100;
-                const d: number = this.sma.nextValue(k);
+            //     if (lowestL === rmLow) {
+            //         lowestL = getMin(this.lows.toArray());
+            //     } else if (lowestL > low) {
+            //         lowestL = low;
+            //     }
 
-                return { k, d };
-            };
+            //     this.highs.pushback(rmHigh);
+            //     this.lows.pushback(rmLow);
 
-            this.momentValue = (high: number, low: number, close: number) => {
-                const rmHigh = this.highs.push(high);
-                const rmLow = this.lows.push(low);
-                let higestH = this.higestH;
-                let lowestL = this.lowestL;
+            //     const k: number = ((close - lowestL) / (higestH - lowestL)) * 100;
+            //     const d: number = this.sma.momentValue(k);
 
-                if (higestH === rmHigh) {
-                    higestH = getMax(this.highs.toArray());
-                } else if (higestH < high) {
-                    higestH = high;
-                }
-
-                if (lowestL === rmLow) {
-                    lowestL = getMin(this.lows.toArray());
-                } else if (lowestL > low) {
-                    lowestL = low;
-                }
-
-                this.highs.pushback(rmHigh);
-                this.lows.pushback(rmLow);
-
-                const k: number = ((close - lowestL) / (higestH - lowestL)) * 100;
-                const d: number = this.sma.momentValue(k);
-
-                return { k, d };
-            };
-
-            return this.nextValue(high, low, close);
-        }
+            //     return { k, d };
+            // };
     }
 
     /**

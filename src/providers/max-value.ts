@@ -9,7 +9,11 @@ export class MaxProvider {
     private max = -Infinity;
 
     public constructor(period: number) {
-        this.highest = new CircularBuffer(period + 1);
+        this.highest = new CircularBuffer(period);
+    }
+
+    filled() {
+        return this.highest.filled;
     }
 
     nextValue(high: number) {
