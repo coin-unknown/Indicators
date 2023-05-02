@@ -1,5 +1,5 @@
 import { SMA } from './sma';
-import { StandardDeviation } from './standard-deviation';
+import { StandardDeviation } from './providers/standard-deviation';
 export class BollingerBands {
     private sd: StandardDeviation;
     private sma: SMA;
