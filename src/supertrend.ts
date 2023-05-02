@@ -11,7 +11,11 @@ export class SuperTrend {
     private prevLower: number;
     private prevClose: number;
 
-    constructor(period = 10, private multiplier = 3, smoothing: 'SMA' | 'EMA' | 'SMMA' | 'WEMA' | 'LWMA' | 'EWMA' | 'RMA' = 'WEMA') {
+    constructor(
+        period = 10,
+        private multiplier = 3,
+        smoothing: 'SMA' | 'EMA' | 'SMMA' | 'WEMA' | 'LWMA' | 'EWMA' | 'RMA' = 'WEMA',
+    ) {
         this.atr = new ATR(period, smoothing);
     }
 

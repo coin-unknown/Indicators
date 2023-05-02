@@ -22,13 +22,14 @@ export class ChaikinOscillator {
     }
 
     nextValue(h: number, l: number, c: number, v: number) {
-        this.accDistribution += (c === h && c === l || h === l ? 0 : ((2 * c - l - h)/(h - l)) * v);
+        this.accDistribution += (c === h && c === l) || h === l ? 0 : ((2 * c - l - h) / (h - l)) * v;
 
         return this.emaFast.nextValue(this.accDistribution) - this.emaSlow.nextValue(this.accDistribution);
     }
 
     momentValue(h: number, l: number, c: number, v: number) {
-        const accDistribution = this.accDistribution + (c === h && c === l || h === l ? 0 : ((2 * c - l - h)/(h - l)) * v);
+        const accDistribution =
+            this.accDistribution + ((c === h && c === l) || h === l ? 0 : ((2 * c - l - h) / (h - l)) * v);
 
         return this.emaFast.momentValue(accDistribution) - this.emaSlow.momentValue(accDistribution);
     }

@@ -30,8 +30,7 @@ export class UniLevel<T extends IndicatorConstructor> {
             this.lastUpperValue = Math.max(0, this.lastUpperValue) * this.redunant;
         }
 
-        if (value <= 0)
-            this.lastLowerValue = Math.min(value, this.prevValue);
+        if (value <= 0) this.lastLowerValue = Math.min(value, this.prevValue);
         else {
             this.lastLowerValue = Math.min(0, this.lastLowerValue) * this.redunant;
         }
@@ -39,10 +38,7 @@ export class UniLevel<T extends IndicatorConstructor> {
         const low = (value <= 0 ? value : this.lastLowerValue) * this.multiplier;
         const up = (value >= 0 ? value : this.lastUpperValue) * this.multiplier;
 
-        return [
-            this.samplerUp.nextValue(up) + this.offset,
-            this.samplerLow.nextValue(low) - this.offset
-        ];
+        return [this.samplerUp.nextValue(up) + this.offset, this.samplerLow.nextValue(low) - this.offset];
     }
 }
 

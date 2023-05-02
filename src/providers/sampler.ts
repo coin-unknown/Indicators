@@ -14,15 +14,15 @@ export interface IndicatorConstructor {
 export class Sampler<T extends IndicatorConstructor> {
     private _indicators: IndicatorInstance[] = [];
 
-    constructor(private indicator: T, private samples: number, ) {}
+    constructor(private indicator: T, private samples: number) {}
 
     /**
      * Create indicator instances for next usage, pass period and other
      * indicator constructor parameters
      */
     create(...args: ConstructorParameters<T>) {
-        for (let i = 0; i < this.samples; i++ ) {
-            this._indicators.push(new this.indicator(...args))
+        for (let i = 0; i < this.samples; i++) {
+            this._indicators.push(new this.indicator(...args));
         }
     }
 
@@ -56,4 +56,3 @@ export class Sampler<T extends IndicatorConstructor> {
         return value;
     }
 }
-
