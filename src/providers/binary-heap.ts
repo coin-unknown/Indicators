@@ -70,7 +70,7 @@ export class Heap {
      * Top node. Aliases: `element`.
      * Same as: `top(1)[0]`
      */
-    public peek(): number | undefined {
+    public peek(): number {
         return this.heapArray[0];
     }
 
