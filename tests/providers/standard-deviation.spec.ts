@@ -1,4 +1,4 @@
-import { StandardDeviation, StandardDeviationTwo } from '../../src/providers/standard-deviation';
+import { StandardDeviation } from '../../src/providers/standard-deviation';
 import { SMA } from '../../src/sma';
 import { SD } from 'technicalindicators';
 
