@@ -9,7 +9,11 @@ export class MinProvider {
     private min = Infinity;
 
     public constructor(period: number) {
-        this.lowest = new CircularBuffer(period + 1);
+        this.lowest = new CircularBuffer(period);
+    }
+
+    filled() {
+        return this.lowest.filled;
     }
 
     nextValue(low: number) {
