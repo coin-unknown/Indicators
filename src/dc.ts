@@ -1,4 +1,5 @@
-import { Heap } from './providers/binary-heap';
+import { MaxProvider } from './providers/max-value';
+import { MinProvider } from './providers/min-value';
 
 /**
  * Donchian channels were developed by Richard Donchian, a pioneer of mechanical trend following systems.
@@ -6,39 +7,24 @@ import { Heap } from './providers/binary-heap';
  * originally 20 days, with the optional middle band calculated as the average of the two.
  */
 export class DC {
-    private highest: Heap;
-    private lowest: Heap;
+    private maxProvider: MaxProvider;
+    private minProvider: MinProvider;
 
     constructor(period = 20) {
-        this.highest = new Heap(Heap.maxComparator, period + 1);
-        this.lowest = new Heap(Heap.minComparator, period + 1);
+        this.maxProvider = new MaxProvider(period);
+        this.minProvider = new MinProvider(period);
     }
 
     nextValue(high: number, low: number) {
-        this.highest.push(high);
-        this.lowest.push(low);
-
-        if (!this.highest.filled) {
-            return;
-        }
-
-        const upper = this.highest.peek();
-        const lower = this.lowest.peek();
+        const upper = this.maxProvider.nextValue(high);
+        const lower = this.minProvider.nextValue(low);
 
         return { upper, middle: (upper + lower) / 2, lower };
     }
 
     momentValue(high: number, low: number) {
-        let upper = this.highest.peek();
-        let lower = this.lowest.peek();
-
-        if (high > upper) {
-            upper = high;
-        }
-
-        if (low < lower) {
-            lower = low;
-        }
+        const upper = this.maxProvider.momentValue(high);
+        const lower = this.minProvider.momentValue(low);
 
         return { upper, middle: (upper + lower) / 2, lower };
     }
