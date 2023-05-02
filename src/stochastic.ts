@@ -37,33 +37,6 @@ export class Stochastic {
         const d: number = this.sma.nextValue(k);
 
         return { k, d };
-
-            // this.momentValue = (high: number, low: number, close: number) => {
-            //     const rmHigh = this.highs.push(high);
-            //     const rmLow = this.lows.push(low);
-            //     let higestH = this.higestH;
-            //     let lowestL = this.lowestL;
-
-            //     if (higestH === rmHigh) {
-            //         higestH = getMax(this.highs.toArray());
-            //     } else if (higestH < high) {
-            //         higestH = high;
-            //     }
-
-            //     if (lowestL === rmLow) {
-            //         lowestL = getMin(this.lows.toArray());
-            //     } else if (lowestL > low) {
-            //         lowestL = low;
-            //     }
-
-            //     this.highs.pushback(rmHigh);
-            //     this.lows.pushback(rmLow);
-
-            //     const k: number = ((close - lowestL) / (higestH - lowestL)) * 100;
-            //     const d: number = this.sma.momentValue(k);
-
-            //     return { k, d };
-            // };
     }
 
     /**
@@ -71,6 +44,17 @@ export class Stochastic {
      * does not affect any next calculations
      */
     momentValue(high: number, low: number, close: number): { k: number; d: number } {
-        return;
+        if (!this.max.filled) {
+            return;
+        }
+
+        const max = this.max.momentValue(high);
+        const min = this.min.momentValue(low);
+
+
+        const k: number = ((close - min) / (max - min)) * 100;
+        const d: number = this.sma.momentValue(k);
+
+        return { k, d };
     }
 }
