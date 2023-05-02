@@ -1,4 +1,4 @@
-import { SMA } from "./sma";
+import { SMA } from './sma';
 
 /**
  * Relative Moving Average adds more weight to recent data (and gives less importance to older data).
@@ -15,7 +15,6 @@ export class RMA {
     }
 
     nextValue(value: number) {
-
         if (!this.prevValue) {
             this.prevValue = this.sma.nextValue(value);
         } else {
@@ -25,7 +24,7 @@ export class RMA {
                 this.prevValue = this.alpha * value + (1 - this.alpha) * this.prevValue;
 
                 return this.prevValue;
-            }
+            };
         }
 
         return this.prevValue;

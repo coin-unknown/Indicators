@@ -1,5 +1,4 @@
-type Candle = { o: number, h: number, l: number, c: number, v: number, time: number };
-
+type Candle = { o: number; h: number; l: number; c: number; v: number; time: number };
 
 const getPriceBySourceDefault = (candle: Candle) => {
     return (candle.o + candle.h + candle.l + candle.c) / 4;
@@ -34,7 +33,7 @@ export class VolumeProfile {
         let minDiff = Infinity;
         let middlePrice = source;
 
-        this.sessionPricesLookup.forEach(price => {
+        this.sessionPricesLookup.forEach((price) => {
             const diff = this.diffPercent(price, source);
 
             if (diff > cleanOffset) {
@@ -64,7 +63,6 @@ export class VolumeProfile {
 
             let segmentVolume = 0;
             let segmentPrice = 0;
-
 
             for (let i = start; i < end; i++) {
                 const currentPrice = prices[start];
@@ -144,6 +142,6 @@ export class VolumeProfile {
      * Percent change
      */
     private diffPercent(a: number, b: number): number {
-        return  a < b ? ((b - a) * 100) / a : ((a - b) * 100) / b;
+        return a < b ? ((b - a) * 100) / a : ((a - b) * 100) / b;
     }
 }

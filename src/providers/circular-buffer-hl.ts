@@ -1,4 +1,4 @@
-import { CircularBuffer } from "./circular-buffer";
+import { CircularBuffer } from './circular-buffer';
 
 /**
  * Circular buffers extension for fast detection highs and lows in period

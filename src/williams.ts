@@ -1,4 +1,3 @@
-
 /**
  * Developed by Larry Williams, Williams %R is a momentum indicator that is the inverse of the Fast Stochastic Oscillator.
  * Also referred to as %R, Williams %R reflects the level of the close relative to the highest high for the look-back period.
@@ -19,7 +18,5 @@ export class Williams {
     // formula
     // %R = (Highest High - Close)/(Highest High - Lowest Low) * -100
 
-    public nextValue(h: number, l: number, c: number) {
-
-    }
+    public nextValue(h: number, l: number, c: number) {}
 }

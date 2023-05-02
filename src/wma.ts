@@ -44,11 +44,10 @@ export class WMA {
 
         if (!this.buffer.filled) {
             this.buffer.pushback(removed);
-            return
+            return;
         }
 
-
-        let result = 0
+        let result = 0;
 
         this.buffer.forEach((v, idx) => {
             result += (v * (idx + 1)) / this.denominator;
@@ -56,6 +55,6 @@ export class WMA {
 
         this.buffer.pushback(removed);
 
-        return result
+        return result;
     }
 }

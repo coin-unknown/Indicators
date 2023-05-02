@@ -69,7 +69,7 @@ export class PSAR {
                 if (high > this.highest) {
                     this.highest = high;
 
-                    const sumOfAcceleration = this.accelerationFactor + this.acceleration
+                    const sumOfAcceleration = this.accelerationFactor + this.acceleration;
                     this.accelerationFactor = sumOfAcceleration > this.max ? this.max : sumOfAcceleration;
                 }
                 if (this.low1 < this.psar) {
@@ -89,7 +89,7 @@ export class PSAR {
                 if (low < this.lowest) {
                     this.lowest = low;
 
-                    const sumOfAcceleration = this.accelerationFactor + this.acceleration
+                    const sumOfAcceleration = this.accelerationFactor + this.acceleration;
                     this.accelerationFactor = sumOfAcceleration > this.max ? this.max : sumOfAcceleration;
                 }
                 if (this.high1 > this.psar) {
