@@ -11,6 +11,9 @@ export function sum(arr: number[]) {
 
 export const percentChange = (current: number, prev: number) => ((current - prev) / prev) * 100;
 export const avg = (arr: number[], period = arr.length) => sum(arr) / period || 0;
+/**
+ * @deprecated Use binary heaps insted of calculate maximums
+ */
 export const getMax = (arr: number[]) => {
     let max = -Infinity;
     let idx = 0;
@@ -27,6 +30,9 @@ export const getMax = (arr: number[]) => {
     return { max, idx };
 };
 
+/**
+ * @deprecated Use binary heaps insted of calculate minimums
+ */
 export const getMin = (arr: number[]) => {
     let min = Infinity;
     let idx = 0;
