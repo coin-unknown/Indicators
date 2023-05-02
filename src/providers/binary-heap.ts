@@ -60,10 +60,10 @@ export class Heap {
     }
 
     /**
-     * Remove all of the elements from this heap.
+     * Is all elements ready and filled inside of period (limit)?
      */
-    public clear(): void {
-        this.heapArray.length = 0;
+    public filled() {
+        return this.heapBuffer.filled;
     }
 
     /**
