@@ -1,3 +1,5 @@
+import { CircularBuffer } from './circular-buffer';
+
 type Comparator = (a: number, b: number) => number;
 
 /**
@@ -27,13 +29,15 @@ const getChildrenIndexOf = (idx: number): number[] => {
  */
 export class Heap {
     private heapArray: number[] = [];
-    private _limit = 0;
+    private heapBuffer: CircularBuffer;
 
     /**
      * Heap instance constructor.
      * @param  {Function} compare Optional comparison function, defaults to Heap.minComparator<number>
      */
-    constructor(public compare: Comparator = Heap.minComparator) {}
+    constructor(public compare: Comparator = Heap.minComparator, private limit = 0) {
+        this.heapBuffer = new CircularBuffer(this.limit);
+    }
 
     /**
      * Min number heap comparison function, default.
@@ -71,25 +75,29 @@ export class Heap {
     }
 
     /**
+     * Pushes element(s) to the heap.
+     */
+    public push(element: number): boolean {
+        this._sortNodeUp(this.heapArray.push(element) - 1);
+        const removed = this.heapBuffer.push(element);
+
+        if (removed) {
+            this.remove(removed);
+        }
+
+        return true;
+    }
+
+    /**
      * Extract the top node (root). Aliases: `poll`.
      * @return {any} Extracted top node, undefined if empty
      */
-    public pop(): number | undefined {
+    pop(): number | undefined {
         const last = this.heapArray.pop();
         if (this.heapArray.length > 0 && last !== undefined) {
             return this.replace(last);
         }
         return last;
-    }
-
-    /**
-     * Pushes element(s) to the heap.
-     */
-    public push(element: number): boolean {
-        this._sortNodeUp(this.heapArray.push(element) - 1);
-        this._applyLimit();
-
-        return true;
     }
 
     /**
@@ -129,20 +137,6 @@ export class Heap {
         this.heapArray[0] = element;
         this._sortNodeDown(0);
         return peek;
-    }
-
-    /**
-     * Limit heap size if needed
-     */
-    private _applyLimit(): void {
-        if (this._limit && this._limit < this.heapArray.length) {
-            let rm = this.heapArray.length - this._limit;
-            // It's much faster than splice
-            while (rm) {
-                this.heapArray.pop();
-                --rm;
-            }
-        }
     }
 
     /**
@@ -210,5 +204,3 @@ export class Heap {
             .filter((e) => e !== undefined);
     }
 }
-
-export default Heap;
