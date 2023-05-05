@@ -99,20 +99,20 @@ sma.nextValue(9); // 7.50
 
 ## [Benchmarks](https://github.com/follow-traders/indicators-benchmark)
 
-|    Indicator    	|  @debut/indicators (ops/sec)  	| technicalindicators (ops/sec) 	| trading-signals (ops/sec) 	|  ta.js (ops/sec)  	|
-|:---------------:	|:---------------------------------:|:---------------------------------:|:-----------------------------:|:-----------------:	|
-| AwesomeOscillator |            458,936            	|             13,517             	|             732             	|         x         	|
-|       ATR       	|            720,049            	|             85,709             	|            1,400             	|         x         	|
-| Bollinger Bands 	|             273,562            	|              6,588             	|             62.93            	|         x         	|
-|       CCI       	|             235,552            	|              9,268              	|             x             	|         x         	|
-|       DC       	|             416,059            	|              x                	|             x             	|         x         	|
-|       EMA       	|            2,451,966            	|             322,287            	|            4.90           	|      740,489      	|
-|       MACD      	|            1,146,681            	|             48,323             	|             2.10             	|         x         	|
-|       ROC       	|            2,256,411            	|             49,253             	|            617             	|         x         	|
-|       RSI       	|            1,207,454            	|             21,272             	|            148             	|         x         	|
-|       SMA       	|            2,034,006            	|             45,479             	|            1,506            	|       1,670       	|
-|    Stochastic   	|             416,059            	|             20,914             	|             197             	|         x    	        |
-|      WEMA     	|             937,491            	|            296,787             	|             x             	|         x    	        |
-|      PSAR     	|             1,084,123            	|            166,158             	|             x             	|         x
-|       ADX      	|              356,637             	|              26,581           	|             x             	|         x
-|       WMA     	|             97,807            	|            22,617             	|             x             	|         x
+| Indicator name | @debut/indicators (ops/sec)|technicalindicators (ops/sec)|trading-signals (ops/sec)|ta.js (ops/sec)|
+|:---------------:|:---------------:|:---------------:|:---------------:|:---------------:|
+|AwesomeOscillator|334,729|22,280|x|x|
+|ATR|959,853|138,269|2|x|
+|Bollinger Bands|416,239|10,864|71|x|
+|CCI|408,103|15,101|x|x|
+|DC|579,186|x|x|x|
+|PSAR|1,448,398|274,614|x|x|
+|EMA|1,688,207|437,915|5|1,009,262|
+|MACD|1,471,612|89,241|2|x|
+|ROC|3,586,280|56,036|550|x|
+|RSI|1,238,360|38,179|0|x|
+|SMA|1,040,127|70,585|280|x|
+|ADX|588,816|42,038|x|x|
+|WEMA|1,511,194|435,418|x|x|
+|WMA|139,300|40,719|x|x|
+|Stochastic|393,242|28,681|313|x|
