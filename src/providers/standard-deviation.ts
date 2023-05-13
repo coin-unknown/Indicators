@@ -21,6 +21,4 @@ export class StandardDeviation {
 
         return result;
     }
-
-    calculate(values: number[], value: number, mean?: number) {}
 }
