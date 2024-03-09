@@ -36,6 +36,7 @@ The main feature of these indicators is their continuous operation, which means 
 - Smoothed Moving Average (SMMA).
 - SuperTrend MTF (ST MTF).
 - Stochastic Oscillator (KD)
+- Stochastic Rsi (KD)
 - Wilder's Smoothed Moving Average (WEMA)
 - Welles Wilder's Smoothing Average (WWS)
 - Weighted moving average (WMA)
