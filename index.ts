@@ -36,3 +36,4 @@ export { CircularBuffer } from './src/providers/circular-buffer';
 export { Sampler } from './src/providers/sampler';
 export { VolumeProfile } from './src/volume-profile'; /** BETA UNSTABLE */
 export { ChaikinOscillator } from './src/chaikin';
+export { OrderBlock } from './src/order-block';
