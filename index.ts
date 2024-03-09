@@ -16,6 +16,7 @@ export { AC } from './src/ac';
 export { Move } from './src/move';
 export { Wave } from './src/wave';
 export { Stochastic } from './src/stochastic';
+export { StochasticRSI } from './src/stochastic-rsi';
 export { RSI } from './src/rsi';
 export { CCI } from './src/cci';
 export { ATR } from './src/atr';
@@ -36,4 +37,4 @@ export { CircularBuffer } from './src/providers/circular-buffer';
 export { Sampler } from './src/providers/sampler';
 export { VolumeProfile } from './src/volume-profile'; /** BETA UNSTABLE */
 export { ChaikinOscillator } from './src/chaikin';
-export { OrderBlock } from './src/order-block';
+// export { OrderBlock } from './src/order-block';
