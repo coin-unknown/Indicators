@@ -29,7 +29,7 @@ export class Stochastic {
         const max = this.max.nextValue(high);
         const min = this.min.nextValue(low);
 
-        if (!this.max.filled) {
+        if (!this.max.filled()) {
             return;
         }
 
@@ -44,7 +44,7 @@ export class Stochastic {
      * does not affect any next calculations
      */
     momentValue(high: number, low: number, close: number): { k: number; d: number } {
-        if (!this.max.filled) {
+        if (!this.max.filled()) {
             return;
         }
 
