@@ -5,3 +5,7 @@ Bollinger Bands are a type of statistical chart characterizing the prices and vo
 Upper Band = SMA + (n * Standard Deviation)
 Lower Band = SMA - (n * Standard Deviation)
 ```
+
+## How to calculate Bollinger Bands (BB) in excel spreadsheet?
+
+[Download excel sample](../tests/bbands/Bollinger-Bands.xlsx)

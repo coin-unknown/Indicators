@@ -4,3 +4,7 @@ The Exponential Moving Average (EMA) is a type of moving average that places a g
 ```
 EMA = (Close - Previous EMA) * (2 / (n + 1)) + Previous EMA
 ```
+
+## How to calculate Exponential Moving Average (EMA) in excel spreadsheet?
+
+[Download excel sample](../tests/ema/EMA.xlsx)
