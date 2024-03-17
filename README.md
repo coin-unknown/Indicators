@@ -17,7 +17,7 @@ The main feature of these indicators is their continuous operation, which means 
 
 ## Available Indicators
 - [Accelerator Oscillator (AO)](./docs/AcceleratorOscillator.md).
-- Average True Range (ATR)
+- [Average True Range (ATR)](./docs/AverageTrueRange.md).
 - Awesome Oscillator (AC).
 - Average Directional Index  (ADX).
 - Bollinger Bands (BB).
