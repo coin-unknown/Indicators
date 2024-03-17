@@ -18,30 +18,30 @@ The main feature of these indicators is their continuous operation, which means 
 ## Available Indicators
 - [Accelerator Oscillator (AO)](./docs/AcceleratorOscillator.md).
 - [Average True Range (ATR)](./docs/AverageTrueRange.md).
-- Awesome Oscillator (AC).
-- Average Directional Index  (ADX).
-- Bollinger Bands (BB).
-- Chaikin Oscillator
-- Commodity Channel Index (CCI).
-- Connor's RSI (CRSI)
-- Donchian channels (DC).
-- Exponential Moving Average (EMA).
-- Exponential Weighted Moving Average (EWMA).
-- Linearly weighted moving average (LWMA).
-- Moving Average Convergence Divergence (MACD).
-- Pivot Point Levels (classic / woodie /camarilla / fibonacci).
-- Rate of Change (ROC).
-- Relative Strength Index (RSI).
-- Simple Moving Average (SMA).
-- Smoothed Moving Average (SMMA).
-- SuperTrend MTF (ST MTF).
-- Stochastic Oscillator (KD)
-- Stochastic Rsi (KD)
-- Wilder's Smoothed Moving Average (WEMA)
-- Welles Wilder's Smoothing Average (WWS)
-- Weighted moving average (WMA)
-- Parabolic Stop And Reverse (PSAR)
-- Volume Profile
+- [Awesome Oscillator (AC)](./docs/AwesomeOscillator.md).
+- [Average Directional Index  (ADX)](./docs/AverageDirectionalIndex.md).
+- [Bollinger Bands (BB)](./docs/BollingerBands.md).
+- [Chaikin Oscillator](./docs/ChaikinOscillator.md).
+- [Commodity Channel Index (CCI)](./docs/CommodityChannelIndex.md).
+- [Connor's RSI (CRSI)](./docs/ConnorsRSI.md).
+- [Donchian Channels (DC)](./docs/DonchianChannels.md).
+- [Exponential Moving Average (EMA)](./docs/ExponentialMovingAverage.md).
+- [Exponential Weighted Moving Average (EWMA)](./docs/ExponentialWeightedMovingAverage.md).
+- [Linearly Weighted Moving Average (LWMA)](./docs/LinearlyWeightedMovingAverage.md).
+- [Moving Average Convergence Divergence (MACD)](./docs/MovingAverageConvergenceDivergence.md).
+- [Pivot Point Levels (classic / woodie /camarilla / fibonacci)](./docs/PivotPointLevels.md).
+- [Rate of Change (ROC)](./docs/RateofChange.md).
+- [Relative Strength Index (RSI)](./docs/RelativeStrengthIndex.md).
+- [Simple Moving Average (SMA)](./docs/SimpleMovingAverage.md).
+- [Smoothed Moving Average (SMMA)](./docs/SmoothedMovingAverage.md).
+- [SuperTrend MTF (ST MTF)](./docs/SuperTrend.md).
+- [Stochastic Oscillator (KD)](./docs/StochasticOscillator.md).
+- [Stochastic Rsi (KD)](./docs/StochasticRsi.md).
+- [Wilder's Smoothed Moving Average (WEMA)](./docs/WildersSmoothedMovingAverage.md).
+- [Welles Wilder's Smoothing Average (WWS)](./docs/WellesWildersSmoothingAverage.md).
+- [Weighted moving average (WMA)](./docs/WeightedMovingAverage.md)
+- [Parabolic Stop And Reverse (PSAR)](./docs/ParabolicStopAndReverse.md).
+- Volume Profile (TBD)
 
 ## Candles
 - Heiken Ashi.
