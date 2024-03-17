@@ -38,3 +38,7 @@ console.log(atrValue); //  Average True Range calculated value for current tick
 // When candle closed call nextValue for candle data
 atr.nextValue(...);
 ```
+
+## How to calculate Average True Range (ATR) in excel spreadsheet?
+
+[Download excel sample](../tests/atr/Average-True-Range.xlsx)

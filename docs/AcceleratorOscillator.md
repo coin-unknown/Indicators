@@ -42,3 +42,7 @@ console.log(aoValue); // Accelerator Oscillator calculated value for current tic
 // When candle closed call nextValue for candle data
 ao.nextValue(...);
 ```
+
+## How to calculate Accelerator Oscillator (AC) in excel spreadsheet?
+
+[Download excel sample](../tests/ac/awesome-and-accelerator-oscillators.xlsx)
