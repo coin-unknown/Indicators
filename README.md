@@ -1,7 +1,6 @@
 ![npm](https://img.shields.io/npm/v/@debut/indicators)
 ![npm](https://img.shields.io/npm/dm/@debut/indicators)
 ![NPM](https://img.shields.io/npm/l/@debut/indicators)
-[![GitNFT](https://img.shields.io/badge/%F0%9F%94%AE-Open%20in%20GitNFT-darkviolet?style=flat)](https://gitnft.quine.sh/app/commits/list/repo/Indicators)
 # Streaming Technical Indicators
 ## High performance for you trading application
 
