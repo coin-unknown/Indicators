@@ -29,7 +29,6 @@ describe('MACD', () => {
         });
 
         closes.forEach((tick) => {
-
             const local = macd.nextValue(tick);
             const cross = macd2.nextValue(tick);
 

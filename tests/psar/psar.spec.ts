@@ -7,10 +7,10 @@ describe('PSAR', () => {
         const psar = new PSAR();
 
         const local = [];
-        const cross = PSAR2.calculate({high: highs, low: lows, step: 0.02, max: 0.2})
+        const cross = PSAR2.calculate({ high: highs, low: lows, step: 0.02, max: 0.2 });
 
-        for(let i = 0; i < lows.length; i++) {
-            local.push(psar.nextValue(highs[i], lows[i], closes[i]))
+        for (let i = 0; i < lows.length; i++) {
+            local.push(psar.nextValue(highs[i], lows[i], closes[i]));
         }
 
         expect(local).toEqual(cross);
@@ -19,11 +19,11 @@ describe('PSAR', () => {
         const psar = new PSAR();
 
         const localMoment = [];
-        const cross = PSAR2.calculate({high: highs, low: lows, step: 0.02, max: 0.2})
+        const cross = PSAR2.calculate({ high: highs, low: lows, step: 0.02, max: 0.2 });
 
-        for(let i = 0; i < lows.length; i++) {
-            localMoment.push(psar.momentValue(highs[i], lows[i]))
-            psar.nextValue(highs[i], lows[i], closes[i])
+        for (let i = 0; i < lows.length; i++) {
+            localMoment.push(psar.momentValue(highs[i], lows[i]));
+            psar.nextValue(highs[i], lows[i], closes[i]);
         }
 
         expect(localMoment).toEqual(cross);
