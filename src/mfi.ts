@@ -49,6 +49,26 @@ export class MFI {
     }
 
     momentValue(high: number, low: number, close: number, volume: number) {
-        return 0;
+        const typicalPrice = (high + low + close) / 3;
+        const moneyFlow = typicalPrice * volume;
+
+        if (!this.pevTypicalPrice) {
+            return;
+        }
+
+        const positiveMoneyFlow = typicalPrice > this.pevTypicalPrice ? moneyFlow : 0;
+        const negativeMoneyFlow = typicalPrice < this.pevTypicalPrice ? moneyFlow : 0;
+        
+        if (!this.posCircular.filled) {
+            return;
+        }
+        
+        const posRedunant = this.posCircular.peek();
+        const negRedunant = this.negCircular.peek();
+        const negativeMoneyFlowSum = this.negativeMoneyFlowSum + negativeMoneyFlow - negRedunant;
+        const positiveMoneyFlowSum = this.positiveMoneyFlowSum + positiveMoneyFlow - posRedunant;
+        const moneyFlowRatio = positiveMoneyFlowSum / negativeMoneyFlowSum;
+
+        return 100 - 100 / (1 + moneyFlowRatio);
     }
 }
