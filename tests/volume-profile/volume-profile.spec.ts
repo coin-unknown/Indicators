@@ -10,7 +10,7 @@ describe.skip('Volume Profile', () => {
             '1.471': '==',
             '1.477': '===',
             '1.487': '==',
-            '1.49': '==='
+            '1.49': '===',
         };
 
         function drawBar(count: number) {
@@ -27,13 +27,11 @@ describe.skip('Volume Profile', () => {
 
         const vpSession = vp.getSession(data[data.length - 1]);
 
-
         vpSession.forEach((volume, price) => {
-            actual[price] =  drawBar(volume);
+            actual[price] = drawBar(volume);
         });
 
-        console.log(actual)
-
+        console.log(actual);
 
         expect(actual).toEqual(expected);
     });

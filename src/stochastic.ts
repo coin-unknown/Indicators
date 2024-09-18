@@ -51,7 +51,6 @@ export class Stochastic {
         const max = this.max.momentValue(high);
         const min = this.min.momentValue(low);
 
-
         const k: number = ((close - min) / (max - min)) * 100;
         const d: number = this.sma.momentValue(k);
 

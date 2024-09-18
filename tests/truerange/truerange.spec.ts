@@ -1,9 +1,8 @@
-
 import { ohlc, trueRangeData, averageTrueRrange } from './data';
 import { getTrueRange } from '../../src/providers/true-range';
 import { ATR } from '../../src/atr';
 
-describe("True Range", () => {
+describe('True Range', () => {
     it('Excel validation test', () => {
         let prevClose: number;
 

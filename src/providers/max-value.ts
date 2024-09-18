@@ -23,8 +23,8 @@ export class MaxProvider {
 
         const rmMax = this.highest.push(high);
 
-         // Most perf degrade case
-         if (rmMax === this.max && high !== this.max) {
+        // Most perf degrade case
+        if (rmMax === this.max && high !== this.max) {
             // console.count('degrade_max');
 
             this.max = getMax(this.highest.toArray());
@@ -37,4 +37,3 @@ export class MaxProvider {
         return this.max > high ? this.max : high;
     }
 }
-
