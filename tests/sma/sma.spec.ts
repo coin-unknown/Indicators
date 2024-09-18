@@ -59,4 +59,18 @@ describe('Simple Moving Average', () => {
             expect(calc).toEqual(cross);
         });
     });
+
+    it('Machine precision error', () => {
+        const array = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30];
+        const localSMA = new SMA(20);
+        const idealSMAValue = 20.5;
+
+        let lastValue = 0;
+
+        for (let i = 0; i < array.length; i++) {
+            lastValue = localSMA.nextValue(array[i])!;
+        }
+
+        console.log(lastValue, idealSMAValue);
+    });
 });
