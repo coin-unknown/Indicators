@@ -1,5 +1,6 @@
 import { SMA } from '../../src/sma';
 import { SMA as SMA2 } from 'technicalindicators';
+import { BigFloat32 } from 'bigfloat';
 
 describe('Simple Moving Average', () => {
     const ticks = [120, 150, 240, 540, 210, 380, 120, 870, 250, 1100, 500, 950];
@@ -73,4 +74,36 @@ describe('Simple Moving Average', () => {
 
         console.log(lastValue, idealSMAValue);
     });
+
+    it.only('BigInt vs Float floating error', () => {
+
+        function bigFloatSMA(array: number[], period = 20) {
+            let sum = new BigFloat32(0);
+
+            for (let i = array.length - period; i < array.length; i++) {
+               sum = sum.add(array[i]);
+            }
+
+            return sum.mul(1/period);
+        }
+
+        const arraySize = 900_000;
+        const randomDataArray = Array.from({length: arraySize}, () => Math.floor(Math.random() * arraySize));
+        const localSMA = new SMA(20);
+
+        for (let i = 0; i < randomDataArray.length; i++) {
+            const calculatedIntSMA = localSMA.nextValue(randomDataArray[i]);
+
+            if (!calculatedIntSMA || i < 20) {
+                continue;
+            }
+
+            const calculatedBigIntSMA = bigFloatSMA(randomDataArray.slice(i-20, i + 1));
+            // console.log(calculatedIntSMA, Number(calculatedBigIntSMA));
+
+            expect(calculatedIntSMA).toEqual(Number(calculatedBigIntSMA));
+        }
+    });
 });
+
+
