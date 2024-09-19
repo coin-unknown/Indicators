@@ -4,10 +4,10 @@ import { MinProvider } from './providers/min-value';
 import { RSI } from './rsi';
 
 /**
-* Developed by Tushar Chande and Stanley Kroll, StochRSI is an oscillator that measures the level of RSI relative
-* to its high-low range over a set time period. StochRSI applies the Stochastics formula to RSI values, rather
-* than price values, making it an indicator of an indicator. The result is an oscillator that 
-* fluctuates between 0 and 1.
+ * Developed by Tushar Chande and Stanley Kroll, StochRSI is an oscillator that measures the level of RSI relative
+ * to its high-low range over a set time period. StochRSI applies the Stochastics formula to RSI values, rather
+ * than price values, making it an indicator of an indicator. The result is an oscillator that
+ * fluctuates between 0 and 1.
  */
 export class StochasticRSI {
     private max: MaxProvider;
@@ -28,7 +28,7 @@ export class StochasticRSI {
      * Get next value for closed candle
      * affect all next calculations
      */
-    nextValue(close: number): { k: number, d: number, stochRsi: number } {
+    nextValue(close: number): { k: number; d: number; stochRsi: number } {
         const rsi = this.rsi.nextValue(close);
 
         if (rsi === undefined) {
@@ -37,7 +37,7 @@ export class StochasticRSI {
 
         const max = this.max.nextValue(rsi);
         const min = this.min.nextValue(rsi);
-        
+
         if (!this.max.filled()) {
             return;
         }
@@ -58,7 +58,7 @@ export class StochasticRSI {
      * Get next value for non closed (tick) candle hlc
      * does not affect any next calculations
      */
-    momentValue(close: number): { k: number, d: number, stochRsi: number} {
+    momentValue(close: number): { k: number; d: number; stochRsi: number } {
         if (!this.max.filled()) {
             return;
         }

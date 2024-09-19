@@ -13,6 +13,7 @@ export { SMMA } from './src/smma';
 export { RMA } from './src/rma';
 export { AO } from './src/ao';
 export { AC } from './src/ac';
+export { MFI } from './src/mfi';
 export { Move } from './src/move';
 export { Wave } from './src/wave';
 export { Stochastic } from './src/stochastic';

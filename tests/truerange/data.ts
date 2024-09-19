@@ -56,7 +56,6 @@ export const trueRangeData = [
     70.6,
 ];
 
-
 export const averageTrueRrange = [
     undefined,
     undefined,

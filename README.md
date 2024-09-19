@@ -28,6 +28,7 @@ The main feature of these indicators is their continuous operation, which means 
 - [Exponential Weighted Moving Average (EWMA)](./docs/ExponentialWeightedMovingAverage.md).
 - [Linearly Weighted Moving Average (LWMA)](./docs/LinearlyWeightedMovingAverage.md).
 - [Moving Average Convergence Divergence (MACD)](./docs/MovingAverageConvergenceDivergence.md).
+- [Money Flow Index (MFI)](./docs/MoneyFlowIndex.md).
 - [Pivot Point Levels (classic / woodie /camarilla / fibonacci)](./docs/PivotPointLevels.md).
 - [Rate of Change (ROC)](./docs/RateofChange.md).
 - [Relative Strength Index (RSI)](./docs/RelativeStrengthIndex.md).

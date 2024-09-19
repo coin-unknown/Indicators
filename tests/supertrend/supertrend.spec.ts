@@ -1,8 +1,7 @@
-
 import { ohlc, stExcelCalculated } from './data';
 import { SuperTrend } from '../../src/supertrend';
 
-describe("Super Trend", () => {
+describe('Super Trend', () => {
     it('Excel validation test', () => {
         const st = new SuperTrend(10, 2, 'SMA');
 
