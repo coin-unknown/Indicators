@@ -66,7 +66,7 @@
         "eslint-plugin-prettier": "^3.1.4",
         "jest": "^27.0.6",
         "prettier": "^2.0.5",
-        "rollup": "^2.18.0",
+        "rollup": "^3.29.5",
         "rollup-plugin-buble": "^0.19.8",
         "rollup-plugin-commonjs": "^10.1.0",
         "rollup-plugin-node-resolve": "^5.2.0",
