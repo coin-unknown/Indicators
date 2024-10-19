@@ -3,16 +3,17 @@ import { data } from './data';
 
 describe('Adaptive Moving Average', () => {
     const ama = new AMA(15, 2, 30);
-    const EPSILON = 0.0001;
+    const EPSILON = 0.01;
 
     it('Excel validate', () => {
         data.forEach((tick, idx) => {
-            const amaValue = ama.nextValue(Number(tick.Close));
-            const expected = Number(tick.AMA);
+            const amaValue = ama.nextValue(tick.c);
+            const expected = Number(tick.ama);
 
-            console.log(amaValue, expected);
+            if (amaValue) {
+                expect(Math.abs(amaValue - expected)).toBeLessThan(EPSILON);
+            }
 
-            // expect(amaValue).toBe(Number(expected));
         });
     });
 });
