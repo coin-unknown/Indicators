@@ -1,5 +1,11 @@
 import { CircularBuffer } from './providers/circular-buffer';
 
+/**
+ * Adaptive Moving Average (AMA) is a powerful tool that can significantly improve your trading strategy. 
+ * In this ultimate guide, I’ll walk you through everything you need to know about AMA – from its 
+ * basics to implementing it in your own trading approach. 
+ * Get ready to take your trading game to the next level!
+ */
 export class AMA {
     private circular: CircularBuffer;
     private sumNoise = 0;
